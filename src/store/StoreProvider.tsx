@@ -17,6 +17,15 @@ interface StoreContextValue {
 const localStore = new LocalStore()
 const StoreContext = createContext<StoreContextValue | null>(null)
 
+/**
+ * Wipes the local copy. Sign-in is required, so the only progress on this
+ * machine belongs to the account signing out; leaving it behind would let the
+ * next account read it, and worse, upload it as their own on the next merge.
+ */
+export async function clearLocalProgress() {
+  await localStore.clear()
+}
+
 export function StoreProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)

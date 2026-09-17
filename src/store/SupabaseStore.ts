@@ -40,19 +40,6 @@ export class SupabaseStore implements ProgressStore {
     return result
   }
 
-  async bulk(data: Record<string, unknown>) {
-    const now = new Date().toISOString()
-    const rows = Object.entries(data).map(([key, value]) => ({
-      user_id: this.userId,
-      key,
-      value,
-      updated_at: now,
-    }))
-    if (rows.length === 0) return
-    const { error } = await this.client.from('progress').upsert(rows)
-    if (error) throw error
-  }
-
   /** Sync-layer only: raw value + timestamp pairs, used for last-write-wins merges. */
   async entries(): Promise<Record<string, Envelope>> {
     const rows = await this.fetchRows()

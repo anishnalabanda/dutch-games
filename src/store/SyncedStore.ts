@@ -1,8 +1,6 @@
 import type { ProgressStore } from './ProgressStore'
-import type { LocalStore } from './LocalStore'
+import { SYNC_QUEUE_KEY, type LocalStore } from './LocalStore'
 import type { SupabaseStore } from './SupabaseStore'
-
-const QUEUE_KEY = '__nl_sync_queue__'
 
 /**
  * ProgressStore for a signed-in user: local is the working copy (reads/writes
@@ -44,13 +42,6 @@ export class SyncedStore implements ProgressStore {
     await this.pushToCloud(key, value)
   }
 
-  async bulk(data: Record<string, unknown>) {
-    await this.local.bulk(data)
-    for (const [key, value] of Object.entries(data)) {
-      await this.pushToCloud(key, value)
-    }
-  }
-
   /** Run once on sign-in: merge local + cloud by updated_at, write the result to both. */
   async mergeFromCloud() {
     const [localEntries, cloudEntries] = await Promise.all([
@@ -80,10 +71,10 @@ export class SyncedStore implements ProgressStore {
 
   private queue(key: string) {
     try {
-      const raw = window.localStorage.getItem(QUEUE_KEY)
+      const raw = window.localStorage.getItem(SYNC_QUEUE_KEY)
       const pending: string[] = raw ? JSON.parse(raw) : []
       if (!pending.includes(key)) pending.push(key)
-      window.localStorage.setItem(QUEUE_KEY, JSON.stringify(pending))
+      window.localStorage.setItem(SYNC_QUEUE_KEY, JSON.stringify(pending))
     } catch {
       // best-effort; if storage is unavailable the pending write is simply lost
     }
@@ -92,7 +83,7 @@ export class SyncedStore implements ProgressStore {
   private async flushQueue() {
     let pending: string[] = []
     try {
-      const raw = window.localStorage.getItem(QUEUE_KEY)
+      const raw = window.localStorage.getItem(SYNC_QUEUE_KEY)
       pending = raw ? JSON.parse(raw) : []
     } catch {
       return
@@ -111,9 +102,9 @@ export class SyncedStore implements ProgressStore {
 
     try {
       if (remaining.length > 0) {
-        window.localStorage.setItem(QUEUE_KEY, JSON.stringify(remaining))
+        window.localStorage.setItem(SYNC_QUEUE_KEY, JSON.stringify(remaining))
       } else {
-        window.localStorage.removeItem(QUEUE_KEY)
+        window.localStorage.removeItem(SYNC_QUEUE_KEY)
       }
     } catch {
       // ignore

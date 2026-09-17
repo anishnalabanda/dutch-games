@@ -24,15 +24,15 @@ export function ExamCard({
       <Card className="exam-card">
         <h3>{exam.title}</h3>
         <p className="exam-card-subtitle">{exam.subtitle}</p>
-        <ProgressBar value={coreDone} max={coreTotal} />
-        <span className="exam-card-count">
-          {coreTotal === 0 ? 'Nog geen games' : `${coreDone} van ${coreTotal} kerngames`}
-        </span>
-        {optionalTotal > 0 && (
-          <span className="exam-card-extra">
-            {optionalDone} van {optionalTotal} extra
+        <div className="exam-card-foot">
+          <ProgressBar value={coreDone} max={coreTotal} />
+          <span className="exam-card-count">
+            {coreTotal === 0 ? 'Nog geen games' : `${coreDone} van ${coreTotal} kerngames`}
           </span>
-        )}
+          <span className="exam-card-extra">
+            {optionalTotal > 0 ? `${optionalDone} van ${optionalTotal} extra` : '\u00a0'}
+          </span>
+        </div>
       </Card>
     </Link>
   )

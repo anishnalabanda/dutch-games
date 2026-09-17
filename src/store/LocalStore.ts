@@ -1,6 +1,7 @@
 import type { ProgressStore } from './ProgressStore'
 
 const PREFIX = 'nl.'
+export const SYNC_QUEUE_KEY = '__nl_sync_queue__'
 
 export interface Envelope {
   v: unknown
@@ -43,9 +44,25 @@ export class LocalStore implements ProgressStore {
     return result
   }
 
-  async bulk(data: Record<string, unknown>) {
-    for (const [key, value] of Object.entries(data)) {
-      await this.set(key, value)
+  /**
+   * Wipes every progress key. Called on sign out so the next account to use
+   * this browser cannot inherit, or upload, the previous one's progress.
+   */
+  async clear() {
+    for (const [key] of this.entriesList()) {
+      if (this.storage) {
+        try {
+          this.storage.removeItem(key)
+        } catch {
+          // fall through to the memory copy below
+        }
+      }
+      this.memory.delete(key)
+    }
+    try {
+      this.storage?.removeItem(SYNC_QUEUE_KEY)
+    } catch {
+      // nothing to do; the queue is best-effort anyway
     }
   }
 

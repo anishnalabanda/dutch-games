@@ -168,15 +168,26 @@
 }
 
 /* ExamCard */
+/* The link is the grid item, so it has to fill the cell for the card inside it
+   to be able to match its siblings' height. */
 .exam-card-link {
   text-decoration: none;
-  display: block;
+  display: flex;
 }
 .exam-card {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
+  width: 100%;
   transition: border-color var(--transition-base);
+}
+
+/* Pinned to the bottom, so a two-line subtitle pushes nothing out of line. */
+.exam-card-foot {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: auto;
 }
 .exam-card-link:hover .exam-card,
 .exam-card-link:focus-visible .exam-card {
@@ -291,6 +302,9 @@
 .hub-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  /* 1fr rather than auto keeps every row the same height as the tallest card,
+     so the cards form a grid instead of a ragged staircase. */
+  grid-auto-rows: 1fr;
   gap: var(--space-3);
 }
 
@@ -361,4 +375,69 @@
   margin: var(--space-1) 0 0;
   font-size: var(--text-sm);
   opacity: 0.75;
+}
+
+/* Sign-in screen: the whole app sits behind this. */
+.signin {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+}
+
+.signin-card {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+.signin-card h1 {
+  margin: 0;
+}
+
+.signin-lead {
+  margin: 0;
+  color: var(--paper);
+  font-size: var(--text-md);
+}
+
+.signin-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--text-sm);
+  line-height: 1.5;
+}
+
+.signin-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.signin-form input {
+  background: var(--board);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: var(--space-2) var(--space-3);
+  color: var(--paper);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+}
+
+.signin-form input:focus-visible {
+  outline: none;
+  border-color: var(--amber);
+}
+
+.signin-error {
+  margin: 0;
+  color: var(--alert);
+  font-size: var(--text-sm);
 }
