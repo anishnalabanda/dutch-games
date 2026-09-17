@@ -1,0 +1,72 @@
+.vg-pass {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--amber);
+  border-radius: var(--radius);
+  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.vg-pass-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-1) var(--space-2);
+  font-size: var(--text-md);
+  color: var(--paper);
+}
+
+.vg-slot {
+  min-width: 4.5rem;
+  text-align: center;
+  padding: var(--space-1) var(--space-2);
+  border-bottom: 2px dashed var(--line);
+  color: var(--amber);
+  font-family: var(--font-heading);
+  font-size: var(--text-lg);
+  letter-spacing: 0.02em;
+}
+.vg-slot-wide {
+  min-width: 8rem;
+}
+.vg-slot-ok {
+  border-bottom-style: solid;
+  border-color: var(--ok);
+  color: var(--ok);
+}
+.vg-slot-alert {
+  border-bottom-style: solid;
+  border-color: var(--alert);
+  color: var(--alert);
+}
+
+.vg-gloss {
+  color: var(--muted);
+}
+
+.vg-kofschip {
+  border: 1px dashed var(--line);
+  border-radius: var(--radius);
+  padding: var(--space-3);
+}
+
+.vg-kofschip-letters {
+  display: flex;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+
+.vg-kofschip-letter {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--amber);
+  border-radius: var(--radius);
+  color: var(--amber);
+  font-family: var(--font-heading);
+  font-size: var(--text-md);
+}

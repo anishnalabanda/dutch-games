@@ -1,0 +1,193 @@
+.so-timer {
+  font-family: var(--font-heading);
+  font-size: var(--text-md);
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+.so-timer-over {
+  color: var(--amber);
+}
+
+.so-brief {
+  border-left: 3px solid var(--amber);
+  padding-left: var(--space-3);
+}
+
+.so-title {
+  font-family: var(--font-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--paper);
+  margin: 0 0 var(--space-1);
+}
+
+.so-situation {
+  color: var(--paper);
+  font-size: var(--text-base);
+  margin: 0 0 var(--space-3);
+}
+
+.so-points {
+  margin: var(--space-1) 0 0;
+  padding-left: var(--space-4);
+  color: var(--paper);
+  font-size: var(--text-sm);
+}
+
+.so-textarea {
+  width: 100%;
+  background: var(--worksheet);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: var(--space-3);
+  font-family: var(--font-reading);
+  font-size: var(--text-md);
+  line-height: 1.6;
+  resize: vertical;
+}
+.so-textarea:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 2px;
+}
+
+.so-review {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+  gap: var(--space-4);
+}
+
+.so-column {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.so-checks {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.so-check {
+  display: flex;
+  gap: var(--space-2);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--line);
+  border-radius: var(--radius);
+  padding: var(--space-2) var(--space-3);
+  color: var(--paper);
+  font-size: var(--text-sm);
+}
+.so-check p {
+  margin: var(--space-1) 0 0;
+  color: var(--muted);
+}
+
+.so-check-mark {
+  font-family: var(--font-heading);
+  font-size: var(--text-md);
+  line-height: 1.2;
+}
+
+.so-check-ok {
+  border-left-color: var(--ok);
+}
+.so-check-ok .so-check-mark {
+  color: var(--ok);
+}
+.so-check-warn {
+  border-left-color: var(--amber);
+}
+.so-check-warn .so-check-mark {
+  color: var(--amber);
+}
+.so-check-fail {
+  border-left-color: var(--alert);
+}
+.so-check-fail .so-check-mark {
+  color: var(--alert);
+}
+
+.so-honesty {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--text-xs);
+  line-height: 1.6;
+  border: 1px dashed var(--line);
+  border-radius: var(--radius);
+  padding: var(--space-2) var(--space-3);
+}
+
+.so-text-copy,
+.so-model {
+  white-space: pre-wrap;
+  font-size: var(--text-base);
+}
+
+.so-model {
+  border-left: 3px solid var(--ok);
+}
+
+.so-rubric {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: var(--space-3);
+}
+
+.so-rubric-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  color: var(--paper);
+  font-size: var(--text-sm);
+  cursor: pointer;
+}
+
+.so-rubric-row input {
+  margin-top: 3px;
+  accent-color: var(--amber);
+  width: 1rem;
+  height: 1rem;
+  flex: none;
+}
+
+.so-stem {
+  font-size: var(--text-lg);
+  line-height: 1.7;
+}
+
+.so-stem-blank {
+  border-bottom: 2px solid #c99a00;
+  padding: 0 var(--space-2);
+  color: #6b5a00;
+}
+
+.so-completion {
+  max-width: 34rem;
+}
+
+.so-paper-note {
+  border: 1px dashed var(--amber);
+  border-radius: var(--radius);
+  padding: var(--space-3);
+  color: var(--paper);
+  font-size: var(--text-sm);
+  line-height: 1.6;
+}
+.so-paper-note-warn {
+  border-color: var(--muted);
+  color: var(--muted);
+}
+
+.so-model h4 {
+  margin-top: 0;
+}

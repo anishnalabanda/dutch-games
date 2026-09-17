@@ -1,0 +1,36 @@
+:root {
+  --board: #101822;
+  --panel: #18222f;
+  --line: #243244;
+  --amber: #ffc917;
+  --paper: #f3f2ee;
+  --ink: #0d1219;
+  --muted: #8b98a8;
+  --ok: #3ec98a;
+  --alert: #e8523a;
+  --verb: #5aa9ff;
+  --worksheet: #f5f2ea;
+
+  --font-heading: 'Barlow Condensed', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --font-reading: 'Source Serif 4', serif;
+
+  --radius: 10px;
+  --radius-pill: 999px;
+  --space-0: 2px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 16px;
+  --space-4: 24px;
+  --space-5: 32px;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-md: 1.1rem;
+  --text-lg: 1.4rem;
+  --text-xl: 1.5rem;
+
+  --transition-fast: 0.1s ease;
+  --transition-base: 0.15s ease;
+}

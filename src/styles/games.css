@@ -1,0 +1,150 @@
+/* Shared game furniture. Per-game CSS covers only that game's own mechanic. */
+
+.g-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.g-label {
+  display: block;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-family: var(--font-heading);
+  font-size: var(--text-xs);
+  margin-bottom: var(--space-1);
+}
+
+.g-prompt {
+  font-size: var(--text-md);
+  color: var(--paper);
+  margin: 0;
+}
+
+.g-sentence {
+  font-size: var(--text-lg);
+  line-height: 1.6;
+  color: var(--paper);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-1) var(--space-2);
+}
+
+.g-hint {
+  color: var(--muted);
+  font-size: var(--text-sm);
+  margin: 0;
+}
+
+.g-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.g-chip {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: var(--space-2) var(--space-3);
+  color: var(--paper);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  cursor: pointer;
+  transition:
+    border-color var(--transition-fast),
+    background var(--transition-fast);
+}
+.g-chip:hover:not(:disabled),
+.g-chip:focus-visible {
+  border-color: var(--amber);
+}
+.g-chip:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+.g-chip-selected {
+  border-color: var(--amber);
+  background: var(--board);
+  color: var(--amber);
+}
+.g-chip-ok {
+  border-color: var(--ok);
+  color: var(--ok);
+}
+.g-chip-alert {
+  border-color: var(--alert);
+  color: var(--alert);
+}
+
+.g-input {
+  background: var(--board);
+  border: 1px solid var(--line);
+  border-bottom: 2px solid var(--amber);
+  border-radius: var(--radius);
+  padding: var(--space-2) var(--space-3);
+  color: var(--paper);
+  font-family: var(--font-body);
+  font-size: var(--text-md);
+  width: 100%;
+  max-width: 26rem;
+}
+.g-input:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 2px;
+}
+
+.g-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.g-answer-key {
+  color: var(--muted);
+  font-size: var(--text-sm);
+  margin: 0;
+}
+.g-answer-key strong {
+  color: var(--paper);
+}
+
+/* Cream "worksheet" surface for reading-heavy screens (messages, model answers). */
+.g-worksheet {
+  background: var(--worksheet);
+  color: var(--ink);
+  border-radius: var(--radius);
+  padding: var(--space-4);
+  font-family: var(--font-reading);
+  font-size: var(--text-md);
+  line-height: 1.65;
+}
+.g-worksheet h4 {
+  font-family: var(--font-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-sm);
+  color: #55606d;
+}
+.g-worksheet p {
+  margin: 0 0 var(--space-2);
+}
+.g-worksheet p:last-child {
+  margin-bottom: 0;
+}
+
+.g-done {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .g-chip {
+    transition: none;
+  }
+}

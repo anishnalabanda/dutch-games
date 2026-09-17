@@ -1,0 +1,56 @@
+.vw-strips {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+/* Two paper strips spliced by the connector in the middle. */
+.vw-strip {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--line);
+  border-radius: var(--radius);
+  padding: var(--space-3);
+  color: var(--paper);
+  font-size: var(--text-md);
+}
+
+.vw-strip-second {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-2);
+  border-left-color: var(--amber);
+}
+
+.vw-word {
+  transition: color var(--transition-base);
+}
+
+.vw-word-verb {
+  color: var(--verb);
+  border-bottom: 2px solid var(--verb);
+}
+
+.vw-connector {
+  align-self: center;
+  min-width: 7rem;
+  text-align: center;
+  padding: var(--space-1) var(--space-3);
+  border: 1px dashed var(--line);
+  border-radius: var(--radius-pill);
+  color: var(--muted);
+  font-family: var(--font-heading);
+  font-size: var(--text-md);
+  letter-spacing: 0.06em;
+}
+.vw-connector-filled {
+  border-style: solid;
+  border-color: var(--amber);
+  color: var(--amber);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vw-word {
+    transition: none;
+  }
+}

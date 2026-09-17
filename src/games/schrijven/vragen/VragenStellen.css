@@ -1,0 +1,33 @@
+.vs-answer {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: var(--space-3);
+}
+
+.vs-answer-text {
+  margin: 0;
+  font-size: var(--text-lg);
+  color: var(--paper);
+}
+
+/* The part of the answer the question has to target. */
+.vs-focus {
+  background: linear-gradient(transparent 62%, rgba(255, 201, 23, 0.45) 62%);
+  color: var(--paper);
+  padding: 0 var(--space-0);
+}
+
+.vs-focus-legend {
+  background: linear-gradient(transparent 62%, rgba(255, 201, 23, 0.45) 62%);
+  color: var(--paper);
+}
+
+.vs-input {
+  max-width: 32rem;
+}
+
+.vs-hint {
+  border-left: 2px solid var(--amber);
+  padding-left: var(--space-2);
+}

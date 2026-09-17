@@ -1,0 +1,70 @@
+.sm-machine {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: var(--space-4) var(--space-3);
+}
+
+.sm-in,
+.sm-out {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 9rem;
+  flex: 1 1 9rem;
+}
+
+.sm-word {
+  font-family: var(--font-heading);
+  font-size: var(--text-xl);
+  letter-spacing: 0.04em;
+  color: var(--paper);
+}
+.sm-word-ok {
+  color: var(--ok);
+}
+
+.sm-gloss {
+  color: var(--muted);
+  font-size: var(--text-xs);
+}
+
+.sm-belt {
+  flex: 0 0 auto;
+  border-top: 2px dashed var(--line);
+  min-width: 3rem;
+  text-align: center;
+  color: var(--muted);
+  padding-top: var(--space-1);
+}
+.sm-belt-run {
+  border-color: var(--ok);
+  color: var(--ok);
+}
+.sm-belt-arrow {
+  display: inline-block;
+  transition: transform var(--transition-base);
+}
+.sm-belt-run .sm-belt-arrow {
+  transform: translateX(4px);
+}
+
+.sm-input {
+  max-width: 14rem;
+  font-family: var(--font-heading);
+  font-size: var(--text-lg);
+  letter-spacing: 0.04em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sm-belt-arrow {
+    transition: none;
+  }
+  .sm-belt-run .sm-belt-arrow {
+    transform: none;
+  }
+}

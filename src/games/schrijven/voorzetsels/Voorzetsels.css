@@ -1,0 +1,111 @@
+.vz-widget {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.vz-clock {
+  width: 10rem;
+  height: 10rem;
+}
+
+.vz-clock-face {
+  fill: var(--panel);
+  stroke: var(--line);
+  stroke-width: 2;
+}
+
+.vz-tick {
+  stroke: var(--muted);
+  stroke-width: 1.5;
+}
+.vz-tick-major {
+  stroke: var(--amber);
+  stroke-width: 3;
+}
+
+.vz-hand {
+  stroke-linecap: round;
+}
+.vz-hand-hour {
+  stroke: var(--paper);
+  stroke-width: 4;
+}
+.vz-hand-minute {
+  stroke: var(--amber);
+  stroke-width: 2.5;
+}
+
+.vz-pin {
+  fill: var(--amber);
+}
+
+.vz-digital {
+  font-family: var(--font-heading);
+  font-size: var(--text-xl);
+  color: var(--muted);
+  letter-spacing: 0.06em;
+}
+
+/* Calendar tile, like a tear-off day sheet. */
+.vz-calendar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 9rem;
+  background: var(--worksheet);
+  color: var(--ink);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.vz-calendar-month {
+  width: 100%;
+  text-align: center;
+  background: var(--alert);
+  color: var(--paper);
+  font-family: var(--font-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: var(--space-1) 0;
+}
+
+.vz-calendar-day {
+  font-family: var(--font-heading);
+  font-size: 3.5rem;
+  line-height: 1.1;
+  padding: var(--space-2) 0 0;
+}
+
+.vz-calendar-weekday {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: #55606d;
+  padding-bottom: var(--space-3);
+}
+
+.vz-sentence {
+  align-items: center;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: var(--space-3);
+}
+
+.vz-blank {
+  min-width: 4.5rem;
+  text-align: center;
+  border-bottom: 2px solid var(--amber);
+  color: var(--amber);
+  font-family: var(--font-heading);
+  font-size: var(--text-lg);
+}
+.vz-blank-ok {
+  border-color: var(--ok);
+  color: var(--ok);
+}
+.vz-blank-alert {
+  border-color: var(--alert);
+  color: var(--alert);
+}

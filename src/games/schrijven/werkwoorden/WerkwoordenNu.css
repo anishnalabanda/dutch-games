@@ -1,0 +1,97 @@
+.wn-sentence {
+  align-items: center;
+}
+
+.wn-slot {
+  min-width: 6rem;
+  text-align: center;
+  padding: var(--space-1) var(--space-2);
+  border-bottom: 2px solid var(--amber);
+  color: var(--amber);
+  font-family: var(--font-heading);
+  letter-spacing: 0.02em;
+}
+.wn-slot-ok {
+  border-color: var(--ok);
+  color: var(--ok);
+}
+.wn-slot-alert {
+  border-color: var(--alert);
+  color: var(--alert);
+}
+
+.wn-gloss {
+  color: var(--muted);
+}
+
+.wn-dial {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  align-self: flex-start;
+}
+
+.wn-dial-step {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: var(--text-base);
+  cursor: pointer;
+  padding: var(--space-1) var(--space-3);
+}
+.wn-dial-step:hover:not(:disabled),
+.wn-dial-step:focus-visible {
+  color: var(--amber);
+}
+.wn-dial-step:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* The drum: a short cylinder of forms, the locked-in one bright in the middle. */
+.wn-drum {
+  display: flex;
+  flex-direction: column;
+  background: var(--board);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+  min-width: 11rem;
+}
+
+.wn-drum-option {
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--line);
+  padding: var(--space-2) var(--space-4);
+  color: var(--muted);
+  font-family: var(--font-heading);
+  font-size: var(--text-lg);
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  opacity: 0.5;
+  transition:
+    opacity var(--transition-base),
+    background var(--transition-base);
+}
+.wn-drum-option:last-child {
+  border-bottom: none;
+}
+.wn-drum-option:hover:not(:disabled) {
+  opacity: 0.8;
+}
+.wn-drum-option-active {
+  background: var(--panel);
+  color: var(--amber);
+  opacity: 1;
+}
+.wn-drum-option:disabled {
+  cursor: default;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wn-drum-option {
+    transition: none;
+  }
+}

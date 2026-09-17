@@ -1,0 +1,220 @@
+.zinnen-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.zinnen-prompt {
+  font-size: var(--text-md);
+  color: var(--paper);
+  margin: 0;
+}
+
+.zinnen-prompt-label {
+  display: block;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: var(--text-xs);
+  margin-bottom: var(--space-1);
+}
+
+.zinnen-answer,
+.zinnen-bank {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: var(--space-2);
+  min-height: calc(var(--text-md) * 2);
+  padding: var(--space-3);
+  border-radius: var(--radius);
+  border: 1px dashed var(--line);
+}
+
+.zinnen-bank {
+  border-style: solid;
+  background: var(--panel);
+}
+
+.zinnen-placeholder {
+  color: var(--muted);
+  font-size: var(--text-sm);
+}
+
+/* The answer row is a wrap flex container; let the placeholder own a full line
+   so its gloss key sits under it instead of beside it. */
+.zinnen-answer .zinnen-placeholder {
+  flex: 1 0 100%;
+}
+
+.zinnen-tile {
+  position: relative;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: var(--space-1) var(--space-2);
+  color: var(--paper);
+  font-family: var(--font-body);
+  font-size: var(--text-md);
+  cursor: pointer;
+  transition: border-color var(--transition-fast);
+}
+
+/* Hover or keyboard focus on the tile itself, since a tile is a button and
+   cannot hold a focusable WordTile of its own. */
+.zinnen-tile-gloss {
+  position: absolute;
+  z-index: 2;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-4px);
+  background: var(--ink);
+  color: var(--paper);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius);
+  font-size: var(--text-sm);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-fast);
+}
+
+.zinnen-tile:hover .zinnen-tile-gloss,
+.zinnen-tile:focus-visible .zinnen-tile-gloss {
+  opacity: 1;
+}
+.zinnen-tile:hover,
+.zinnen-tile:focus-visible {
+  border-color: var(--amber);
+}
+
+.zinnen-answer .zinnen-tile {
+  background: var(--board);
+  border-color: var(--amber);
+}
+
+.zinnen-tile-verb {
+  border-color: var(--verb);
+  color: var(--verb);
+}
+
+.zinnen-answer-key {
+  color: var(--muted);
+  font-size: var(--text-sm);
+}
+
+.zinnen-actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.zinnen-hint {
+  margin: 0 0 var(--space-3);
+  font-size: var(--text-sm);
+  color: var(--muted);
+}
+
+.zinnen-hint strong {
+  color: var(--amber);
+  font-family: var(--font-heading);
+  letter-spacing: 0.03em;
+}
+
+.zinnen-tries {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--muted);
+}
+
+/* The rule's frame: a worked example cut into numbered slots, so the shape of
+   the sentence is visible and not only described in words. */
+.zinnen-pattern {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.zinnen-pattern-title {
+  font-family: var(--font-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: var(--text-xs);
+  color: var(--muted);
+}
+
+.zinnen-pattern-slots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.zinnen-slot {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-0);
+  flex: 0 1 auto;
+  min-width: 0;
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel);
+}
+
+.zinnen-slot-n {
+  font-family: var(--font-heading);
+  font-size: var(--text-xs);
+  color: var(--muted);
+}
+
+.zinnen-slot-text {
+  font-size: var(--text-base);
+  color: var(--paper);
+}
+
+.zinnen-slot-role {
+  font-size: var(--text-xs);
+  color: var(--muted);
+  max-width: 16ch;
+}
+
+.zinnen-slot-verb {
+  border-color: var(--verb);
+}
+.zinnen-slot-verb .zinnen-slot-text,
+.zinnen-slot-verb .zinnen-slot-n {
+  color: var(--verb);
+}
+
+.zinnen-examples {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--text-sm);
+  color: var(--paper);
+}
+
+.zinnen-examples li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2);
+}
+
+/* The whole verb or trigger word the example is built from. */
+.zinnen-example-from {
+  min-width: 7rem;
+  color: var(--muted);
+  font-family: var(--font-heading);
+  letter-spacing: 0.03em;
+}
+
+.zinnen-mark {
+  color: var(--verb);
+  font-weight: 600;
+}

@@ -1,0 +1,99 @@
+.dh-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: var(--space-4);
+}
+
+.dh-noun {
+  font-family: var(--font-heading);
+  font-size: 2.2rem;
+  letter-spacing: 0.04em;
+  color: var(--paper);
+}
+
+.dh-gloss {
+  color: var(--muted);
+  font-size: var(--text-sm);
+}
+
+/* Two lanes: the word drops into one of them. */
+.dh-lanes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+}
+
+.dh-lane {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 6rem;
+  background: var(--board);
+  border: 2px dashed var(--line);
+  border-radius: var(--radius);
+  padding: var(--space-3);
+  color: var(--muted);
+  cursor: pointer;
+  transition: border-color var(--transition-fast);
+}
+.dh-lane:hover:not(:disabled),
+.dh-lane:focus-visible {
+  border-color: var(--amber);
+}
+.dh-lane:disabled {
+  cursor: default;
+}
+
+.dh-lane-article {
+  font-family: var(--font-heading);
+  font-size: var(--text-xl);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--amber);
+}
+
+.dh-lane-word {
+  color: var(--paper);
+  font-size: var(--text-md);
+  min-height: 1.4em;
+}
+
+.dh-lane-ok {
+  border-style: solid;
+  border-color: var(--ok);
+}
+.dh-lane-alert {
+  border-style: solid;
+  border-color: var(--alert);
+}
+
+.dh-follow {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  border-left: 3px solid var(--amber);
+  padding-left: var(--space-3);
+}
+
+.dh-phrase {
+  margin: 0;
+}
+
+.dh-blank {
+  min-width: 5rem;
+  text-align: center;
+  border-bottom: 2px solid var(--amber);
+  color: var(--amber);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dh-lane {
+    transition: none;
+  }
+}

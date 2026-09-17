@@ -1,0 +1,68 @@
+.fi-persona {
+  font-size: var(--text-base);
+}
+
+.fi-fictional {
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  color: #6b7684;
+}
+
+.fi-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: var(--space-3);
+}
+
+.fi-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  border-left: 2px solid var(--line);
+  padding-left: var(--space-2);
+}
+.fi-field-ok {
+  border-left-color: var(--ok);
+}
+.fi-field-alert {
+  border-left-color: var(--alert);
+}
+
+.fi-field-label {
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-family: var(--font-heading);
+  font-size: var(--text-xs);
+}
+
+.fi-field-name {
+  border-bottom: 1px dotted var(--muted);
+}
+
+.fi-field-input {
+  background: var(--board);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: var(--space-2);
+  color: var(--paper);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  width: 100%;
+}
+.fi-field-input:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 1px;
+}
+.fi-field-alert .fi-field-input {
+  border-color: var(--alert);
+}
+.fi-field-ok .fi-field-input {
+  border-color: var(--ok);
+}
+
+.fi-field-help {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--text-xs);
+}

@@ -1,0 +1,95 @@
+.bb-brief {
+  border-left: 3px solid var(--amber);
+  padding-left: var(--space-3);
+}
+
+.bb-title {
+  font-family: var(--font-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--paper);
+  margin: 0 0 var(--space-1);
+}
+
+.bb-points {
+  margin: var(--space-2) 0 0;
+  padding-left: var(--space-4);
+  color: var(--paper);
+  font-size: var(--text-sm);
+}
+
+.bb-preview {
+  white-space: pre-wrap;
+}
+.bb-preview-empty {
+  color: #8d8778;
+  font-style: italic;
+}
+
+.bb-slot {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.bb-slot-name {
+  border-bottom: 1px dotted var(--muted);
+}
+
+.bb-pile {
+  display: grid;
+  gap: var(--space-2);
+}
+
+/* Each block is a labelled strip you drop into the message. */
+.bb-block {
+  text-align: left;
+  white-space: pre-wrap;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--line);
+  border-radius: var(--radius);
+  padding: var(--space-2) var(--space-3);
+  color: var(--paper);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  cursor: pointer;
+  transition: border-color var(--transition-fast);
+}
+.bb-block:hover:not(:disabled),
+.bb-block:focus-visible {
+  border-left-color: var(--amber);
+}
+.bb-block:disabled {
+  cursor: default;
+}
+.bb-block-selected {
+  border-color: var(--amber);
+  border-left-color: var(--amber);
+  background: var(--board);
+}
+.bb-block-ok {
+  border-color: var(--ok);
+  border-left-color: var(--ok);
+}
+.bb-block-alert {
+  border-color: var(--alert);
+  border-left-color: var(--alert);
+}
+
+.bb-why {
+  margin: 0;
+  padding-left: var(--space-4);
+  color: var(--muted);
+  font-size: var(--text-sm);
+}
+.bb-why strong {
+  color: var(--paper);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bb-block {
+    transition: none;
+  }
+}

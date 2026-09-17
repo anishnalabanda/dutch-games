@@ -1,0 +1,64 @@
+.uj-envelope {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: var(--space-3);
+}
+
+.uj-envelope-row {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  color: var(--paper);
+}
+.uj-envelope-row .g-label {
+  margin-bottom: 0;
+  min-width: 5.5rem;
+}
+
+/* The message itself sits on the cream worksheet surface. */
+.uj-message {
+  white-space: pre-wrap;
+}
+
+.uj-text {
+  white-space: pre-wrap;
+}
+
+.uj-toggle {
+  background: rgba(255, 201, 23, 0.28);
+  border: none;
+  border-bottom: 2px solid #c99a00;
+  border-radius: 3px;
+  padding: 0 var(--space-1);
+  margin: 0 1px;
+  color: var(--ink);
+  font-family: inherit;
+  font-size: inherit;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+.uj-toggle:hover:not(:disabled),
+.uj-toggle:focus-visible {
+  background: rgba(255, 201, 23, 0.55);
+}
+.uj-toggle:disabled {
+  cursor: default;
+}
+.uj-toggle-ok {
+  background: rgba(62, 201, 138, 0.3);
+  border-bottom-color: #2f9a69;
+}
+.uj-toggle-alert {
+  background: rgba(232, 82, 58, 0.28);
+  border-bottom-color: #b23a26;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .uj-toggle {
+    transition: none;
+  }
+}

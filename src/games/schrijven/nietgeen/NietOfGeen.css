@@ -1,0 +1,60 @@
+.ng-english {
+  color: var(--paper);
+  font-style: italic;
+}
+
+.ng-sentence {
+  align-items: center;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: var(--space-3);
+}
+
+.ng-gap-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.ng-token {
+  color: var(--paper);
+}
+
+/* A narrow slot between every pair of words; only one of them is right. */
+.ng-gap {
+  min-width: 2.2rem;
+  padding: var(--space-0) var(--space-1);
+  background: var(--board);
+  border: 1px dashed var(--line);
+  border-radius: var(--radius);
+  color: var(--muted);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  cursor: pointer;
+  transition: border-color var(--transition-fast);
+}
+.ng-gap:hover:not(:disabled),
+.ng-gap:focus-visible {
+  border-color: var(--amber);
+  color: var(--amber);
+}
+.ng-gap:disabled {
+  cursor: default;
+}
+.ng-gap-ok {
+  border-style: solid;
+  border-color: var(--ok);
+  color: var(--ok);
+}
+.ng-gap-alert {
+  border-style: solid;
+  border-color: var(--alert);
+  color: var(--alert);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ng-gap {
+    transition: none;
+  }
+}
