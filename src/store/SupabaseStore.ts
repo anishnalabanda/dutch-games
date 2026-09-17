@@ -8,21 +8,21 @@ interface ProgressRow {
   updated_at: string
 }
 
-/** ProgressStore backed by the Supabase `progress` table for one signed-in user. */
+/** ProgressStore backed by the Supabase `progress` table for one email address. */
 export class SupabaseStore implements ProgressStore {
   private client: SupabaseClient
-  private userId: string
+  private email: string
 
-  constructor(client: SupabaseClient, userId: string) {
+  constructor(client: SupabaseClient, email: string) {
     this.client = client
-    this.userId = userId
+    this.email = email
   }
 
   async get(key: string) {
     const { data, error } = await this.client
       .from('progress')
       .select('value')
-      .eq('user_id', this.userId)
+      .eq('email', this.email)
       .eq('key', key)
       .maybeSingle()
     if (error) throw error
@@ -52,7 +52,7 @@ export class SupabaseStore implements ProgressStore {
   async setWithTimestamp(key: string, value: unknown, updatedAt: string) {
     const { error } = await this.client
       .from('progress')
-      .upsert({ user_id: this.userId, key, value, updated_at: updatedAt })
+      .upsert({ email: this.email, key, value, updated_at: updatedAt })
     if (error) throw error
   }
 
@@ -60,7 +60,7 @@ export class SupabaseStore implements ProgressStore {
     const { data, error } = await this.client
       .from('progress')
       .select('key, value, updated_at')
-      .eq('user_id', this.userId)
+      .eq('email', this.email)
     if (error) throw error
     return data ?? []
   }

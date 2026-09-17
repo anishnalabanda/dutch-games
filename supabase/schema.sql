@@ -1,24 +1,30 @@
--- Run once in the Supabase SQL editor for this project.
--- Matches the schema in AGENTS.md section 5.
+-- Run in the Supabase SQL editor for this project.
+--
+-- There are no accounts. Identity is whatever email address is typed into the
+-- app, so rows are keyed by that address and the policies below are open to the
+-- publishable key on purpose. Anyone who knows an address can read or overwrite
+-- that address's progress. This is a deliberate trade for a one-field sign-in;
+-- do not put anything sensitive in this table.
 
-create table if not exists progress (
-  user_id uuid not null references auth.users (id) on delete cascade,
+drop table if exists progress;
+
+create table progress (
+  email text not null,
   key text not null,
   value jsonb not null,
   updated_at timestamptz not null default now(),
-  primary key (user_id, key)
+  primary key (email, key)
 );
 
 alter table progress enable row level security;
 
-create policy "select own progress" on progress
-  for select using (auth.uid() = user_id);
+-- Open by design, see the note above. Delete is deliberately not granted: the
+-- app never needs it, and withholding it means a stray request cannot wipe rows.
+create policy "read progress" on progress
+  for select using (true);
 
-create policy "insert own progress" on progress
-  for insert with check (auth.uid() = user_id);
+create policy "insert progress" on progress
+  for insert with check (true);
 
-create policy "update own progress" on progress
-  for update using (auth.uid() = user_id) with check (auth.uid() = user_id);
-
-create policy "delete own progress" on progress
-  for delete using (auth.uid() = user_id);
+create policy "update progress" on progress
+  for update using (true) with check (true);

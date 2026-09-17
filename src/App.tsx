@@ -1,5 +1,5 @@
 import { HashRouter, Route, Routes } from 'react-router-dom'
-import { StoreProvider, useAuthSession } from './store/StoreProvider'
+import { StoreProvider, useIdentity } from './store/StoreProvider'
 import { Hub } from './pages/Hub'
 import { ExamPage } from './pages/ExamPage'
 import { GamePage } from './pages/GamePage'
@@ -9,9 +9,8 @@ import './styles/components.css'
 import './styles/games.css'
 
 function Gate() {
-  const { session, loading } = useAuthSession()
-  if (loading) return null
-  if (!session) return <SignIn />
+  const { email } = useIdentity()
+  if (!email) return <SignIn />
   return (
     <HashRouter>
       <Routes>
