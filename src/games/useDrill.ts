@@ -29,15 +29,16 @@ export const initialDrillState: DrillState = {
   correctFirstTry: 0,
 }
 
-/** How many items pass before a missed item comes round again. */
-const REQUEUE_GAP = 3
-
-/** Moves the head of the queue back a few places so it returns soon, but not next. */
+/**
+ * Sends a missed item to the back of the queue, so everything else still
+ * unmastered comes first. It used to move back only three places, which read as
+ * the same sentence over and over. It has to return at some point: an item is
+ * only mastered by a first-time-right answer.
+ */
 function requeue(queue: string[]): string[] {
   if (queue.length <= 1) return queue
   const [head, ...rest] = queue
-  const at = Math.min(REQUEUE_GAP, rest.length)
-  return [...rest.slice(0, at), head, ...rest.slice(at)]
+  return [...rest, head]
 }
 
 export interface Drill<T> {

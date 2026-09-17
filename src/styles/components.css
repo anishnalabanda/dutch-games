@@ -230,6 +230,19 @@
   color: var(--amber);
   font-family: var(--font-heading);
 }
+.shell-progress {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+/* Says what the bar counts, since it only moves on a first-time-right answer
+   and otherwise looks stuck. */
+.shell-progress-count {
+  font-size: var(--text-xs);
+  color: var(--muted);
+}
+
 .shell-body {
   display: flex;
   flex-direction: column;

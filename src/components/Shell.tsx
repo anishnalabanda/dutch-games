@@ -21,7 +21,14 @@ export function Shell({ title, backTo, progress, streak, children }: ShellProps)
         <h2>{title}</h2>
         {typeof streak === 'number' && <span className="shell-streak">{streak}</span>}
       </header>
-      {progress && <ProgressBar value={progress.value} max={progress.max} />}
+      {progress && (
+        <div className="shell-progress">
+          <ProgressBar value={progress.value} max={progress.max} />
+          <span className="shell-progress-count">
+            {progress.value} van {progress.max} in een keer goed
+          </span>
+        </div>
+      )}
       <main className="shell-body">{children}</main>
     </div>
   )
