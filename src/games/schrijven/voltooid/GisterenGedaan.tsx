@@ -32,6 +32,9 @@ export function GisterenGedaan() {
   const [aux, setAux] = useState<string | null>(null)
   const [participle, setParticiple] = useState('')
   const [checked, setChecked] = useState(false)
+  // Both halves have to be filled in before Check is allowed, so without this
+  // there is no way out of an item whose participle you simply do not know.
+  const [revealed, setRevealed] = useState(false)
 
   const current = drill.current
   const currentId = current?.id
@@ -41,6 +44,7 @@ export function GisterenGedaan() {
     setAux(null)
     setParticiple('')
     setChecked(false)
+    setRevealed(false)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentId, drill.round])
 
@@ -59,6 +63,16 @@ export function GisterenGedaan() {
     setParticiple('')
   }
 
+  /** Shows the answer. The item counts as missed, so it comes round again. */
+  function giveUp() {
+    if (!current || revealed) return
+    setRevealed(true)
+    // Drop whatever was typed, so the locked field cannot sit there
+    // contradicting the answer now shown in the sentence.
+    setParticiple('')
+    if (!checked) drill.miss()
+  }
+
   if (!current) {
     return (
       <Shell title="Gisteren gedaan" backTo="/schrijven">
@@ -75,9 +89,12 @@ export function GisterenGedaan() {
 
   const { auxOk, participleOk } = grade(current, aux, participle)
   const allOk = checked && auxOk && participleOk
+  const locked = checked || revealed
 
   let message = ''
-  if (checked && !allOk) {
+  if (revealed) {
+    message = `${AUX_EXPLANATIONS[current.auxKind]} ${KIND_EXPLANATIONS[current.kind]}`
+  } else if (checked && !allOk) {
     const wrongParts: string[] = []
     if (!auxOk) wrongParts.push(`The auxiliary is "${current.aux}". ${AUX_EXPLANATIONS[current.auxKind]}`)
     if (!participleOk)
@@ -102,16 +119,24 @@ export function GisterenGedaan() {
       <div className="vg-pass">
         <div className="vg-pass-line">
           <GlossedText text={current.before} />
-          <span className={`vg-slot ${checked ? (auxOk ? 'vg-slot-ok' : 'vg-slot-alert') : ''}`}>
-            {aux ?? '\u00a0'}
+          {/* A revealed answer keeps the neutral amber: it is the right answer,
+              so marking it red would say the opposite of what it is. */}
+          <span
+            className={`vg-slot ${revealed || !checked ? '' : auxOk ? 'vg-slot-ok' : 'vg-slot-alert'}`}
+          >
+            {(revealed ? current.aux : aux) ?? '\u00a0'}
           </span>
           <GlossedText text={current.middle} />
           <span
             className={`vg-slot vg-slot-wide ${
-              checked ? (participleOk ? 'vg-slot-ok' : 'vg-slot-alert') : ''
+              revealed || !checked ? '' : participleOk ? 'vg-slot-ok' : 'vg-slot-alert'
             }`}
           >
-            {participle.trim() === '' ? '\u00a0' : participle.trim()}
+            {revealed
+              ? current.participle
+              : participle.trim() === ''
+                ? '\u00a0'
+                : participle.trim()}
           </span>
           <span>{current.after}</span>
         </div>
@@ -128,7 +153,7 @@ export function GisterenGedaan() {
             <button
               key={option}
               className={`g-chip ${aux === option ? 'g-chip-selected' : ''}`}
-              disabled={checked}
+              disabled={locked}
               aria-pressed={aux === option}
               onClick={() => setAux(option)}
             >
@@ -146,7 +171,7 @@ export function GisterenGedaan() {
           id="vg-participle"
           className="g-input"
           value={participle}
-          disabled={checked}
+          disabled={locked}
           autoComplete="off"
           autoCapitalize="off"
           spellCheck={false}
@@ -173,16 +198,33 @@ export function GisterenGedaan() {
         </p>
       </div>
 
-      {checked && <FeedbackBox correct={allOk} message={message} />}
+      {locked && (
+        <>
+          <FeedbackBox correct={allOk} message={message} />
+          {revealed && (
+            <p className="g-answer-key">
+              Right answer:{' '}
+              <strong>
+                {current.aux} {current.participle}
+              </strong>
+            </p>
+          )}
+        </>
+      )}
 
       <div className="g-actions">
-        {!checked && (
+        {!locked && (
           <Button onClick={check} disabled={aux === null || participle.trim() === ''}>
             Check
           </Button>
         )}
-        {checked && allOk && <Button onClick={drill.advance}>Next</Button>}
-        {checked && !allOk && <Button onClick={retry}>Try again</Button>}
+        {checked && !allOk && !revealed && <Button onClick={retry}>Try again</Button>}
+        {!revealed && !allOk && (
+          <Button variant="secondary" onClick={giveUp}>
+            Give up
+          </Button>
+        )}
+        {(allOk || revealed) && <Button onClick={drill.advance}>Next</Button>}
       </div>
     </Shell>
   )

@@ -27,7 +27,7 @@ export const KIND_LABELS: Record<ParticipleKind, string> = {
   'kofschip-t': "'t kofschip: -t",
   'kofschip-d': "'t kofschip: -d",
   'stam-op-t': 'Stem ends in -t',
-  'geen-ge': 'No ge-',
+  'geen-ge': 'No ge- prefix',
   onregelmatig: 'Irregular',
   scheidbaar: 'Separable verb',
 }
