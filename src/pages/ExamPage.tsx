@@ -4,26 +4,21 @@ import { exams } from '../games/exams'
 import { games, gameSlug } from '../games/manifest'
 import { Card } from '../components/Card'
 import { Tag } from '../components/Tag'
+import { ProgressBar } from '../components/ProgressBar'
+import { countFinished, isDone } from '../games/progress'
 import { useProgressStore } from '../store/StoreProvider'
 
 export function ExamPage() {
   const { examId } = useParams<{ examId: string }>()
   const store = useProgressStore()
-  const [doneKeys, setDoneKeys] = useState<Record<string, boolean>>({})
+  const [saved, setSaved] = useState<Record<string, unknown>>({})
   const exam = exams.find((e) => e.id === examId)
   const examGames = games.filter((g) => g.exam === examId)
 
   useEffect(() => {
     let cancelled = false
     void store.all().then((data) => {
-      if (cancelled) return
-      const done: Record<string, boolean> = {}
-      for (const [key, value] of Object.entries(data)) {
-        if (value && typeof value === 'object' && (value as { done?: boolean }).done) {
-          done[key] = true
-        }
-      }
-      setDoneKeys(done)
+      if (!cancelled) setSaved(data)
     })
     return () => {
       cancelled = true
@@ -42,7 +37,7 @@ export function ExamPage() {
   }
 
   const core = examGames.filter((g) => g.core)
-  const coreDone = core.filter((g) => doneKeys[g.id]).length
+  const coreDone = core.filter((g) => isDone(saved[g.id])).length
 
   return (
     <div className="exam-page">
@@ -59,18 +54,28 @@ export function ExamPage() {
         <Card className="exam-page-empty">No games for this exam yet.</Card>
       ) : (
         <div className="exam-page-grid">
-          {examGames.map((g) => (
-            <Link key={g.id} to={`/${exam.id}/${gameSlug(g.id)}`} className="exam-page-game-link">
-              <Card className={doneKeys[g.id] ? 'exam-page-game-done' : ''}>
-                <div className="exam-page-game-head">
-                  <h3>{g.title}</h3>
-                  {doneKeys[g.id] && <Tag tone="ok">Done</Tag>}
-                </div>
-                {g.subtitle && <p className="exam-page-game-subtitle">{g.subtitle}</p>}
-                <Tag>{g.core ? 'Core' : 'Extra'}</Tag>
-              </Card>
-            </Link>
-          ))}
+          {examGames.map((g) => {
+            const finished = countFinished(saved[g.id])
+            const done = isDone(saved[g.id])
+            return (
+              <Link key={g.id} to={`/${exam.id}/${gameSlug(g.id)}`} className="exam-page-game-link">
+                <Card className={done ? 'exam-page-game-done' : ''}>
+                  <div className="exam-page-game-head">
+                    <h3>{g.title}</h3>
+                    {done && <Tag tone="ok">Done</Tag>}
+                  </div>
+                  <p className="exam-page-game-subtitle">{g.subtitle}</p>
+                  <div className="exam-page-game-foot">
+                    <Tag>{g.core ? 'Core' : 'Extra'}</Tag>
+                    <ProgressBar value={finished} max={g.total} />
+                    <span className="exam-page-game-count">
+                      {finished} of {g.total} done
+                    </span>
+                  </div>
+                </Card>
+              </Link>
+            )
+          })}
         </div>
       )}
     </div>

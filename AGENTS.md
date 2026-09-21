@@ -226,13 +226,20 @@ words like *in*, *op* and *je* as Dutch.
     title: string;         // Dutch
     subtitle: string;      // short English: required, it is the game's hover gloss
     core: boolean;         // core vs optional (affects "ready" honesty)
+    total: number;         // items the game's bar counts, from its own data module
   }
   ```
-- A central **manifest** registers all games and drives the hub and per-exam counters.
+- A central **manifest** registers all games and drives the hub and per-exam counters. It
+  imports each game's `data.ts` for `total`, so a card can never quote a number of items
+  the game does not have.
 - The game title in the `Shell` header stays Dutch and carries its English `subtitle` as a
   hover/focus tooltip, like a glossed word. `GamePage` publishes the manifest entry through
   `CurrentGameProvider` (`src/games/currentGame.tsx`) and `Shell` reads it, so a game never
   repeats its own metadata and `Shell` never imports the manifest (that would be a cycle).
+- The per-exam page shows a bar per game: `countFinished` (`src/games/progress.ts`) reads
+  whichever list a game saved, since `useDrill` games store `mastered` and the older ones
+  store `completedIds`, and Schrijfopdracht stores one list per level and counts both.
+  A new game needs no change there as long as it uses one of those keys.
 - **Hub = home route** (`/`): lists exams as cards, each showing its per-exam progress
   ("X of Y games done", core vs optional distinguished), linking into that exam's games.
 - Every game reads/writes only its own `nl.<exam>.<game>` key via the store.

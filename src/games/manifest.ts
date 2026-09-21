@@ -15,6 +15,23 @@ import { Voorzetsels } from './schrijven/voorzetsels/Voorzetsels'
 import { DeOfHet } from './schrijven/dehet/DeOfHet'
 import { Schrijfopdracht } from './schrijven/examen/Schrijfopdracht'
 
+// Item counts come from the games' own data, so the hub and the exam page can
+// never quote a total the game does not actually have.
+import { sentences } from './schrijven/zinnen/data'
+import { items as werkwoorden } from './schrijven/werkwoorden/data'
+import { items as voltooid } from './schrijven/voltooid/data'
+import { items as spelling } from './schrijven/spelling/data'
+import { items as nietgeen } from './schrijven/nietgeen/data'
+import { items as voegwoorden } from './schrijven/voegwoorden/data'
+import { items as vragen } from './schrijven/vragen/data'
+import { messages } from './schrijven/uofje/data'
+import { personas } from './schrijven/formulier/data'
+import { situations } from './schrijven/bouwstenen/data'
+import { items as woorden } from './schrijven/woorden/data'
+import { items as voorzetsels } from './schrijven/voorzetsels/data'
+import { items as dehet } from './schrijven/dehet/data'
+import { stems, tasks } from './schrijven/examen/data'
+
 export interface RegisteredGame extends GameMeta {
   component: ComponentType
 }
@@ -28,6 +45,7 @@ export const games: RegisteredGame[] = [
     title: 'Zinnen bouwen',
     subtitle: 'Sentence word order',
     core: true,
+    total: sentences.length,
     component: ZinnenBouwen,
   },
   {
@@ -36,6 +54,7 @@ export const games: RegisteredGame[] = [
     title: 'Werkwoorden nu',
     subtitle: 'Present tense',
     core: true,
+    total: werkwoorden.length,
     component: WerkwoordenNu,
   },
   {
@@ -44,6 +63,7 @@ export const games: RegisteredGame[] = [
     title: 'Gisteren gedaan',
     subtitle: 'Perfect tense',
     core: true,
+    total: voltooid.length,
     component: GisterenGedaan,
   },
   {
@@ -52,6 +72,7 @@ export const games: RegisteredGame[] = [
     title: 'Spellingmachine',
     subtitle: 'Spelling rules',
     core: true,
+    total: spelling.length,
     component: Spellingmachine,
   },
   {
@@ -60,6 +81,7 @@ export const games: RegisteredGame[] = [
     title: 'Niet of geen',
     subtitle: 'Negation',
     core: true,
+    total: nietgeen.length,
     component: NietOfGeen,
   },
   {
@@ -68,6 +90,7 @@ export const games: RegisteredGame[] = [
     title: 'Verbindingswoorden',
     subtitle: 'Connectors',
     core: true,
+    total: voegwoorden.length,
     component: Verbindingswoorden,
   },
   {
@@ -76,6 +99,7 @@ export const games: RegisteredGame[] = [
     title: 'Vragen stellen',
     subtitle: 'Asking questions',
     core: true,
+    total: vragen.length,
     component: VragenStellen,
   },
   {
@@ -84,6 +108,7 @@ export const games: RegisteredGame[] = [
     title: 'U of je',
     subtitle: 'Register',
     core: true,
+    total: messages.length,
     component: UofJe,
   },
   {
@@ -92,6 +117,7 @@ export const games: RegisteredGame[] = [
     title: 'Formulier invullen',
     subtitle: 'Filling in forms',
     core: true,
+    total: personas.length,
     component: FormulierInvullen,
   },
   {
@@ -100,6 +126,7 @@ export const games: RegisteredGame[] = [
     title: 'Bericht bouwstenen',
     subtitle: 'Message building blocks',
     core: true,
+    total: situations.length,
     component: BerichtBouwstenen,
   },
   {
@@ -108,6 +135,7 @@ export const games: RegisteredGame[] = [
     title: 'Woordenschat per thema',
     subtitle: 'Productive vocabulary',
     core: true,
+    total: woorden.length,
     component: Woordenschat,
   },
   {
@@ -116,6 +144,7 @@ export const games: RegisteredGame[] = [
     title: 'Op maandag om negen uur',
     subtitle: 'Prepositions, dates and times',
     core: true,
+    total: voorzetsels.length,
     component: Voorzetsels,
   },
   {
@@ -124,6 +153,7 @@ export const games: RegisteredGame[] = [
     title: 'De of het',
     subtitle: 'Articles and adjectives',
     core: false,
+    total: dehet.length,
     component: DeOfHet,
   },
   {
@@ -132,6 +162,7 @@ export const games: RegisteredGame[] = [
     title: 'Schrijfopdracht',
     subtitle: 'Full writing task',
     core: true,
+    total: stems.length + tasks.length,
     component: Schrijfopdracht,
   },
 ]
