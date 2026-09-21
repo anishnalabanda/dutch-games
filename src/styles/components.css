@@ -115,16 +115,29 @@
 }
 .tooltip-bubble {
   position: absolute;
-  bottom: 100%;
   left: 50%;
-  transform: translateX(-50%) translateY(-4px);
   background: var(--ink);
   color: var(--paper);
   padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--line);
   border-radius: var(--radius);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 0.45);
+  font-family: var(--font-body);
   font-size: var(--text-sm);
+  font-weight: 400;
+  letter-spacing: normal;
+  text-transform: none;
   white-space: nowrap;
-  z-index: 1;
+  z-index: 2;
+}
+.tooltip-bubble-above {
+  bottom: 100%;
+  transform: translateX(-50%) translateY(-6px);
+}
+/* For anchors near the top of the screen, where a bubble above would be cut off. */
+.tooltip-bubble-below {
+  top: 100%;
+  transform: translateX(-50%) translateY(6px);
 }
 
 /* FeedbackBox */
@@ -225,6 +238,12 @@
 .shell-header h2 {
   flex: 1;
   font-size: var(--text-lg);
+}
+/* The game title is Dutch; the dotted underline says the English is a hover away,
+   the same signal a glossed word gives. */
+.shell-title {
+  border-bottom: 1px dotted var(--muted);
+  padding-bottom: 1px;
 }
 .shell-streak {
   color: var(--amber);
@@ -379,15 +398,6 @@
 
 .exam-page-game-done {
   border-color: var(--ok);
-}
-
-
-/* English line under a feedback message: smaller and dimmer than the Dutch it
-   explains, so the Dutch stays the thing you read first. */
-.feedback-translation {
-  margin: var(--space-1) 0 0;
-  font-size: var(--text-sm);
-  opacity: 0.75;
 }
 
 /* Sign-in screen: the whole app sits behind this. */

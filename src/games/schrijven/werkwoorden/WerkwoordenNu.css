@@ -95,3 +95,81 @@
     transition: none;
   }
 }
+
+/* The whole present tense, shown after a right answer: the Dutch form is the
+   thing to read, the English role sits next to it as a label. */
+.wn-forms {
+  background: var(--board);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.wn-forms-title {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: var(--text-md);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.wn-forms-title strong {
+  color: var(--amber);
+}
+
+.wn-forms-legend {
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-xs);
+  color: var(--muted);
+}
+
+.wn-forms-grid {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.wn-forms-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-2);
+  border-left: 2px solid transparent;
+}
+.wn-forms-row dt,
+.wn-forms-row dd {
+  margin: 0;
+}
+.wn-forms-row dd {
+  font-size: var(--text-sm);
+  color: var(--muted);
+}
+
+.wn-forms-pronoun {
+  color: var(--muted);
+}
+
+.wn-forms-form {
+  font-family: var(--font-heading);
+  font-size: var(--text-md);
+  letter-spacing: 0.02em;
+}
+
+/* The form this sentence asked for. */
+.wn-forms-row-here {
+  border-left-color: var(--ok);
+  background: var(--panel);
+}
+.wn-forms-row-here .wn-forms-form {
+  color: var(--ok);
+}
+
+.wn-forms-note {
+  margin: var(--space-2) 0 0;
+  font-size: var(--text-sm);
+  color: var(--muted);
+}

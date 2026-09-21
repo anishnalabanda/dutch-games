@@ -10,39 +10,20 @@ export interface ZinSentence {
   id: string
   rule: RuleType
   prompt: string
-  /** Hele werkwoord, shown for the rules where the infinitive is the point. */
+  /** The infinitive, shown for the rules where the whole verb is the point. */
   hint?: string
   words: WordSpec[]
 }
 
 export const RULE_LABELS: Record<RuleType, string> = {
-  hoofdzin: 'Hoofdzin',
-  inversie: 'Inversie',
-  'bijzin-omdat': 'Omdat-zin',
-  modaal: 'Modaal werkwoord',
-  scheidbaar: 'Scheidbaar werkwoord',
+  hoofdzin: 'Main clause',
+  inversie: 'Inversion',
+  'bijzin-omdat': 'Omdat clause',
+  modaal: 'Modal verb',
+  scheidbaar: 'Separable verb',
 }
 
 export const RULE_EXPLANATIONS: Record<RuleType, string> = {
-  hoofdzin: 'In een hoofdzin staat de persoonsvorm (het vervoegde werkwoord) op de tweede plaats.',
-  inversie:
-    'Begint de zin met een tijd- of plaatsbepaling? Dan draait de volgorde om: werkwoord vóór het onderwerp.',
-  'bijzin-omdat': 'Na "omdat" gaat het vervoegde werkwoord naar het einde van de zin.',
-  modaal:
-    'Na een modaal werkwoord (kunnen, moeten, willen, mogen) gaat het tweede werkwoord als hele werkwoord naar het einde.',
-  scheidbaar:
-    'Een scheidbaar werkwoord valt in een hoofdzin uit elkaar: het vervoegde deel staat op plaats 2, het voorzetsel gaat naar het einde.',
-}
-
-export const RULE_SUCCESS: Record<RuleType, string> = {
-  hoofdzin: 'Goed: de persoonsvorm staat op de tweede plaats.',
-  inversie: 'Goed: na de bepaling vooraan volgt eerst het werkwoord, dan het onderwerp.',
-  'bijzin-omdat': 'Goed: het werkwoord staat aan het einde, na "omdat".',
-  modaal: 'Goed: het hele werkwoord staat helemaal aan het einde.',
-  scheidbaar: 'Goed: het losse deel van het werkwoord staat aan het einde.',
-}
-
-export const RULE_EXPLANATIONS_EN: Record<RuleType, string> = {
   hoofdzin: 'In a main clause the finite verb (the conjugated verb) goes in second position.',
   inversie:
     'Does the sentence start with a time or place phrase? Then the order flips: verb before the subject.',
@@ -53,7 +34,7 @@ export const RULE_EXPLANATIONS_EN: Record<RuleType, string> = {
     'A separable verb splits in a main clause: the conjugated part sits in position 2, the prefix goes to the end.',
 }
 
-export const RULE_SUCCESS_EN: Record<RuleType, string> = {
+export const RULE_SUCCESS: Record<RuleType, string> = {
   hoofdzin: 'The finite verb is in second position.',
   inversie: 'After the phrase at the front comes the verb first, then the subject.',
   'bijzin-omdat': 'The verb is at the end, after "omdat".',
@@ -65,7 +46,7 @@ export const RULE_SUCCESS_EN: Record<RuleType, string> = {
  * One extra sentence shown when the answer was right. It does not restate the
  * rule, it generalises it, so a correct answer still teaches something.
  */
-export const RULE_NOTES_EN: Record<RuleType, string> = {
+export const RULE_NOTES: Record<RuleType, string> = {
   hoofdzin: 'Slot 1 holds one chunk of meaning, however many words that takes.',
   inversie: 'The verb never leaves slot 2, so it is the subject that gets pushed back.',
   'bijzin-omdat': 'Dat, als and terwijl send the verb to the end in the same way.',
@@ -163,7 +144,7 @@ export const RULE_EXAMPLES: Record<RuleType, RuleExample[]> = {
 }
 
 export const sentences: ZinSentence[] = [
-  // --- Hoofdzin: persoonsvorm op plaats 2 ---
+  // --- Main clause: finite verb in position 2 ---
   {
     id: 'hz1',
     rule: 'hoofdzin',
@@ -270,7 +251,7 @@ export const sentences: ZinSentence[] = [
     ],
   },
 
-  // --- Inversie: bepaling vooraan, dan werkwoord, dan onderwerp ---
+  // --- Inversion: phrase at the front, then the verb, then the subject ---
   {
     id: 'iv1',
     rule: 'inversie',
@@ -387,7 +368,7 @@ export const sentences: ZinSentence[] = [
     ],
   },
 
-  // --- Omdat-zin: werkwoord naar het eind ---
+  // --- Omdat clause: verb moves to the end ---
   {
     id: 'om1',
     rule: 'bijzin-omdat',
@@ -525,7 +506,7 @@ export const sentences: ZinSentence[] = [
     ],
   },
 
-  // --- Modaal: tweede werkwoord als infinitief naar het eind ---
+  // --- Modal: second verb goes to the end as an infinitive ---
   {
     id: 'md1',
     rule: 'modaal',
@@ -650,7 +631,7 @@ export const sentences: ZinSentence[] = [
     ],
   },
 
-  // --- Scheidbaar: het losse deel naar het eind ---
+  // --- Separable: the detached part goes to the end ---
   {
     id: 'sb1',
     rule: 'scheidbaar',

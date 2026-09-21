@@ -100,9 +100,9 @@ export function VragenStellen() {
         <div className="g-done">
           <FeedbackBox
             correct
-            message={`Klaar! Alle ${items.length} vragen zijn goed geformuleerd. Beste streak: ${state.bestStreak}.`}
+            message={`Done. All ${items.length} questions are phrased correctly. Best streak: ${state.bestStreak}.`}
           />
-          <Button onClick={restart}>Opnieuw oefenen</Button>
+          <Button onClick={restart}>Practise again</Button>
         </div>
       </Shell>
     )
@@ -115,17 +115,17 @@ export function VragenStellen() {
       progress={{ value: state.completedIds.length, max: items.length }}
     >
       <div className="g-row">
-        <Tag>{current.type === 'janee' ? 'Ja/nee-vraag' : 'Vraag met vraagwoord'}</Tag>
+        <Tag>{current.type === 'janee' ? 'Yes/no question' : 'Question word question'}</Tag>
         <StreakBadge label="Streak" value={state.streak} />
       </div>
 
       <p className="g-hint">
-        Dit is het antwoord. Schrijf de vraag die hoort bij het{' '}
-        <span className="vs-focus-legend">gemarkeerde deel</span>.
+        This is the answer. Write the question that asks about the{' '}
+        <span className="vs-focus-legend">marked part</span>.
       </p>
 
       <div className="vs-answer">
-        <span className="g-label">Antwoord</span>
+        <span className="g-label">Answer</span>
         <p className="vs-answer-text">
           <GlossedText text={current.before} />
           <GlossedText text={current.focus} className="vs-focus" />
@@ -135,7 +135,7 @@ export function VragenStellen() {
 
       <div>
         <label className="g-label" htmlFor="vs-question">
-          Jouw vraag
+          Your question
         </label>
         <input
           id="vs-question"
@@ -144,7 +144,7 @@ export function VragenStellen() {
           disabled={checked}
           autoComplete="off"
           spellCheck={false}
-          placeholder="Typ de hele vraag"
+          placeholder="Type the whole question"
           onChange={(e) => setTyped(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === 'Enter') check()
@@ -162,11 +162,11 @@ export function VragenStellen() {
           />
           {!correct && (
             <p className="g-answer-key">
-              Modelvraag: <strong>{current.question}</strong>
+              Model question: <strong>{current.question}</strong>
               {current.accept.length > 0 && (
                 <>
                   <br />
-                  Ook goed: {current.accept.join(' / ')}
+                  Also correct: {current.accept.join(' / ')}
                 </>
               )}
             </p>
@@ -178,7 +178,7 @@ export function VragenStellen() {
         {!checked && (
           <>
             <Button onClick={check} disabled={typed.trim() === ''}>
-              Controleer
+              Check
             </Button>
             {!showHint && (
               <Button variant="secondary" onClick={() => setShowHint(true)}>
@@ -187,8 +187,8 @@ export function VragenStellen() {
             )}
           </>
         )}
-        {checked && correct && <Button onClick={advance}>Volgende</Button>}
-        {checked && !correct && <Button onClick={retry}>Probeer opnieuw</Button>}
+        {checked && correct && <Button onClick={advance}>Next</Button>}
+        {checked && !correct && <Button onClick={retry}>Try again</Button>}
       </div>
     </Shell>
   )

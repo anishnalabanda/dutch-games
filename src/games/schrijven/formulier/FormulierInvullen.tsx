@@ -91,9 +91,9 @@ export function FormulierInvullen() {
         <div className="g-done">
           <FeedbackBox
             correct
-            message={`Klaar! Je hebt alle ${personas.length} formulieren foutloos ingevuld.`}
+            message={`Done. You filled in all ${personas.length} forms without a mistake.`}
           />
-          <Button onClick={restart}>Opnieuw oefenen</Button>
+          <Button onClick={restart}>Practise again</Button>
         </div>
       </Shell>
     )
@@ -106,17 +106,17 @@ export function FormulierInvullen() {
       progress={{ value: state.completedIds.length, max: personas.length }}
     >
       <div className="g-row">
-        <Tag>Formulier {state.completedIds.length + 1} van {personas.length}</Tag>
+        <Tag>Form {state.completedIds.length + 1} of {personas.length}</Tag>
       </div>
 
       <div className="g-worksheet fi-persona">
-        <h4>Jouw gegevens</h4>
+        <h4>Your details</h4>
         {current.intro.map((line, i) => (
           <p key={i}>
             <GlossedText text={line} />
           </p>
         ))}
-        <p className="fi-fictional">Deze gegevens zijn verzonnen, alleen om mee te oefenen.</p>
+        <p className="fi-fictional">These details are made up, for practice only.</p>
       </div>
 
       <div className="fi-form">
@@ -153,15 +153,15 @@ export function FormulierInvullen() {
           correct={allOk}
           message={
             allOk
-              ? 'Alle velden kloppen, ook de schrijfwijze van de datum, de postcode en het BSN.'
-              : `${wrong.length} van de ${fields.length} velden klopt nog niet. Kijk naar het veld en de schrijfwijze.`
+              ? 'Every field is right, including how the date, the postcode and the BSN are written.'
+              : `${wrong.length} of the ${fields.length} fields ${wrong.length === 1 ? 'is' : 'are'} not right yet. Check the field itself and how it is written.`
           }
         />
       )}
 
       <div className="g-actions">
-        {!allOk && <Button onClick={check}>Controleer</Button>}
-        {allOk && <Button onClick={advance}>Volgende formulier</Button>}
+        {!allOk && <Button onClick={check}>Check</Button>}
+        {allOk && <Button onClick={advance}>Next form</Button>}
       </div>
     </Shell>
   )

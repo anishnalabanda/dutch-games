@@ -153,9 +153,9 @@ export function Voorzetsels() {
         <div className="g-done">
           <FeedbackBox
             correct
-            message={`Klaar! Alle ${items.length} voorzetsels, tijden en datums staan goed. Beste streak: ${state.bestStreak}.`}
+            message={`Done. All ${items.length} prepositions, times and dates are right. Best streak: ${state.bestStreak}.`}
           />
-          <Button onClick={restart}>Opnieuw oefenen</Button>
+          <Button onClick={restart}>Practise again</Button>
         </div>
       </Shell>
     )
@@ -170,10 +170,10 @@ export function Voorzetsels() {
       <div className="g-row">
         <Tag>
           {current.kind === 'klok'
-            ? 'Hoe laat?'
+            ? 'What time is it?'
             : current.kind === 'kalender'
-              ? 'Welke datum?'
-              : 'Welk voorzetsel?'}
+              ? 'Which date?'
+              : 'Which preposition?'}
         </Tag>
         <StreakBadge label="Streak" value={state.streak} />
       </div>
@@ -223,7 +223,7 @@ export function Voorzetsels() {
           </div>
           <div>
             <label className="g-label" htmlFor="vz-answer">
-              Schrijf de hele bepaling, met het voorzetsel erbij
+              Write the whole phrase in Dutch, preposition included
             </label>
             <input
               id="vz-answer"
@@ -247,9 +247,9 @@ export function Voorzetsels() {
           <FeedbackBox correct={correct} message={RULE_EXPLANATIONS[current.rule]} />
           {!correct && (
             <p className="g-answer-key">
-              Antwoord: <strong>{current.answer}</strong>
+              Answer: <strong>{current.answer}</strong>
               {current.kind !== 'zin' && current.accept.length > 0 && (
-                <>, ook goed: {current.accept.join(' / ')}</>
+                <>, also correct: {current.accept.join(' / ')}</>
               )}
             </p>
           )}
@@ -259,11 +259,11 @@ export function Voorzetsels() {
       <div className="g-actions">
         {!checked && current.kind !== 'zin' && (
           <Button onClick={check} disabled={typed.trim() === ''}>
-            Controleer
+            Check
           </Button>
         )}
-        {checked && correct && <Button onClick={advance}>Volgende</Button>}
-        {checked && !correct && <Button onClick={retry}>Probeer opnieuw</Button>}
+        {checked && correct && <Button onClick={advance}>Next</Button>}
+        {checked && !correct && <Button onClick={retry}>Try again</Button>}
       </div>
     </Shell>
   )

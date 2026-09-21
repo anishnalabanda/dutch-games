@@ -65,9 +65,9 @@ export function GisterenGedaan() {
         <div className="g-done">
           <FeedbackBox
             correct
-            message={`Klaar! Alle ${items.length} zinnen in de voltooide tijd had je in één keer goed. Beste streak: ${drill.state.bestStreak}.`}
+            message={`Done. You got all ${items.length} perfect-tense sentences right first time. Best streak: ${drill.state.bestStreak}.`}
           />
-          <Button onClick={drill.restart}>Opnieuw oefenen</Button>
+          <Button onClick={drill.restart}>Practise again</Button>
         </div>
       </Shell>
     )
@@ -79,9 +79,9 @@ export function GisterenGedaan() {
   let message = ''
   if (checked && !allOk) {
     const wrongParts: string[] = []
-    if (!auxOk) wrongParts.push(`Het hulpwerkwoord is "${current.aux}". ${AUX_EXPLANATIONS[current.auxKind]}`)
+    if (!auxOk) wrongParts.push(`The auxiliary is "${current.aux}". ${AUX_EXPLANATIONS[current.auxKind]}`)
     if (!participleOk)
-      wrongParts.push(`Het deelwoord is "${current.participle}". ${KIND_EXPLANATIONS[current.kind]}`)
+      wrongParts.push(`The participle is "${current.participle}". ${KIND_EXPLANATIONS[current.kind]}`)
     message = wrongParts.join(' ')
   } else if (allOk) {
     message = `${AUX_EXPLANATIONS[current.auxKind]} ${KIND_EXPLANATIONS[current.kind]}`
@@ -98,7 +98,7 @@ export function GisterenGedaan() {
         <StreakBadge label="Streak" value={drill.state.streak} />
       </div>
 
-      {/* Boarding pass: hulpwerkwoord in the left stub, deelwoord in the right. */}
+      {/* Boarding pass: the auxiliary in the left stub, the participle in the right. */}
       <div className="vg-pass">
         <div className="vg-pass-line">
           <GlossedText text={current.before} />
@@ -116,13 +116,13 @@ export function GisterenGedaan() {
           <span>{current.after}</span>
         </div>
         <p className="g-hint">
-          Hele werkwoord: <strong>{current.infinitive}</strong>{' '}
+          Infinitive: <strong>{current.infinitive}</strong>{' '}
           <span className="vg-gloss">({current.gloss})</span>
         </p>
       </div>
 
       <div>
-        <span className="g-label">1 &middot; Hulpwerkwoord</span>
+        <span className="g-label">1 &middot; Auxiliary verb (hebben or zijn)</span>
         <div className="g-chips">
           {current.auxOptions.map((option) => (
             <button
@@ -140,7 +140,7 @@ export function GisterenGedaan() {
 
       <div>
         <label className="g-label" htmlFor="vg-participle">
-          2 &middot; Voltooid deelwoord
+          2 &middot; Past participle
         </label>
         <input
           id="vg-participle"
@@ -150,7 +150,7 @@ export function GisterenGedaan() {
           autoComplete="off"
           autoCapitalize="off"
           spellCheck={false}
-          placeholder="typ het deelwoord"
+          placeholder="type the participle"
           onChange={(e) => setParticiple(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === 'Enter') check()
@@ -158,7 +158,7 @@ export function GisterenGedaan() {
         />
       </div>
 
-      <div className="vg-kofschip" aria-label="'t kofschip">
+      <div className="vg-kofschip" aria-label="'t kofschip: the letters that take -t">
         <span className="g-label">&apos;t kofschip</span>
         <div className="vg-kofschip-letters">
           {KOFSCHIP_LETTERS.map((letter) => (
@@ -168,8 +168,8 @@ export function GisterenGedaan() {
           ))}
         </div>
         <p className="g-hint">
-          Eindigt de stam op een van deze letters? Dan -t. Anders -d. Onregelmatige werkwoorden
-          volgen deze regel niet.
+          Does the stem end in one of these letters? Then -t. Otherwise -d. Irregular verbs do not
+          follow this rule.
         </p>
       </div>
 
@@ -178,11 +178,11 @@ export function GisterenGedaan() {
       <div className="g-actions">
         {!checked && (
           <Button onClick={check} disabled={aux === null || participle.trim() === ''}>
-            Controleer
+            Check
           </Button>
         )}
-        {checked && allOk && <Button onClick={drill.advance}>Volgende</Button>}
-        {checked && !allOk && <Button onClick={retry}>Probeer opnieuw</Button>}
+        {checked && allOk && <Button onClick={drill.advance}>Next</Button>}
+        {checked && !allOk && <Button onClick={retry}>Try again</Button>}
       </div>
     </Shell>
   )

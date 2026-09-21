@@ -97,9 +97,9 @@ export function Spellingmachine() {
         <div className="g-done">
           <FeedbackBox
             correct
-            message={`Klaar! Alle ${items.length} woorden zijn goed gespeld. Beste streak: ${state.bestStreak}.`}
+            message={`Done. All ${items.length} words are spelled correctly. Best streak: ${state.bestStreak}.`}
           />
-          <Button onClick={restart}>Opnieuw oefenen</Button>
+          <Button onClick={restart}>Practise again</Button>
         </div>
       </Shell>
     )
@@ -138,8 +138,8 @@ export function Spellingmachine() {
               autoComplete="off"
               autoCapitalize="off"
               spellCheck={false}
-              aria-label="Typ de nieuwe vorm"
-              placeholder="typ hier"
+              aria-label="Type the new form"
+              placeholder="type here"
               onChange={(e) => setTyped(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') check()
@@ -151,7 +151,7 @@ export function Spellingmachine() {
 
       {current.cue && (
         <p className="g-hint">
-          Vorm voor: <strong>{current.cue}</strong>
+          Form for: <strong>{current.cue}</strong>
         </p>
       )}
 
@@ -162,7 +162,7 @@ export function Spellingmachine() {
             message={
               correct
                 ? RULE_EXPLANATIONS[current.rule]
-                : `${RULE_EXPLANATIONS[current.rule]} Het juiste woord is "${current.to}".`
+                : `${RULE_EXPLANATIONS[current.rule]} The right word is "${current.to}".`
             }
           />
         </>
@@ -171,11 +171,11 @@ export function Spellingmachine() {
       <div className="g-actions">
         {!checked && (
           <Button onClick={check} disabled={typed.trim() === ''}>
-            Controleer
+            Check
           </Button>
         )}
-        {checked && correct && <Button onClick={advance}>Volgende</Button>}
-        {checked && !correct && <Button onClick={retry}>Probeer opnieuw</Button>}
+        {checked && correct && <Button onClick={advance}>Next</Button>}
+        {checked && !correct && <Button onClick={retry}>Try again</Button>}
       </div>
     </Shell>
   )

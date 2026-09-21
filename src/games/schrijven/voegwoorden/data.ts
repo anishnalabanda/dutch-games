@@ -16,19 +16,19 @@ export interface ConnItem {
 export const SUBORDINATING: Connector[] = ['omdat', 'als', 'dat', 'of']
 
 export const CONNECTOR_MEANINGS: Record<Connector, string> = {
-  en: 'opsomming, je telt iets op',
-  maar: 'tegenstelling, het gaat de andere kant op',
-  want: 'reden, hetzelfde als omdat, maar met normale volgorde',
-  dus: 'gevolg, daarom gebeurt het andere',
-  omdat: 'reden, antwoord op "waarom?"',
-  als: 'voorwaarde, alleen dán',
-  dat: 'na denken, weten, zeggen, hopen',
-  of: 'bij twijfel, of bij een ja/nee-vraag',
+  en: 'adds something, one thing on top of another',
+  maar: 'contrast, it goes the other way',
+  want: 'reason, the same as omdat but with normal word order',
+  dus: 'result, so the other thing happens',
+  omdat: 'reason, answers "waarom?"',
+  als: 'condition, only then',
+  dat: 'after thinking, knowing, saying, hoping',
+  of: 'for doubt, or for a yes/no question',
 }
 
 export const ORDER_RULES = {
-  main: 'Na en, maar, want en dus blijft de volgorde gewoon: eerst het onderwerp, dan de persoonsvorm.',
-  sub: 'Na omdat, als, dat en of gaat de persoonsvorm naar het eind van de zin.',
+  main: 'After en, maar, want and dus the order stays normal: subject first, then the finite verb.',
+  sub: 'After omdat, als, dat and of the finite verb moves to the end of the clause.',
 }
 
 export const items: ConnItem[] = [

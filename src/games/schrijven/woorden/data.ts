@@ -14,12 +14,12 @@ export interface VocabItem {
 }
 
 export const THEME_LABELS: Record<Theme, string> = {
-  werk: 'Werk',
-  gezondheid: 'Gezondheid',
-  wonen: 'Wonen en buren',
-  school: 'School en kinderen',
-  afspraken: 'Afspraken',
-  winkelen: 'Winkelen',
+  werk: 'Work',
+  gezondheid: 'Health',
+  wonen: 'Housing and neighbours',
+  school: 'School and children',
+  afspraken: 'Appointments',
+  winkelen: 'Shopping',
 }
 
 export const items: VocabItem[] = [

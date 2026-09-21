@@ -99,12 +99,12 @@ export const fields: FormField[] = [
 ]
 
 export const FORMAT_HELP: Record<FieldType, string> = {
-  text: 'Schrijf het woord precies over, met een hoofdletter.',
-  date: 'Een datum schrijf je op een formulier als dd-mm-jjjj: 03-03-1990.',
-  postcode: 'Een postcode is 4 cijfers en 2 letters: 3512 AB.',
-  bsn: 'Een burgerservicenummer heeft precies 9 cijfers, zonder spaties.',
-  tel: 'Een mobiel nummer begint met 06 en heeft 10 cijfers.',
-  email: 'Een e-mailadres schrijf je met een @ en zonder hoofdletters.',
+  text: 'Copy the word exactly, with a capital letter.',
+  date: 'On a form a date is written as dd-mm-yyyy: 03-03-1990.',
+  postcode: 'A Dutch postcode is 4 digits and 2 letters: 3512 AB.',
+  bsn: 'A burgerservicenummer has exactly 9 digits, with no spaces.',
+  tel: 'A mobile number starts with 06 and has 10 digits.',
+  email: 'An email address is written with an @ and without capitals.',
 }
 
 /** Fictional people: the data is invented for practice, not real. */

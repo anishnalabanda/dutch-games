@@ -25,40 +25,40 @@ export interface SpellItem {
 }
 
 export const MODE_LABELS: Record<SpellMode, string> = {
-  meervoud: 'enkelvoud → meervoud',
-  ikvorm: 'hele werkwoord → ik',
-  hijvorm: 'hele werkwoord → hij / jij',
-  inversie: 'hele werkwoord → vraag met jij',
+  meervoud: 'singular → plural',
+  ikvorm: 'infinitive → ik-form',
+  hijvorm: 'infinitive → hij / jij',
+  inversie: 'infinitive → question with jij',
 }
 
 export const RULE_LABELS: Record<SpellRule, string> = {
-  verdubbel: 'Medeklinker verdubbelen',
-  'enkel-medeklinker': 'Dubbele medeklinker valt weg',
-  'lange-klank': 'Lange klank korter schrijven',
-  'v-f': 'v wordt f',
-  'z-s': 'z wordt s',
-  apostrof: "Meervoud met 's",
-  's-meervoud': 'Meervoud met -s',
-  onregelmatig: 'Onregelmatig',
+  verdubbel: 'Double the consonant',
+  'enkel-medeklinker': 'Double consonant drops',
+  'lange-klank': 'Long sound, one vowel',
+  'v-f': 'v becomes f',
+  'z-s': 'z becomes s',
+  apostrof: "Plural with 's",
+  's-meervoud': 'Plural with -s',
+  onregelmatig: 'Irregular',
   dt: '-dt',
-  'dt-inversie': 'Inversie',
+  'dt-inversie': 'Inversion',
 }
 
 export const RULE_EXPLANATIONS: Record<SpellRule, string> = {
   verdubbel:
-    'Korte klank in een gesloten lettergreep blijft kort: verdubbel de medeklinker als er een lettergreep bij komt (man → mannen).',
+    'A short sound in a closed syllable stays short: double the consonant when a syllable is added (man → mannen).',
   'enkel-medeklinker':
-    'Andersom valt de dubbele medeklinker weg zodra de lettergreep sluit (zitten → ik zit).',
+    'The other way round, the double consonant drops as soon as the syllable closes (zitten → ik zit).',
   'lange-klank':
-    'Lange klank in een open lettergreep schrijf je met één klinker (boom → bomen, maken → ik maak).',
-  'v-f': 'Aan het eind van een lettergreep wordt de v een f (schrijven → ik schrijf, brief → brieven).',
-  'z-s': 'Aan het eind van een lettergreep wordt de z een s (lezen → ik lees, huis → huizen).',
+    'A long sound in an open syllable is written with one vowel (boom → bomen, maken → ik maak).',
+  'v-f': 'At the end of a syllable the v becomes an f (schrijven → ik schrijf, brief → brieven).',
+  'z-s': 'At the end of a syllable the z becomes an s (lezen → ik lees, huis → huizen).',
   apostrof:
-    "Eindigt het woord op een losse a, i, o, u of y? Dan krijgt het meervoud 's (foto → foto's).",
-  's-meervoud': 'Woorden op -el, -em, -en, -er of -je krijgen -s in het meervoud.',
-  onregelmatig: 'Dit meervoud is onregelmatig. Leer het uit je hoofd.',
-  dt: 'Stam + t. Eindigt de stam al op een d? Dan schrijf je toch -dt: hij wordt, jij vindt.',
-  'dt-inversie': 'Staat jij ná het werkwoord? Dan valt de -t weg: jij wordt, maar word jij?',
+    "Does the word end in a lone a, i, o, u or y? Then the plural takes 's (foto → foto's).",
+  's-meervoud': 'Words ending in -el, -em, -en, -er or -je take -s in the plural.',
+  onregelmatig: 'This plural is irregular, so it has to be memorised.',
+  dt: 'Stem + t. Does the stem already end in a d? Then you still write -dt: hij wordt, jij vindt.',
+  'dt-inversie': 'Does jij come after the verb? Then the -t drops: jij wordt, but word jij?',
 }
 
 export const items: SpellItem[] = [

@@ -98,9 +98,9 @@ export function BerichtBouwstenen() {
         <div className="g-done">
           <FeedbackBox
             correct
-            message={`Klaar! Je hebt alle ${situations.length} berichten goed opgebouwd.`}
+            message={`Done. You built all ${situations.length} messages correctly.`}
           />
-          <Button onClick={restart}>Opnieuw oefenen</Button>
+          <Button onClick={restart}>Practise again</Button>
         </div>
       </Shell>
     )
@@ -113,17 +113,19 @@ export function BerichtBouwstenen() {
       progress={{ value: state.completedIds.length, max: situations.length }}
     >
       <div className="g-row">
-        <Tag>{current.register === 'formeel' ? 'Formeel bericht' : 'Informeel bericht'}</Tag>
+        <Tag>{current.register === 'formeel' ? 'Formal message' : 'Informal message'}</Tag>
       </div>
 
       <div className="bb-brief">
         <h3 className="bb-title">{current.title}</h3>
         <p className="g-hint">
-          Aan: <strong>{current.recipient}</strong>
+          To: <strong>{current.recipient}</strong>
         </p>
         <ul className="bb-points">
           {current.brief.map((point) => (
-            <li key={point}>{point}</li>
+            <li key={point}>
+              <GlossedText text={point} />
+            </li>
           ))}
         </ul>
       </div>
@@ -172,7 +174,7 @@ export function BerichtBouwstenen() {
         <>
           <FeedbackBox
             correct={allOk}
-            message={allOk ? `Goed opgebouwd. ${STRUCTURE_RULE}` : STRUCTURE_RULE}
+            message={allOk ? `Well built. ${STRUCTURE_RULE}` : STRUCTURE_RULE}
           />
           {!allOk && (
             <ul className="bb-why">
@@ -191,11 +193,11 @@ export function BerichtBouwstenen() {
       <div className="g-actions">
         {!checked && (
           <Button onClick={check} disabled={!complete}>
-            Controleer
+            Check
           </Button>
         )}
-        {checked && allOk && <Button onClick={advance}>Volgend bericht</Button>}
-        {checked && !allOk && <Button onClick={retry}>Pas aan</Button>}
+        {checked && allOk && <Button onClick={advance}>Next message</Button>}
+        {checked && !allOk && <Button onClick={retry}>Adjust</Button>}
       </div>
     </Shell>
   )

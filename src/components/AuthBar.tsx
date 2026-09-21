@@ -9,12 +9,12 @@ export function AuthBar() {
     <div className="auth-bar">
       <span className="auth-bar-email">{email}</span>
       {!cloudSync && (
-        <span className="auth-bar-status" title="VITE_CLOUD_SYNC=on schakelt sync in">
-          Lokaal, geen cloud-sync
+        <span className="auth-bar-status" title="VITE_CLOUD_SYNC=on turns syncing on">
+          Local only, no cloud sync
         </span>
       )}
       <Button variant="secondary" onClick={() => void signOut()}>
-        Wisselen
+        Switch
       </Button>
     </div>
   )

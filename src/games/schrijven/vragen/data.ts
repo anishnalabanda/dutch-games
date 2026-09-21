@@ -17,9 +17,9 @@ export interface QuestionItem {
 
 export const TYPE_RULES: Record<QuestionType, string> = {
   vraagwoord:
-    'Vraagwoord eerst, dan de persoonsvorm, dan het onderwerp: "Waar woon je?", niet "Waar je woont?".',
+    'Question word first, then the finite verb, then the subject: "Waar woon je?", not "Waar je woont?".',
   janee:
-    'Een ja/nee-vraag begint met de persoonsvorm: "Woon je in Utrecht?". Na jij/je valt de -t weg.',
+    'A yes/no question starts with the finite verb: "Woon je in Utrecht?". After jij/je the -t drops.',
 }
 
 export const items: QuestionItem[] = [
@@ -31,7 +31,7 @@ export const items: QuestionItem[] = [
     question: 'Waar woon je?',
     accept: ['Waar woon jij?', 'Waar woont u?'],
     type: 'vraagwoord',
-    hint: 'Je vraagt naar een plaats.',
+    hint: 'You are asking about a place.',
   },
   {
     id: 'q2',
@@ -41,7 +41,7 @@ export const items: QuestionItem[] = [
     question: 'Hoe oud ben je?',
     accept: ['Hoe oud ben jij?', 'Hoe oud bent u?'],
     type: 'vraagwoord',
-    hint: 'Je vraagt naar een leeftijd.',
+    hint: 'You are asking about an age.',
   },
   {
     id: 'q3',
@@ -51,7 +51,7 @@ export const items: QuestionItem[] = [
     question: 'Hoe laat begint de les?',
     accept: ['Wanneer begint de les?'],
     type: 'vraagwoord',
-    hint: 'Je vraagt naar een tijd.',
+    hint: 'You are asking about a time.',
   },
   {
     id: 'q4',
@@ -61,7 +61,7 @@ export const items: QuestionItem[] = [
     question: 'Waar kom je vandaan?',
     accept: ['Waar kom jij vandaan?', 'Waar komt u vandaan?', 'Uit welk land kom je?'],
     type: 'vraagwoord',
-    hint: 'Je vraagt naar het land van herkomst, let op het woordje "vandaan".',
+    hint: 'You are asking which country someone is from; mind the little word "vandaan".',
   },
   {
     id: 'q5',
@@ -71,7 +71,7 @@ export const items: QuestionItem[] = [
     question: 'Hoeveel kost het boek?',
     accept: ['Wat kost het boek?'],
     type: 'vraagwoord',
-    hint: 'Je vraagt naar een prijs.',
+    hint: 'You are asking about a price.',
   },
   {
     id: 'q6',
@@ -81,7 +81,7 @@ export const items: QuestionItem[] = [
     question: 'Hoe heet je?',
     accept: ['Hoe heet jij?', 'Hoe heet u?', 'Wat is je naam?', 'Wat is uw naam?'],
     type: 'vraagwoord',
-    hint: 'Je vraagt naar een naam.',
+    hint: 'You are asking about a name.',
   },
   {
     id: 'q7',
@@ -91,7 +91,7 @@ export const items: QuestionItem[] = [
     question: 'Wie is ziek?',
     accept: [],
     type: 'vraagwoord',
-    hint: 'Je vraagt naar de persoon, het onderwerp van de zin.',
+    hint: 'You are asking about the person, the subject of the sentence.',
   },
   {
     id: 'q8',
@@ -101,7 +101,7 @@ export const items: QuestionItem[] = [
     question: 'Wanneer ga je naar de tandarts?',
     accept: ['Wanneer ga jij naar de tandarts?', 'Wanneer gaat u naar de tandarts?'],
     type: 'vraagwoord',
-    hint: 'Je vraagt naar een moment.',
+    hint: 'You are asking about a moment in time.',
   },
   {
     id: 'q9',
@@ -111,7 +111,7 @@ export const items: QuestionItem[] = [
     question: 'Waarom blijf je thuis?',
     accept: ['Waarom blijf jij thuis?', 'Waarom blijft u thuis?'],
     type: 'vraagwoord',
-    hint: 'Je vraagt naar de reden.',
+    hint: 'You are asking about the reason.',
   },
   {
     id: 'q10',
@@ -126,7 +126,7 @@ export const items: QuestionItem[] = [
       'Hoe ga je naar werk?',
     ],
     type: 'vraagwoord',
-    hint: 'Je vraagt naar de manier, met de bus, de fiets, de auto.',
+    hint: 'You are asking how, by bus, by bike, by car.',
   },
   {
     id: 'q11',
@@ -136,7 +136,7 @@ export const items: QuestionItem[] = [
     question: 'Waar werk je?',
     accept: ['Waar werk jij?', 'Waar werkt u?'],
     type: 'vraagwoord',
-    hint: 'Je vraagt naar de plaats van het werk.',
+    hint: 'You are asking where the work is.',
   },
   {
     id: 'q12',
@@ -146,7 +146,7 @@ export const items: QuestionItem[] = [
     question: 'Hoeveel kinderen hebben jullie?',
     accept: ['Hoeveel kinderen heeft u?', 'Hoeveel kinderen hebben jullie samen?'],
     type: 'vraagwoord',
-    hint: 'Je vraagt naar een aantal.',
+    hint: 'You are asking about a number of things.',
   },
   {
     id: 'q13',
@@ -156,7 +156,7 @@ export const items: QuestionItem[] = [
     question: 'Hoelang duurt de cursus?',
     accept: ['Hoe lang duurt de cursus?'],
     type: 'vraagwoord',
-    hint: 'Je vraagt naar een duur.',
+    hint: 'You are asking how long something takes.',
   },
   {
     id: 'q14',
@@ -166,7 +166,7 @@ export const items: QuestionItem[] = [
     question: 'Wie is dat?',
     accept: [],
     type: 'vraagwoord',
-    hint: 'Je vraagt naar een persoon.',
+    hint: 'You are asking about a person.',
   },
   {
     id: 'q15',
@@ -176,7 +176,7 @@ export const items: QuestionItem[] = [
     question: 'Woon je in Utrecht?',
     accept: ['Woon jij in Utrecht?', 'Woont u in Utrecht?'],
     type: 'janee',
-    hint: 'Begin met het werkwoord. Let op: na "je" valt de -t weg.',
+    hint: 'Start with the verb. Careful: after "je" the -t drops.',
   },
   {
     id: 'q16',
@@ -186,7 +186,7 @@ export const items: QuestionItem[] = [
     question: 'Heb je een afspraak?',
     accept: ['Heb jij een afspraak?', 'Heeft u een afspraak?'],
     type: 'janee',
-    hint: 'Begin met het werkwoord: "heb" bij je/jij, "heeft" bij u.',
+    hint: 'Start with the verb: "heb" with je/jij, "heeft" with u.',
   },
   {
     id: 'q17',
@@ -196,6 +196,6 @@ export const items: QuestionItem[] = [
     question: 'Kan de dokter mij vandaag zien?',
     accept: ['Kan de dokter me vandaag zien?'],
     type: 'janee',
-    hint: 'Begin met de persoonsvorm, daarna het onderwerp.',
+    hint: 'Start with the finite verb, then the subject.',
   },
 ]

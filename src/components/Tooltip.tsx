@@ -2,10 +2,12 @@ import { useId, useState, type ReactNode } from 'react'
 
 interface TooltipProps {
   content: string
+  /** Where the bubble sits. Use 'below' near the top of the screen. */
+  placement?: 'above' | 'below'
   children: ReactNode
 }
 
-export function Tooltip({ content, children }: TooltipProps) {
+export function Tooltip({ content, placement = 'above', children }: TooltipProps) {
   const [visible, setVisible] = useState(false)
   const id = useId()
   return (
@@ -20,7 +22,7 @@ export function Tooltip({ content, children }: TooltipProps) {
     >
       {children}
       {visible && (
-        <span role="tooltip" id={id} className="tooltip-bubble">
+        <span role="tooltip" id={id} className={`tooltip-bubble tooltip-bubble-${placement}`}>
           {content}
         </span>
       )}

@@ -33,9 +33,9 @@ export function ExamPage() {
   if (!exam) {
     return (
       <div className="exam-page">
-        <p>Onbekend examen.</p>
+        <p>Unknown exam.</p>
         <Link to="/" className="exam-page-back">
-          &larr; Overzicht
+          &larr; Overview
         </Link>
       </div>
     )
@@ -47,16 +47,16 @@ export function ExamPage() {
   return (
     <div className="exam-page">
       <Link to="/" className="exam-page-back">
-        &larr; Overzicht
+        &larr; Overview
       </Link>
       <h1>{exam.title}</h1>
       {examGames.length > 0 && (
         <p className="exam-page-count">
-          {coreDone} van {core.length} kerngames klaar
+          {coreDone} of {core.length} core games done
         </p>
       )}
       {examGames.length === 0 ? (
-        <Card className="exam-page-empty">Nog geen games voor dit examen.</Card>
+        <Card className="exam-page-empty">No games for this exam yet.</Card>
       ) : (
         <div className="exam-page-grid">
           {examGames.map((g) => (
@@ -64,10 +64,10 @@ export function ExamPage() {
               <Card className={doneKeys[g.id] ? 'exam-page-game-done' : ''}>
                 <div className="exam-page-game-head">
                   <h3>{g.title}</h3>
-                  {doneKeys[g.id] && <Tag tone="ok">Klaar</Tag>}
+                  {doneKeys[g.id] && <Tag tone="ok">Done</Tag>}
                 </div>
                 {g.subtitle && <p className="exam-page-game-subtitle">{g.subtitle}</p>}
-                <Tag>{g.core ? 'Kern' : 'Extra'}</Tag>
+                <Tag>{g.core ? 'Core' : 'Extra'}</Tag>
               </Card>
             </Link>
           ))}

@@ -198,6 +198,21 @@ being written next to it. Use it for every Dutch sentence a game shows: **not** 
 reading and a verb form in another (`werk`, `vraag`, `fiets`) are deliberately not flagged
 as verbs. When a game adds new Dutch text, add its new words to the glossary.
 
+### Which language each string is in (strict)
+The split is by role, not by screen:
+
+- **Dutch**: everything the exam itself is made of. Sentences to build, words to type,
+  options and chips, model answers, form fields and their values, the task brief, game
+  titles. Run every Dutch sentence through `GlossedText`, including a Dutch task brief.
+- **English**: everything the app says *about* that content. Feedback and rule
+  explanations, hints, rule/tag labels, section labels, input placeholders, aria-labels,
+  buttons, counters and the done screens.
+
+The owner is learning from the explanations, so an explanation in Dutch has to be decoded
+before it can teach anything: that is why `FeedbackBox` writes "Correct" / "Not quite" and
+takes an English `message`. Never wrap an English string in `GlossedText`: it would gloss
+words like *in*, *op* and *je* as Dutch.
+
 ---
 
 ## 8. Game architecture
@@ -209,11 +224,15 @@ as verbs. When a game adds new Dutch text, add its new words to the glossary.
     id: string;            // matches nl.<exam>.<game>
     exam: 'luisteren'|'schrijven'|'knm'|'spreken';
     title: string;         // Dutch
-    subtitle?: string;     // short English
+    subtitle: string;      // short English: required, it is the game's hover gloss
     core: boolean;         // core vs optional (affects "ready" honesty)
   }
   ```
 - A central **manifest** registers all games and drives the hub and per-exam counters.
+- The game title in the `Shell` header stays Dutch and carries its English `subtitle` as a
+  hover/focus tooltip, like a glossed word. `GamePage` publishes the manifest entry through
+  `CurrentGameProvider` (`src/games/currentGame.tsx`) and `Shell` reads it, so a game never
+  repeats its own metadata and `Shell` never imports the manifest (that would be a cycle).
 - **Hub = home route** (`/`): lists exams as cards, each showing its per-exam progress
   ("X of Y games done", core vs optional distinguished), linking into that exam's games.
 - Every game reads/writes only its own `nl.<exam>.<game>` key via the store.
@@ -320,6 +339,11 @@ register (`u` vs `je`), spelling, punctuation.
    - Drills: present tense (`ik werk` / `jij werkt` / `hij werkt` / plural = infinitief),
      and the `-t` that disappears in `werk jij?`. Stem spelling (`maken` → `ik maak`).
    - Mechanic: a drum of candidate forms, stepped with ▲/▼ or the arrow keys and locked in.
+   - A right answer opens the verb's whole present tense (`CONJUGATIONS` in its `data.ts`,
+     the pronouns in `FORM_ROWS`), with the form this sentence needed marked, so one item
+     teaches a paradigm and not a fact. `npm run check:content` holds the table and the
+     items to each other.
+   - 25 items.
 3. `nl.schrijven.voltooid`: **Gisteren gedaan**, core, *built*
    - Drills: perfectum, `hebben` vs `zijn`, `ge-` + stam + `-d`/`-t` via 't kofschip,
      the frequent irregulars, **scheidbare deelwoorden waar `ge-` in het midden komt**

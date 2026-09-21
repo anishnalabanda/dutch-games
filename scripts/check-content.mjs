@@ -19,8 +19,22 @@ for (const it of w.items) {
   ok(it.options.includes(it.answer), `werkwoorden ${it.id}: answer "${it.answer}" not among options`)
   ok(it.sentence.includes('___'), `werkwoorden ${it.id}: no gap`)
   for (const a of it.accept ?? []) ok(it.options.includes(a), `werkwoorden ${it.id}: accept "${a}" not an option`)
+  // The table shown after a right answer has to agree with the item itself.
+  const conj = w.CONJUGATIONS[it.infinitive]
+  ok(conj !== undefined, `werkwoorden ${it.id}: no conjugation table for "${it.infinitive}"`)
+  if (conj === undefined) continue
+  const forms = w.FORM_ROWS.map(row => conj[row.key].toLowerCase())
+  for (const given of [it.answer, ...(it.accept ?? [])]) {
+    ok(forms.includes(given.toLowerCase()), `werkwoorden ${it.id}: "${given}" is not a form in the ${it.infinitive} table`)
+  }
 }
-console.log(`werkwoorden: ${w.items.length} items`)
+for (const [inf, conj] of Object.entries(w.CONJUGATIONS)) {
+  for (const row of w.FORM_ROWS) ok(conj[row.key]?.length > 0, `werkwoorden: ${inf} has no ${row.key} form`)
+  ok(conj.vraag.endsWith('jij?'), `werkwoorden: ${inf} question form "${conj.vraag}" should end in "jij?"`)
+  ok(conj.note.length > 10, `werkwoorden: ${inf} has no note`)
+  ok(w.items.some(it => it.infinitive === inf), `werkwoorden: ${inf} has a table but no item`)
+}
+console.log(`werkwoorden: ${w.items.length} items, ${Object.keys(w.CONJUGATIONS).length} conjugation tables`)
 
 const v = await import(`${base}/schrijven/voltooid/data.ts`)
 for (const it of v.items) {

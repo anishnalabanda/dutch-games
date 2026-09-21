@@ -17,24 +17,24 @@ export interface NounItem {
   noun: string
   gloss: string
   article: Article
-  /** Why this word takes this article, when there is a pattern to lean on. */
+  /** Why this word takes this article, in English, when there is a pattern to lean on. */
   hint: string
   follow?: Follow
 }
 
 export const ADJ_RULES: Record<AdjRule, string> = {
-  'de-altijd-e': 'Bij een de-woord krijgt het bijvoeglijk naamwoord altijd een -e: de grote stad, een grote stad.',
+  'de-altijd-e': 'With a de-word the adjective always takes an -e: de grote stad, een grote stad.',
   'het-bepaald-e':
-    'Bij een het-woord met het, dit, dat of mijn krijgt het bijvoeglijk naamwoord ook een -e: het grote huis.',
+    'With a het-word after het, dit, dat or mijn the adjective takes an -e too: het grote huis.',
   'het-een-geen-e':
-    'Bij een het-woord met een (of zonder lidwoord) krijgt het bijvoeglijk naamwoord géén -e: een groot huis.',
+    'With a het-word after een (or with no article) the adjective takes no -e: een groot huis.',
 }
 
 export const ARTICLE_PATTERNS = [
-  'Verkleinwoorden op -je zijn altijd het: het meisje, het kopje.',
-  'Woorden op -ing, -heid, -tie en -teit zijn de-woorden: de vergadering, de gezondheid.',
-  'In het meervoud is het altijd de: de huizen, de kinderen.',
-  'Bij de rest hoort het lidwoord gewoon bij het woord: leer ze samen.',
+  'Diminutives ending in -je are always het: het meisje, het kopje.',
+  'Words ending in -ing, -heid, -tie and -teit are de-words: de vergadering, de gezondheid.',
+  'In the plural it is always de: de huizen, de kinderen.',
+  'For the rest the article is simply part of the word: learn the two together.',
 ]
 
 export const items: NounItem[] = [
@@ -43,7 +43,7 @@ export const items: NounItem[] = [
     noun: 'huis',
     gloss: 'house',
     article: 'het',
-    hint: 'Een van de het-woorden die je uit je hoofd leert.',
+    hint: 'One of the het-words that simply has to be memorised.',
     follow: {
       before: 'een',
       after: 'huis',
@@ -58,7 +58,7 @@ export const items: NounItem[] = [
     noun: 'stad',
     gloss: 'city',
     article: 'de',
-    hint: 'Een de-woord.',
+    hint: 'A de-word.',
     follow: {
       before: 'een',
       after: 'stad',
@@ -73,7 +73,7 @@ export const items: NounItem[] = [
     noun: 'boek',
     gloss: 'book',
     article: 'het',
-    hint: 'Een het-woord.',
+    hint: 'A het-word.',
     follow: {
       before: 'het',
       after: 'boek',
@@ -88,49 +88,49 @@ export const items: NounItem[] = [
     noun: 'meisje',
     gloss: 'girl',
     article: 'het',
-    hint: 'Verkleinwoorden op -je zijn altijd het-woorden.',
+    hint: 'Diminutives ending in -je are always het-words.',
   },
   {
     id: 'a5',
     noun: 'kopje',
     gloss: 'cup',
     article: 'het',
-    hint: 'Verkleinwoorden op -je zijn altijd het-woorden.',
+    hint: 'Diminutives ending in -je are always het-words.',
   },
   {
     id: 'a6',
     noun: 'vergadering',
     gloss: 'meeting',
     article: 'de',
-    hint: 'Woorden op -ing zijn de-woorden.',
+    hint: 'Words ending in -ing are de-words.',
   },
   {
     id: 'a7',
     noun: 'gezondheid',
     gloss: 'health',
     article: 'de',
-    hint: 'Woorden op -heid zijn de-woorden.',
+    hint: 'Words ending in -heid are de-words.',
   },
   {
     id: 'a8',
     noun: 'informatie',
     gloss: 'information',
     article: 'de',
-    hint: 'Woorden op -tie zijn de-woorden.',
+    hint: 'Words ending in -tie are de-words.',
   },
   {
     id: 'a9',
     noun: 'kinderen',
     gloss: 'children',
     article: 'de',
-    hint: 'In het meervoud is het altijd de.',
+    hint: 'In the plural it is always de.',
   },
   {
     id: 'a10',
     noun: 'formulier',
     gloss: 'form',
     article: 'het',
-    hint: 'Een het-woord, handig om te kennen voor het examen.',
+    hint: 'A het-word, worth knowing for the exam.',
     follow: {
       before: 'een',
       after: 'formulier',
@@ -145,7 +145,7 @@ export const items: NounItem[] = [
     noun: 'brief',
     gloss: 'letter',
     article: 'de',
-    hint: 'Een de-woord.',
+    hint: 'A de-word.',
     follow: {
       before: 'een',
       after: 'brief',
@@ -160,7 +160,7 @@ export const items: NounItem[] = [
     noun: 'kind',
     gloss: 'child',
     article: 'het',
-    hint: 'Een het-woord, maar het meervoud is "de kinderen".',
+    hint: 'A het-word, but the plural is "de kinderen".',
     follow: {
       before: 'een',
       after: 'kind',
@@ -175,7 +175,7 @@ export const items: NounItem[] = [
     noun: 'afspraak',
     gloss: 'appointment',
     article: 'de',
-    hint: 'Een de-woord.',
+    hint: 'A de-word.',
     follow: {
       before: 'de',
       after: 'afspraak',
@@ -190,7 +190,7 @@ export const items: NounItem[] = [
     noun: 'werk',
     gloss: 'work',
     article: 'het',
-    hint: 'Een het-woord.',
+    hint: 'A het-word.',
     follow: {
       before: 'mijn',
       after: 'werk',
@@ -200,12 +200,12 @@ export const items: NounItem[] = [
       rule: 'het-bepaald-e',
     },
   },
-  { id: 'a15', noun: 'ziekenhuis', gloss: 'hospital', article: 'het', hint: 'Een het-woord.' },
-  { id: 'a16', noun: 'station', gloss: 'station', article: 'het', hint: 'Een het-woord.' },
-  { id: 'a17', noun: 'gesprek', gloss: 'conversation', article: 'het', hint: 'Een het-woord.' },
-  { id: 'a18', noun: 'sleutel', gloss: 'key', article: 'de', hint: 'Een de-woord.' },
-  { id: 'a19', noun: 'dokter', gloss: 'doctor', article: 'de', hint: 'Een de-woord.' },
-  { id: 'a20', noun: 'week', gloss: 'week', article: 'de', hint: 'Een de-woord.' },
-  { id: 'a21', noun: 'geld', gloss: 'money', article: 'het', hint: 'Een het-woord.' },
-  { id: 'a22', noun: 'les', gloss: 'lesson', article: 'de', hint: 'Een de-woord.' },
+  { id: 'a15', noun: 'ziekenhuis', gloss: 'hospital', article: 'het', hint: 'A het-word.' },
+  { id: 'a16', noun: 'station', gloss: 'station', article: 'het', hint: 'A het-word.' },
+  { id: 'a17', noun: 'gesprek', gloss: 'conversation', article: 'het', hint: 'A het-word.' },
+  { id: 'a18', noun: 'sleutel', gloss: 'key', article: 'de', hint: 'A de-word.' },
+  { id: 'a19', noun: 'dokter', gloss: 'doctor', article: 'de', hint: 'A de-word.' },
+  { id: 'a20', noun: 'week', gloss: 'week', article: 'de', hint: 'A de-word.' },
+  { id: 'a21', noun: 'geld', gloss: 'money', article: 'het', hint: 'A het-word.' },
+  { id: 'a22', noun: 'les', gloss: 'lesson', article: 'de', hint: 'A de-word.' },
 ]

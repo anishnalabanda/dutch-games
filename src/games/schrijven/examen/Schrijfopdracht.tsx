@@ -54,7 +54,7 @@ function formatTime(seconds: number): string {
 export function Schrijfopdracht() {
   const { state, loaded, save } = useGameProgress<ExamenState>(STORE_KEY, initialState)
 
-  // Level 1: zinnen afmaken.
+  // Level 1: finishing sentences.
   const [stem, setStem] = useState<SentenceStem | null>(null)
   const [completion, setCompletion] = useState('')
   const [stemChecked, setStemChecked] = useState(false)
@@ -104,14 +104,15 @@ export function Schrijfopdracht() {
         progress={{ value: state.stemIds.length, max: stems.length }}
       >
         <div className="g-row">
-          <Tag>Niveau 1 &middot; Zinnen afmaken</Tag>
+          <Tag>Level 1 &middot; Finish the sentence</Tag>
           <span className="so-timer">
             {state.stemIds.length}/{stems.length}
           </span>
         </div>
 
         <p className="g-hint">
-          Maak de zin zelf af. Geen tegels, geen keuzes, precies wat het examen van je vraagt.
+          Finish the sentence yourself. No tiles, no multiple choice: exactly what the exam asks
+          of you.
         </p>
 
         <div className="g-worksheet so-stem">
@@ -121,7 +122,7 @@ export function Schrijfopdracht() {
 
         <div>
           <label className="g-label" htmlFor="so-completion">
-            Jouw vervolg
+            Your continuation
           </label>
           <input
             id="so-completion"
@@ -142,7 +143,7 @@ export function Schrijfopdracht() {
           <>
             <CheckList results={results} />
             <div className="g-worksheet so-model">
-              <h4>Zo kan het ook</h4>
+              <h4>Other ways to say it</h4>
               {stem.models.map((model) => (
                 <p key={model}>
                   {stem.stem} <GlossedText text={model} />
@@ -156,15 +157,15 @@ export function Schrijfopdracht() {
         <div className="g-actions">
           {!stemChecked && (
             <Button onClick={() => setStemChecked(true)} disabled={completion.trim() === ''}>
-              Nakijken
+              Check
             </Button>
           )}
           {stemChecked && (
             <>
               <Button variant="secondary" onClick={() => setStemChecked(false)}>
-                Aanpassen
+                Adjust
               </Button>
-              <Button onClick={() => nextStem(stem.id)}>Volgende zin</Button>
+              <Button onClick={() => nextStem(stem.id)}>Next sentence</Button>
             </>
           )}
         </div>
@@ -222,10 +223,10 @@ export function Schrijfopdracht() {
         <div className="g-done">
           <FeedbackBox
             correct
-            message={`Niveau 1 en niveau 2 zijn klaar: ${stems.length} zinnen afgemaakt en ${tasks.length} opdrachten geschreven en zelf nagekeken.`}
+            message={`Level 1 and level 2 are done: ${stems.length} sentences finished, and ${tasks.length} tasks written and marked by you.`}
           />
           <p className="g-hint">{PAPER_NOTE}</p>
-          <Button onClick={restart}>Opnieuw oefenen</Button>
+          <Button onClick={restart}>Practise again</Button>
         </div>
       </Shell>
     )
@@ -241,7 +242,7 @@ export function Schrijfopdracht() {
       progress={{ value: state.completedIds.length, max: tasks.length }}
     >
       <div className="g-row">
-        <Tag>Niveau 2 &middot; {task.register === 'formeel' ? 'Formeel' : 'Informeel'}</Tag>
+        <Tag>Level 2 &middot; {task.register === 'formeel' ? 'Formal' : 'Informal'}</Tag>
         {mode && (
           <span className={`so-timer ${overTime ? 'so-timer-over' : ''}`}>
             {formatTime(seconds)} / {task.minutes}:00
@@ -252,15 +253,17 @@ export function Schrijfopdracht() {
       <div className="so-brief">
         <h3 className="so-title">{task.title}</h3>
         <p className="g-hint">
-          Aan: <strong>{task.recipient}</strong>
+          To: <strong>{task.recipient}</strong>
         </p>
         <p className="so-situation">
           <GlossedText text={task.situation} />
         </p>
-        <span className="g-label">Verwerk deze punten</span>
+        <span className="g-label">Cover these points</span>
         <ul className="so-points">
           {task.points.map((point) => (
-            <li key={point.label}>{point.label}</li>
+            <li key={point.label}>
+              <GlossedText text={point.label} />
+            </li>
           ))}
         </ul>
       </div>
@@ -269,9 +272,9 @@ export function Schrijfopdracht() {
         <>
           <div className="so-paper-note">{PAPER_NOTE}</div>
           <div className="g-actions">
-            <Button onClick={() => startMode('papier')}>Op papier schrijven</Button>
+            <Button onClick={() => startMode('papier')}>Write it on paper</Button>
             <Button variant="secondary" onClick={() => startMode('typen')}>
-              Typen (oefenvorm)
+              Type it (practice only)
             </Button>
           </div>
         </>
@@ -280,11 +283,11 @@ export function Schrijfopdracht() {
       {mode === 'papier' && phase === 'schrijven' && (
         <>
           <div className="so-paper-note">
-            Pak pen en papier en schrijf je bericht met de hand. De klok loopt. Klaar? Dan leg je je
-            blad naast het modelantwoord.
+            Take pen and paper and write your message by hand. The clock is running. Done? Then
+            put your sheet next to the model answer.
           </div>
           <div className="g-actions">
-            <Button onClick={finish}>Ik heb het opgeschreven</Button>
+            <Button onClick={finish}>I have written it</Button>
           </div>
         </>
       )}
@@ -292,11 +295,11 @@ export function Schrijfopdracht() {
       {mode === 'typen' && phase === 'schrijven' && (
         <>
           <div className="so-paper-note so-paper-note-warn">
-            Let op: het echte examen schrijf je met de hand. Typen is hier alleen een oefening in
-            het opbouwen van je tekst, geen examenrealistische oefening.
+            Careful: the real exam is handwritten. Typing here only practises how you build your
+          text, so it is not exam-realistic.
           </div>
           <label className="g-label" htmlFor="so-text">
-            Jouw bericht
+            Your message
           </label>
           <textarea
             id="so-text"
@@ -309,7 +312,7 @@ export function Schrijfopdracht() {
           />
           <div className="g-actions">
             <Button onClick={finish} disabled={text.trim() === ''}>
-              Klaar: nakijken
+              Done: check it
             </Button>
           </div>
         </>
@@ -319,14 +322,14 @@ export function Schrijfopdracht() {
         <>
           <div className="so-review">
             <div className="so-column">
-              <span className="g-label">Automatische checks</span>
+              <span className="g-label">Automatic checks</span>
               {mode === 'typen' ? (
                 <CheckList results={checks} />
               ) : (
                 <p className="so-honesty">
-                  Je hebt op papier geschreven, dus de app heeft je tekst niet gezien. Er valt hier
-                  niets automatisch te controleren, het nakijken doe je hieronder zelf, met het
-                  modelantwoord ernaast.
+                  You wrote on paper, so the app has not seen your text. There is nothing to check
+                  automatically here: you do the marking yourself below, with the model answer next
+                  to it.
                 </p>
               )}
               <p className="so-honesty">{HONESTY_NOTE}</p>
@@ -335,11 +338,11 @@ export function Schrijfopdracht() {
             <div className="so-column">
               {mode === 'typen' && (
                 <>
-                  <span className="g-label">Jouw tekst</span>
+                  <span className="g-label">Your text</span>
                   <div className="g-worksheet so-text-copy">{text}</div>
                 </>
               )}
-              <span className="g-label">Modelantwoord</span>
+              <span className="g-label">Model answer</span>
               <div className="g-worksheet so-model">
                 <GlossedText text={task.model} />
               </div>
@@ -347,7 +350,7 @@ export function Schrijfopdracht() {
           </div>
 
           <div className="so-rubric">
-            <span className="g-label">Zelf nakijken: de DUO-criteria</span>
+            <span className="g-label">Mark it yourself: the DUO criteria</span>
             {RUBRIC.map((line, i) => (
               <label key={line} className="so-rubric-row">
                 <input
@@ -364,15 +367,15 @@ export function Schrijfopdracht() {
 
           <div className="g-actions">
             <Button variant="secondary" onClick={() => setPhase('schrijven')}>
-              Terug
+              Back
             </Button>
             <Button onClick={markDone} disabled={!ticked.every(Boolean)}>
-              Opdracht afronden
+              Finish this task
             </Button>
           </div>
           {!ticked.every(Boolean) && (
             <p className="g-hint">
-              Vink alleen aan wat je echt gecontroleerd hebt op je eigen blad.
+              Only tick what you have really checked on your own sheet.
             </p>
           )}
         </>

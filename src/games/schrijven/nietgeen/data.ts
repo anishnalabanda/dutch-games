@@ -20,21 +20,21 @@ export interface NegItem {
 
 export const RULE_LABELS: Record<NegRule, string> = {
   geen: 'Geen',
-  'niet-eind': 'Niet aan het eind',
-  'niet-adjectief': 'Niet voor een bijvoeglijk naamwoord',
-  'niet-voorzetsel': 'Niet voor een voorzetsel',
-  'niet-werkwoord': 'Niet voor het werkwoord',
+  'niet-eind': 'Niet at the end',
+  'niet-adjectief': 'Niet before an adjective',
+  'niet-voorzetsel': 'Niet before a preposition',
+  'niet-werkwoord': 'Niet before the verb',
 }
 
 export const RULE_EXPLANATIONS: Record<NegRule, string> = {
-  geen: 'Geen gebruik je vóór een zelfstandig naamwoord met "een" of zonder lidwoord. "Ik heb een auto" wordt "Ik heb geen auto".',
+  geen: 'Use geen before a noun that has "een" or no article at all. "Ik heb een auto" becomes "Ik heb geen auto".',
   'niet-eind':
-    'Bij een bepaald woord (de, het, die, mijn) gebruik je niet. Volgt er niets meer? Dan staat niet aan het eind.',
-  'niet-adjectief': 'Niet staat vóór een bijvoeglijk naamwoord: "Hij is niet ziek".',
+    'With a definite word (de, het, die, mijn) you use niet. Is there nothing after it? Then niet goes at the end.',
+  'niet-adjectief': 'Niet goes before an adjective: "Hij is niet ziek".',
   'niet-voorzetsel':
-    'Niet staat vóór een groep met een voorzetsel (in, naar, om, op), en ná een tijdsbepaling: "Ik ga vandaag niet naar school".',
+    'Niet goes before a phrase with a preposition (in, naar, om, op), and after a time phrase: "Ik ga vandaag niet naar school".',
   'niet-werkwoord':
-    'Niet staat vóór een werkwoord aan het eind van de zin (hele werkwoord of deelwoord): "Ik wil niet werken", "Ik heb de brief niet gelezen".',
+    'Niet goes before a verb at the end of the sentence (an infinitive or a participle): "Ik wil niet werken", "Ik heb de brief niet gelezen".',
 }
 
 export const items: NegItem[] = [

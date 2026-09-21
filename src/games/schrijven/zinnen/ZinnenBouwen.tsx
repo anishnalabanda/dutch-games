@@ -11,9 +11,9 @@ import { shuffle } from '../../normalize'
 import {
   sentences,
   RULE_LABELS,
-  RULE_EXPLANATIONS_EN,
-  RULE_SUCCESS_EN,
-  RULE_NOTES_EN,
+  RULE_EXPLANATIONS,
+  RULE_SUCCESS,
+  RULE_NOTES,
   RULE_PATTERNS,
   RULE_EXAMPLES,
   type WordSpec,
@@ -23,7 +23,7 @@ import './ZinnenBouwen.css'
 
 const STORE_KEY = 'nl.schrijven.zinnen'
 
-const PLACEHOLDER = 'Tik hieronder op woorden om te beginnen.'
+const PLACEHOLDER = 'Tap the words below to start.'
 
 /** Wrong answers allowed before the sentence is given away. */
 const MAX_TRIES = 5
@@ -142,7 +142,7 @@ export function ZinnenBouwen() {
       drill.hit()
       setFeedback({
         correct: true,
-        message: `${RULE_SUCCESS_EN[current.rule]} ${RULE_NOTES_EN[current.rule]}`,
+        message: `${RULE_SUCCESS[current.rule]} ${RULE_NOTES[current.rule]}`,
         revealed: false,
       })
       return
@@ -152,7 +152,7 @@ export function ZinnenBouwen() {
     drill.miss()
     setFeedback({
       correct: false,
-      message: RULE_EXPLANATIONS_EN[current.rule],
+      message: RULE_EXPLANATIONS[current.rule],
       revealed: used >= MAX_TRIES,
     })
   }
@@ -160,7 +160,7 @@ export function ZinnenBouwen() {
   function giveUp() {
     if (!current || feedback?.revealed) return
     drill.miss()
-    setFeedback({ correct: false, message: RULE_EXPLANATIONS_EN[current.rule], revealed: true })
+    setFeedback({ correct: false, message: RULE_EXPLANATIONS[current.rule], revealed: true })
   }
 
   function retry() {
@@ -175,9 +175,9 @@ export function ZinnenBouwen() {
       <Shell title="Zinnen bouwen" backTo="/schrijven">
         <FeedbackBox
           correct
-          message={`Klaar! Je hebt alle ${sentences.length} zinnen in één keer goed gezet. Beste streak: ${drill.state.bestStreak}.`}
+          message={`Done. You put all ${sentences.length} sentences in the right order first time. Best streak: ${drill.state.bestStreak}.`}
         />
-        <Button onClick={drill.restart}>Opnieuw oefenen</Button>
+        <Button onClick={drill.restart}>Practise again</Button>
       </Shell>
     )
   }
@@ -194,31 +194,29 @@ export function ZinnenBouwen() {
       </div>
 
       <p className="zinnen-prompt">
-        <span className="zinnen-prompt-label">Vertaal</span>
+        <span className="zinnen-prompt-label">Translate</span>
         {current.prompt}
       </p>
 
       {current.hint && (
         <p className="zinnen-hint">
-          <GlossedText text="Hele werkwoord:" />{' '}
+          Infinitive:{' '}
           <strong>
             <GlossedText text={current.hint} />
           </strong>
         </p>
       )}
 
-      <div className="zinnen-answer" aria-label="Jouw zin">
+      <div className="zinnen-answer" aria-label="Your sentence">
         {answer.length === 0 && (
-          <span className="zinnen-placeholder">
-            <GlossedText text={PLACEHOLDER} />
-          </span>
+          <span className="zinnen-placeholder">{PLACEHOLDER}</span>
         )}
         {answer.map((word, i) => (
           <Tile key={`${word.text}-${i}`} word={word} onClick={() => unplaceWord(i)} />
         ))}
       </div>
 
-      <div className="zinnen-bank" aria-label="Beschikbare woorden">
+      <div className="zinnen-bank" aria-label="Available words">
         {bank.map((word, i) => (
           <Tile key={`${word.text}-${i}`} word={word} onClick={() => placeWord(i)} />
         ))}
@@ -228,19 +226,18 @@ export function ZinnenBouwen() {
         <>
           <FeedbackBox
             correct={feedback.correct}
-            heading={feedback.correct ? 'Well done' : 'Not quite'}
             message={feedback.message}
           />
           <Pattern rule={current.rule} />
           <Examples rule={current.rule} />
           {!feedback.correct && !feedback.revealed && (
             <p className="zinnen-tries">
-              <GlossedText text={`Poging ${tries} van ${MAX_TRIES}`} />
+              Attempt {tries} of {MAX_TRIES}
             </p>
           )}
           {feedback.revealed && (
             <p className="zinnen-answer-key">
-              Juiste zin:{' '}
+              Right sentence:{' '}
               {current.words.map((w, i) => (
                 <span key={i}>
                   <WordTile word={w.text} gloss={w.gloss} isVerb={w.isVerb} />{' '}
@@ -254,19 +251,19 @@ export function ZinnenBouwen() {
       <div className="zinnen-actions">
         {!feedback && (
           <Button onClick={check} disabled={bank.length > 0}>
-            Controleer
+            Check
           </Button>
         )}
         {!feedback?.correct && !feedback?.revealed && (
           <Button variant="secondary" onClick={giveUp}>
-            Geef op
+            Give up
           </Button>
         )}
-        {feedback?.correct && <Button onClick={drill.advance}>Volgende</Button>}
+        {feedback?.correct && <Button onClick={drill.advance}>Next</Button>}
         {feedback && !feedback.correct && !feedback.revealed && (
-          <Button onClick={retry}>Probeer opnieuw</Button>
+          <Button onClick={retry}>Try again</Button>
         )}
-        {feedback?.revealed && <Button onClick={drill.advance}>Volgende</Button>}
+        {feedback?.revealed && <Button onClick={drill.advance}>Next</Button>}
       </div>
     </Shell>
   )

@@ -107,13 +107,13 @@ export function DeOfHet() {
       <Shell title="De of het" backTo="/schrijven">
         <div className="g-done">
           <div className="g-worksheet">
-            <h4>Onthoud</h4>
+            <h4>Remember</h4>
             {ARTICLE_PATTERNS.map((pattern) => (
               <p key={pattern}>{pattern}</p>
             ))}
           </div>
-          <FeedbackBox correct message={`Klaar! Alle ${items.length} woorden zijn goed gesorteerd.`} />
-          <Button onClick={restart}>Opnieuw oefenen</Button>
+          <FeedbackBox correct message={`Done. All ${items.length} words are sorted correctly.`} />
+          <Button onClick={restart}>Practise again</Button>
         </div>
       </Shell>
     )
@@ -126,7 +126,7 @@ export function DeOfHet() {
       progress={{ value: state.completedIds.length, max: items.length }}
     >
       <div className="g-row">
-        <Tag>{sorted === null ? 'Sorteer het woord' : 'Welke uitgang?'}</Tag>
+        <Tag>{sorted === null ? 'Sort the word' : 'Which ending?'}</Tag>
         <StreakBadge label="Streak" value={state.streak} />
       </div>
 
@@ -156,7 +156,7 @@ export function DeOfHet() {
       {sorted !== null && articleOk && current.follow && (
         <div className="dh-follow">
           <span className="g-label">
-            Vul aan met &ldquo;{current.follow.adjective}&rdquo;
+            Complete it with &ldquo;{current.follow.adjective}&rdquo;
           </span>
           <p className="g-sentence dh-phrase">
             <GlossedText text={current.follow.before} />
@@ -183,7 +183,7 @@ export function DeOfHet() {
           correct={correct}
           message={
             !articleOk
-              ? `Het is "${current.article} ${current.noun}". ${current.hint}`
+              ? `It is "${current.article} ${current.noun}". ${current.hint}`
               : current.follow
                 ? ADJ_RULES[current.follow.rule]
                 : current.hint
@@ -192,8 +192,8 @@ export function DeOfHet() {
       )}
 
       <div className="g-actions">
-        {sorted !== null && correct && finished && <Button onClick={advance}>Volgende</Button>}
-        {sorted !== null && !correct && <Button onClick={retry}>Probeer opnieuw</Button>}
+        {sorted !== null && correct && finished && <Button onClick={advance}>Next</Button>}
+        {sorted !== null && !correct && <Button onClick={retry}>Try again</Button>}
       </div>
     </Shell>
   )

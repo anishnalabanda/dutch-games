@@ -106,9 +106,9 @@ export function NietOfGeen() {
         <div className="g-done">
           <FeedbackBox
             correct
-            message={`Klaar! Alle ${items.length} ontkenningen staan op de goede plek. Beste streak: ${state.bestStreak}.`}
+            message={`Done. All ${items.length} negations are in the right place. Best streak: ${state.bestStreak}.`}
           />
-          <Button onClick={restart}>Opnieuw oefenen</Button>
+          <Button onClick={restart}>Practise again</Button>
         </div>
       </Shell>
     )
@@ -123,16 +123,16 @@ export function NietOfGeen() {
       progress={{ value: state.completedIds.length, max: items.length }}
     >
       <div className="g-row">
-        <Tag>{placed === null ? 'Kies en plaats' : RULE_LABELS[current.rule]}</Tag>
+        <Tag>{placed === null ? 'Choose and place' : RULE_LABELS[current.rule]}</Tag>
         <StreakBadge label="Streak" value={state.streak} />
       </div>
 
       <p className="g-hint">
-        Maak deze zin ontkennend: <strong className="ng-english">{current.english}</strong>
+        Make this sentence negative: <strong className="ng-english">{current.english}</strong>
       </p>
 
       <div>
-        <span className="g-label">1 &middot; Welk woord?</span>
+        <span className="g-label">1 &middot; Which word?</span>
         <div className="g-chips">
           {(['niet', 'geen'] as NegWord[]).map((option) => (
             <button
@@ -149,14 +149,14 @@ export function NietOfGeen() {
       </div>
 
       <div>
-        <span className="g-label">2 &middot; Waar in de zin?</span>
+        <span className="g-label">2 &middot; Where in the sentence?</span>
         <div className="g-sentence ng-sentence">
           {Array.from({ length: gaps }).map((_, gap) => (
             <span key={`gap-${gap}`} className="ng-gap-wrap">
               <button
                 className={`ng-gap ${placed === gap ? (correct ? 'ng-gap-ok' : 'ng-gap-alert') : ''}`}
                 disabled={word === null || placed !== null}
-                aria-label={`Plaats ${word ?? 'het woord'} op positie ${gap + 1}`}
+                aria-label={`Place ${word ?? 'the word'} in position ${gap + 1}`}
                 onClick={() => place(gap)}
               >
                 {placed === gap ? word : '+'}
@@ -178,21 +178,21 @@ export function NietOfGeen() {
               correct
                 ? RULE_EXPLANATIONS[current.rule]
                 : !wordOk
-                  ? `Hier hoort "${current.word}". ${RULE_EXPLANATIONS[current.rule]}`
-                  : `Het woord klopt, de plek nog niet. ${RULE_EXPLANATIONS[current.rule]}`
+                  ? `This sentence needs "${current.word}". ${RULE_EXPLANATIONS[current.rule]}`
+                  : `The word is right, the position is not. ${RULE_EXPLANATIONS[current.rule]}`
             }
           />
           {!correct && (
             <p className="g-answer-key">
-              Juiste zin: <strong>{renderAnswer(current)}</strong>
+              Right sentence: <strong>{renderAnswer(current)}</strong>
             </p>
           )}
         </>
       )}
 
       <div className="g-actions">
-        {placed !== null && correct && <Button onClick={advance}>Volgende</Button>}
-        {placed !== null && !correct && <Button onClick={retry}>Probeer opnieuw</Button>}
+        {placed !== null && correct && <Button onClick={advance}>Next</Button>}
+        {placed !== null && !correct && <Button onClick={retry}>Try again</Button>}
       </div>
     </Shell>
   )

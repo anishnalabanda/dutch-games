@@ -61,17 +61,17 @@ export const MONTHS = [
 ]
 
 export const RULE_EXPLANATIONS: Record<PrepRule, string> = {
-  'om-tijd': 'Bij een kloktijd hoort om: om negen uur, om half drie. Let op: "half drie" is 2.30 uur.',
-  'op-dag': 'Bij een dag of een datum hoort op: op maandag, op 3 maart. Maanden en dagen krijgen een kleine letter.',
-  'in-maand': 'Bij een maand, een jaar, een seizoen of een deel van de dag hoort in: in juni, in 2026, in het weekend.',
-  'naar-beweging': 'Ga je ergens naartoe, dan gebruik je naar: ik ga naar de dokter.',
-  'bij-persoon': 'Ben je ergens (bij een persoon of een instantie), dan gebruik je bij: ik ben bij de gemeente.',
-  'op-plek': 'School, werk en kantoor krijgen op: ik werk op school, ik ben op mijn werk.',
-  'in-gebouw': 'Bij een gebouw of een stad gebruik je in: in het ziekenhuis, in Utrecht.',
-  'van-tot': 'Een periode loopt van … tot: ik werk van maandag tot vrijdag.',
-  'met-vervoer': 'Bij vervoer hoort met: met de fiets, met de bus, met de auto.',
+  'om-tijd': 'A clock time takes om: om negen uur, om half drie. Careful: "half drie" is 2.30, not 3.30.',
+  'op-dag': 'A day or a date takes op: op maandag, op 3 maart. Months and days are written in lower case.',
+  'in-maand': 'A month, a year, a season or a part of the day takes in: in juni, in 2026, in het weekend.',
+  'naar-beweging': 'Going somewhere takes naar: ik ga naar de dokter.',
+  'bij-persoon': 'Being somewhere, with a person or an organisation, takes bij: ik ben bij de gemeente.',
+  'op-plek': 'School, work and the office take op: ik werk op school, ik ben op mijn werk.',
+  'in-gebouw': 'A building or a city takes in: in het ziekenhuis, in Utrecht.',
+  'van-tot': 'A period runs van … tot: ik werk van maandag tot vrijdag.',
+  'met-vervoer': 'Transport takes met: met de fiets, met de bus, met de auto.',
   'vast-werkwoord':
-    'Sommige werkwoorden hebben een vast voorzetsel dat je uit je hoofd leert: wachten op, vragen naar, kijken naar.',
+    'Some verbs come with a fixed preposition that has to be memorised: wachten op, vragen naar, kijken naar.',
 }
 
 export const items: PrepItem[] = [

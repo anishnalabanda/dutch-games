@@ -1,7 +1,7 @@
 export interface BlockOption {
   text: string
   ok: boolean
-  /** Why this block is wrong: shown in the feedback when it is picked. */
+  /** Why this block is wrong, in English: shown in the feedback when it is picked. */
   why: string
 }
 
@@ -22,7 +22,7 @@ export interface Situation {
 }
 
 export const STRUCTURE_RULE =
-  'Een bericht heeft vier delen in vaste volgorde: aanhef, reden, verzoek of mededeling, afsluiting. Alle vier moeten bij dezelfde ontvanger passen.'
+  'A message has four parts in a fixed order: opening, reason, request or statement, closing. All four have to fit the same recipient.'
 
 export const situations: Situation[] = [
   {
@@ -37,8 +37,8 @@ export const situations: Situation[] = [
         gloss: 'opening',
         options: [
           { text: 'Geachte heer De Vries,', ok: true, why: '' },
-          { text: 'Hoi Jan,', ok: false, why: 'Te informeel: je baas spreek je aan met meneer en u.' },
-          { text: 'Beste klant,', ok: false, why: 'Verkeerde ontvanger, dit bericht gaat naar je leidinggevende.' },
+          { text: 'Hoi Jan,', ok: false, why: 'Too informal: you address your boss as meneer and u.' },
+          { text: 'Beste klant,', ok: false, why: 'Wrong recipient: this message goes to your manager.' },
         ],
       },
       {
@@ -46,8 +46,8 @@ export const situations: Situation[] = [
         gloss: 'reason',
         options: [
           { text: 'Ik ben vandaag ziek. Ik heb griep en koorts.', ok: true, why: '' },
-          { text: 'Ik heb vandaag geen zin om te komen.', ok: false, why: 'Dit is geen ziekmelding en niet beleefd.' },
-          { text: 'Ik wil graag een nieuwe afspraak maken.', ok: false, why: 'Dit hoort bij een afspraak verzetten, niet bij een ziekmelding.' },
+          { text: 'Ik heb vandaag geen zin om te komen.', ok: false, why: 'This is not a sick note, and it is not polite.' },
+          { text: 'Ik wil graag een nieuwe afspraak maken.', ok: false, why: 'This belongs in a message that moves an appointment, not in a sick note.' },
         ],
       },
       {
@@ -55,8 +55,8 @@ export const situations: Situation[] = [
         gloss: 'what happens next',
         options: [
           { text: 'Ik kan daarom niet naar mijn werk komen. Morgenochtend bel ik u weer.', ok: true, why: '' },
-          { text: 'Kun je mijn werk vandaag overnemen?', ok: false, why: 'Hier staat "je" in een formeel bericht; bij je baas gebruik je u.' },
-          { text: 'Ik kom vanmiddag toch even langs.', ok: false, why: 'Dit spreekt de ziekmelding tegen.' },
+          { text: 'Kun je mijn werk vandaag overnemen?', ok: false, why: 'This uses "je" in a formal message; with your boss you use u.' },
+          { text: 'Ik kom vanmiddag toch even langs.', ok: false, why: 'This contradicts the sick note.' },
         ],
       },
       {
@@ -64,8 +64,8 @@ export const situations: Situation[] = [
         gloss: 'closing',
         options: [
           { text: 'Met vriendelijke groet,\nAnish Nalabanda', ok: true, why: '' },
-          { text: 'Groetjes,\nAnish', ok: false, why: 'Te informeel voor een bericht aan je leidinggevende.' },
-          { text: 'Doei!', ok: false, why: 'Dit is spreektaal en hoort niet in een formeel bericht.' },
+          { text: 'Groetjes,\nAnish', ok: false, why: 'Too informal for a message to your manager.' },
+          { text: 'Doei!', ok: false, why: 'This is spoken language and does not belong in a formal message.' },
         ],
       },
     ],
@@ -82,8 +82,8 @@ export const situations: Situation[] = [
         gloss: 'opening',
         options: [
           { text: 'Geachte heer/mevrouw,', ok: true, why: '' },
-          { text: 'Hoi allemaal,', ok: false, why: 'Te informeel voor een praktijk die je niet persoonlijk kent.' },
-          { text: 'Lieve tandarts,', ok: false, why: '"Lieve" gebruik je alleen bij familie en vrienden.' },
+          { text: 'Hoi allemaal,', ok: false, why: 'Too informal for a practice you do not know personally.' },
+          { text: 'Lieve tandarts,', ok: false, why: 'You only use "Lieve" with family and friends.' },
         ],
       },
       {
@@ -91,8 +91,8 @@ export const situations: Situation[] = [
         gloss: 'reason',
         options: [
           { text: 'Ik heb donderdag 12 maart om 14.00 uur een afspraak bij u. Ik kan helaas niet komen, omdat ik die dag moet werken.', ok: true, why: '' },
-          { text: 'Ik kom niet.', ok: false, why: 'Te kort: de datum en de reden ontbreken.' },
-          { text: 'Mijn kies doet al een week pijn.', ok: false, why: 'Dat is een reden voor een afspraak, niet voor het afzeggen ervan.' },
+          { text: 'Ik kom niet.', ok: false, why: 'Too short: the date and the reason are missing.' },
+          { text: 'Mijn kies doet al een week pijn.', ok: false, why: 'That is a reason for an appointment, not for cancelling one.' },
         ],
       },
       {
@@ -100,8 +100,8 @@ export const situations: Situation[] = [
         gloss: 'request',
         options: [
           { text: 'Kunt u mij een nieuwe afspraak geven? Volgende week donderdag komt het mij goed uit.', ok: true, why: '' },
-          { text: 'Kun je me even bellen?', ok: false, why: 'Hier staat "je"; in een formeel bericht gebruik je u.' },
-          { text: 'Ik hoop dat het goed met u gaat.', ok: false, why: 'Dit is geen verzoek, de vraag om een nieuwe afspraak ontbreekt dan.' },
+          { text: 'Kun je me even bellen?', ok: false, why: 'This uses "je"; in a formal message you use u.' },
+          { text: 'Ik hoop dat het goed met u gaat.', ok: false, why: 'This is not a request, so the question about a new appointment is missing.' },
         ],
       },
       {
@@ -109,8 +109,8 @@ export const situations: Situation[] = [
         gloss: 'closing',
         options: [
           { text: 'Met vriendelijke groet,\nAnish Nalabanda', ok: true, why: '' },
-          { text: 'Tot snel!', ok: false, why: 'Te informeel, en je weet nog niet wanneer je komt.' },
-          { text: 'Groetjes,\nAnish', ok: false, why: 'Te informeel voor een praktijk.' },
+          { text: 'Tot snel!', ok: false, why: 'Too informal, and you do not know yet when you are coming.' },
+          { text: 'Groetjes,\nAnish', ok: false, why: 'Too informal for a practice.' },
         ],
       },
     ],
@@ -127,8 +127,8 @@ export const situations: Situation[] = [
         gloss: 'opening',
         options: [
           { text: 'Hoi Anna,', ok: true, why: '' },
-          { text: 'Geachte mevrouw,', ok: false, why: 'Te formeel voor een buurvrouw die je goed kent.' },
-          { text: 'Aan de bewoner van nummer 14,', ok: false, why: 'Dat is een adressering, geen aanhef voor een buurvrouw.' },
+          { text: 'Geachte mevrouw,', ok: false, why: 'Too formal for a neighbour you know well.' },
+          { text: 'Aan de bewoner van nummer 14,', ok: false, why: 'That is an address line, not an opening for a neighbour.' },
         ],
       },
       {
@@ -136,8 +136,8 @@ export const situations: Situation[] = [
         gloss: 'reason',
         options: [
           { text: 'Heel erg bedankt dat je vorige week op de planten hebt gepast.', ok: true, why: '' },
-          { text: 'Hierbij bevestig ik de ontvangst van uw diensten.', ok: false, why: 'Veel te formeel en onnatuurlijk voor een buurvrouw.' },
-          { text: 'Kun je volgende week weer op de planten passen?', ok: false, why: 'Dat is een nieuw verzoek, geen bedankje.' },
+          { text: 'Hierbij bevestig ik de ontvangst van uw diensten.', ok: false, why: 'Far too formal and unnatural for a neighbour.' },
+          { text: 'Kun je volgende week weer op de planten passen?', ok: false, why: 'That is a new request, not a thank-you.' },
         ],
       },
       {
@@ -145,8 +145,8 @@ export const situations: Situation[] = [
         gloss: 'offer',
         options: [
           { text: 'Als jij een keer weg bent, doe ik het graag voor jou.', ok: true, why: '' },
-          { text: 'Als u een keer weg bent, doe ik het graag voor u.', ok: false, why: 'Hier staat "u" terwijl de rest informeel is; houd één register vol.' },
-          { text: 'Ik verwacht uw antwoord binnen veertien dagen.', ok: false, why: 'Dit hoort in een zakelijke brief, niet in een bedankje.' },
+          { text: 'Als u een keer weg bent, doe ik het graag voor u.', ok: false, why: 'This uses "u" while the rest is informal; keep one register throughout.' },
+          { text: 'Ik verwacht uw antwoord binnen veertien dagen.', ok: false, why: 'This belongs in a business letter, not in a thank-you.' },
         ],
       },
       {
@@ -154,8 +154,8 @@ export const situations: Situation[] = [
         gloss: 'closing',
         options: [
           { text: 'Groetjes,\nAnish', ok: true, why: '' },
-          { text: 'Hoogachtend,\nA. Nalabanda', ok: false, why: 'Veel te formeel voor je buurvrouw.' },
-          { text: 'Met vriendelijke groet,\nAnish Nalabanda', ok: false, why: 'Netjes, maar te zakelijk naast een informele aanhef als "Hoi Anna".' },
+          { text: 'Hoogachtend,\nA. Nalabanda', ok: false, why: 'Far too formal for your neighbour.' },
+          { text: 'Met vriendelijke groet,\nAnish Nalabanda', ok: false, why: 'Polite, but too businesslike next to an informal opening like "Hoi Anna".' },
         ],
       },
     ],
@@ -172,8 +172,8 @@ export const situations: Situation[] = [
         gloss: 'opening',
         options: [
           { text: 'Hoi Sam,', ok: true, why: '' },
-          { text: 'Geachte heer,', ok: false, why: 'Veel te formeel voor een vriend.' },
-          { text: 'Beste meneer Sam,', ok: false, why: '"Meneer" gebruik je niet bij een vriend.' },
+          { text: 'Geachte heer,', ok: false, why: 'Far too formal for a friend.' },
+          { text: 'Beste meneer Sam,', ok: false, why: 'You do not use "Meneer" with a friend.' },
         ],
       },
       {
@@ -181,8 +181,8 @@ export const situations: Situation[] = [
         gloss: 'reason',
         options: [
           { text: 'Ik ben zaterdag jarig en ik geef een klein feestje.', ok: true, why: '' },
-          { text: 'Hierbij nodig ik u uit voor een bijeenkomst.', ok: false, why: 'Dit is zakelijke taal; bij een vriend schrijf je gewoon.' },
-          { text: 'Ik kan zaterdag helaas niet komen.', ok: false, why: 'Dat is een afzegging, geen uitnodiging.' },
+          { text: 'Hierbij nodig ik u uit voor een bijeenkomst.', ok: false, why: 'This is business language; to a friend you write plainly.' },
+          { text: 'Ik kan zaterdag helaas niet komen.', ok: false, why: 'That is a cancellation, not an invitation.' },
         ],
       },
       {
@@ -190,8 +190,8 @@ export const situations: Situation[] = [
         gloss: 'the details',
         options: [
           { text: 'Kom je ook? Het begint om 20.00 uur bij mij thuis.', ok: true, why: '' },
-          { text: 'Komt u ook? Het begint om 20.00 uur.', ok: false, why: 'Hier staat "u" in een informeel bericht aan een vriend.' },
-          { text: 'Het feest is ergens in het weekend.', ok: false, why: 'Te vaag: tijd en plaats moeten erin staan.' },
+          { text: 'Komt u ook? Het begint om 20.00 uur.', ok: false, why: 'This uses "u" in an informal message to a friend.' },
+          { text: 'Het feest is ergens in het weekend.', ok: false, why: 'Too vague: the time and the place have to be in there.' },
         ],
       },
       {
@@ -199,8 +199,8 @@ export const situations: Situation[] = [
         gloss: 'closing',
         options: [
           { text: 'Laat je even weten of je komt?\n\nGroetjes,\nAnish', ok: true, why: '' },
-          { text: 'Ik zie uw reactie graag tegemoet.\n\nHoogachtend,\nA. Nalabanda', ok: false, why: 'Zakelijke taal in een bericht aan een vriend.' },
-          { text: 'Groetjes,\nAnish', ok: false, why: 'De afsluiting is goed, maar de gevraagde reactie ontbreekt.' },
+          { text: 'Ik zie uw reactie graag tegemoet.\n\nHoogachtend,\nA. Nalabanda', ok: false, why: 'Business language in a message to a friend.' },
+          { text: 'Groetjes,\nAnish', ok: false, why: 'The closing is fine, but the brief asked you to request a reply.' },
         ],
       },
     ],
@@ -217,8 +217,8 @@ export const situations: Situation[] = [
         gloss: 'opening',
         options: [
           { text: 'Geachte heer/mevrouw,', ok: true, why: '' },
-          { text: 'Hallo,', ok: false, why: 'Te informeel voor je verhuurder.' },
-          { text: 'Beste buren,', ok: false, why: 'Verkeerde ontvanger.' },
+          { text: 'Hallo,', ok: false, why: 'Too informal for your landlord.' },
+          { text: 'Beste buren,', ok: false, why: 'Wrong recipient.' },
         ],
       },
       {
@@ -226,8 +226,8 @@ export const situations: Situation[] = [
         gloss: 'reason',
         options: [
           { text: 'De verwarming in mijn woning is kapot. Het is sinds maandag koud in huis.', ok: true, why: '' },
-          { text: 'Er is iets aan de hand met het huis.', ok: false, why: 'Te vaag: zeg precies wat er kapot is.' },
-          { text: 'Ik wil de huur opzeggen.', ok: false, why: 'Dat is een heel ander bericht.' },
+          { text: 'Er is iets aan de hand met het huis.', ok: false, why: 'Too vague: say exactly what is broken.' },
+          { text: 'Ik wil de huur opzeggen.', ok: false, why: 'That is an entirely different message.' },
         ],
       },
       {
@@ -235,8 +235,8 @@ export const situations: Situation[] = [
         gloss: 'request',
         options: [
           { text: 'Kunt u een monteur sturen? Ik ben op werkdagen na 17.00 uur thuis.', ok: true, why: '' },
-          { text: 'Stuur snel iemand.', ok: false, why: 'Te kort en onbeleefd voor een formeel bericht.' },
-          { text: 'Kun je even langskomen?', ok: false, why: 'Hier staat "je"; bij je verhuurder gebruik je u.' },
+          { text: 'Stuur snel iemand.', ok: false, why: 'Too short and impolite for a formal message.' },
+          { text: 'Kun je even langskomen?', ok: false, why: 'This uses "je"; with your landlord you use u.' },
         ],
       },
       {
@@ -244,8 +244,8 @@ export const situations: Situation[] = [
         gloss: 'closing',
         options: [
           { text: 'Met vriendelijke groet,\nAnish Nalabanda\nKerkstraat 12, Utrecht', ok: true, why: '' },
-          { text: 'Groetjes,\nAnish', ok: false, why: 'Te informeel, en je adres ontbreekt bij een klacht over je woning.' },
-          { text: 'Bedankt alvast!', ok: false, why: 'Vriendelijk, maar een afsluiting met je naam ontbreekt.' },
+          { text: 'Groetjes,\nAnish', ok: false, why: 'Too informal, and a complaint about your home needs your address.' },
+          { text: 'Bedankt alvast!', ok: false, why: 'Friendly, but a closing with your name is missing.' },
         ],
       },
     ],

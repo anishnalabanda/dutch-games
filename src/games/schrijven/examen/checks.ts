@@ -50,42 +50,42 @@ export function runChecks(task: WritingTask, text: string): CheckResult[] {
   )
   results.push({
     id: 'punten',
-    label: 'Punten uit de opdracht',
+    label: 'Points from the brief',
     status: missing.length === 0 ? 'ok' : 'fail',
     detail:
       missing.length === 0
-        ? `Van alle ${task.points.length} punten staat er een woord in je tekst. Dit is alleen een woordcheck: lees zelf na of je het punt ook echt uitlegt.`
-        : `Hier vond ik geen woorden van: ${missing.map((p) => `"${p.label}"`).join(', ')}.`,
+        ? `For all ${task.points.length} points there is a matching word in your text. This is only a word check: read it back yourself to see whether you really cover the point.`
+        : `I found no words for these: ${missing.map((p) => `"${p.label}"`).join(', ')}.`,
   })
 
   // 2. Length.
   results.push({
     id: 'lengte',
-    label: 'Lengte',
+    label: 'Length',
     status: sents.length >= task.minSentences ? 'ok' : 'warn',
-    detail: `${sents.length} ${sents.length === 1 ? 'zin' : 'zinnen'}, ${wordCount} woorden. Voor deze opdracht zijn minstens ${task.minSentences} zinnen een goede maat.`,
+    detail: `${sents.length} ${sents.length === 1 ? 'sentence' : 'sentences'}, ${wordCount} words. For this task at least ${task.minSentences} sentences is a good size.`,
   })
 
   // 3. Opening.
   const hasOpening = lines.length > 0 && OPENINGS.test(lines[0])
   results.push({
     id: 'aanhef',
-    label: 'Aanhef',
+    label: 'Opening',
     status: hasOpening ? 'ok' : 'fail',
     detail: hasOpening
-      ? `Je begint met "${lines[0]}".`
-      : 'Ik vind geen aanhef op de eerste regel. Begin met Geachte heer/mevrouw, Beste ... of Hoi ...',
+      ? `You start with "${lines[0]}".`
+      : 'I cannot find an opening on the first line. Start with Geachte heer/mevrouw, Beste ... or Hoi ...',
   })
 
   // 4. Closing.
   const hasClosing = CLOSINGS.test(trimmed)
   results.push({
     id: 'afsluiting',
-    label: 'Afsluiting',
+    label: 'Closing',
     status: hasClosing ? 'ok' : 'fail',
     detail: hasClosing
-      ? 'Er staat een afsluiting onder je bericht.'
-      : 'Ik vind geen afsluiting. Zet er "Met vriendelijke groet" of "Groetjes" onder, met je naam.',
+      ? 'There is a closing under your message.'
+      : 'I cannot find a closing. Put "Met vriendelijke groet" or "Groetjes" underneath, with your name.',
   })
 
   // 5. Register, and consistency within the message.
@@ -98,8 +98,8 @@ export function runChecks(task: WritingTask, text: string): CheckResult[] {
       status: informalHits.length === 0 ? 'ok' : 'fail',
       detail:
         informalHits.length === 0
-          ? 'Geen informele woorden gevonden, dat past bij deze ontvanger.'
-          : `Deze opdracht is formeel, maar ik zie ${informalHits.length}x een informeel woord: ${[...new Set(informalHits.map((h) => h.toLowerCase()))].join(', ')}. Gebruik u en uw.`,
+          ? 'No informal words found, which fits this recipient.'
+          : `This task is formal, but I see an informal word ${informalHits.length}x: ${[...new Set(informalHits.map((h) => h.toLowerCase()))].join(', ')}. Use u and uw.`,
     })
   } else {
     results.push({
@@ -108,8 +108,8 @@ export function runChecks(task: WritingTask, text: string): CheckResult[] {
       status: formalHits.length === 0 ? 'ok' : 'fail',
       detail:
         formalHits.length === 0
-          ? 'Geen formele woorden gevonden, dat past bij deze ontvanger.'
-          : `Deze opdracht is informeel, maar ik zie ${formalHits.length}x "u" of "uw". Gebruik je, jij en jouw.`,
+          ? 'No formal words found, which fits this recipient.'
+          : `This task is informal, but I see "u" or "uw" ${formalHits.length}x. Use je, jij and jouw.`,
     })
   }
 
@@ -123,20 +123,20 @@ export function runChecks(task: WritingTask, text: string): CheckResult[] {
     status: dtProblems.length === 0 ? 'ok' : 'fail',
     detail:
       dtProblems.length === 0
-        ? 'Geen bekende -dt-fouten gevonden. Let op: ik ken alleen de meest voorkomende.'
-        : `Kijk hier nog eens naar: ${dtProblems.map((p) => `"${p.trim()}"`).join(', ')}. Bij hij/zij/u komt er -t bij de stam; bij ik niet.`,
+        ? 'No known -dt mistakes found. Careful: I only know the most common ones.'
+        : `Have another look at these: ${dtProblems.map((p) => `"${p.trim()}"`).join(', ')}. With hij/zij/u a -t is added to the stem; with ik it is not.`,
   })
 
   // 7. Capitals after a full stop.
   const lowercaseStarts = sents.filter((s) => /^[a-z]/.test(s))
   results.push({
     id: 'hoofdletters',
-    label: 'Hoofdletters',
+    label: 'Capital letters',
     status: lowercaseStarts.length === 0 ? 'ok' : 'warn',
     detail:
       lowercaseStarts.length === 0
-        ? 'Elke zin begint met een hoofdletter.'
-        : `${lowercaseStarts.length} ${lowercaseStarts.length === 1 ? 'zin begint' : 'zinnen beginnen'} met een kleine letter, bijvoorbeeld "${lowercaseStarts[0].slice(0, 30)}...".`,
+        ? 'Every sentence starts with a capital letter.'
+        : `${lowercaseStarts.length} ${lowercaseStarts.length === 1 ? 'sentence starts' : 'sentences start'} with a lower-case letter, for example "${lowercaseStarts[0].slice(0, 30)}...".`,
   })
 
   // 8. Inversion after a fronted time word: only flagged when the very next
@@ -149,24 +149,24 @@ export function runChecks(task: WritingTask, text: string): CheckResult[] {
   })
   results.push({
     id: 'inversie',
-    label: 'Inversie',
+    label: 'Inversion',
     status: inversionMisses.length === 0 ? 'ok' : 'warn',
     detail:
       inversionMisses.length === 0
-        ? 'Geen zinnen gevonden waar de inversie ontbreekt.'
-        : `Begint een zin met een tijdwoord, dan komt eerst het werkwoord en daarna pas het onderwerp: "Morgen bel ik u", niet "Morgen ik bel u". Kijk naar: "${inversionMisses[0].slice(0, 40)}...".`,
+        ? 'No sentences found where the inversion is missing.'
+        : `When a sentence starts with a time word, the verb comes first and the subject after it: "Morgen bel ik u", not "Morgen ik bel u". Look at: "${inversionMisses[0].slice(0, 40)}...".`,
   })
 
   return results
 }
 
 export const PAPER_NOTE =
-  'Het echte A2-examen Schrijven doe je met de hand op papier, in 40 minuten voor vier opdrachten. Oefen daarom bij voorkeur met pen en papier: de app geeft je de opdracht en de klok, en daarna het modelantwoord en de criteria om je eigen blad mee na te kijken.'
+  'The real A2 writing exam is handwritten on paper: 40 minutes for four tasks. So practise with pen and paper where you can. The app gives you the task and the clock, and then the model answer and the criteria to mark your own sheet against.'
 
 export const HONESTY_NOTE =
-  'Deze app draait zonder server en zonder taalmodel: dit zijn mechanische checks. Ze zien of er wóórden staan, niet of je Nederlands klopt. Een groen vinkje is dus geen cijfer. Vergelijk je tekst met het model en loop daarna de checklist zelf na, dat is hier het echte nakijkwerk.'
+  'This app runs without a server and without a language model, so these are mechanical checks. They see whether words are there, not whether your Dutch is right. A green tick is not a grade. Compare your text with the model, then walk the checklist yourself: that is the real marking here.'
 
-// --- Level 1: zinnen afmaken -------------------------------------------------
+// --- Level 1: finishing sentences --------------------------------------------
 
 /**
  * Checks a sentence completion against the one rule its stem is drilling. It
@@ -187,13 +187,13 @@ export function checkCompletion(rule: StemRule, text: string): CheckResult[] {
     const known = lastEntry !== null
     results.push({
       id: 'werkwoord-eind',
-      label: 'Werkwoord aan het eind',
+      label: 'Verb at the end',
       status: !known ? 'warn' : lastEntry.verb ? 'ok' : 'fail',
       detail: !known
-        ? `Ik ken "${tokens[tokens.length - 1]}" niet, dus ik kan niet zien of het een werkwoord is. Controleer zelf of de persoonsvorm achteraan staat.`
+        ? `I do not know "${tokens[tokens.length - 1]}", so I cannot tell whether it is a verb. Check yourself that the finite verb is last.`
         : lastEntry.verb
-          ? `Goed: je zin eindigt op "${tokens[tokens.length - 1]}".`
-          : `Je zin eindigt op "${tokens[tokens.length - 1]}", en dat is geen werkwoord. Na omdat, dat, of en als hoort de persoonsvorm achteraan.`,
+          ? `Good: your sentence ends in "${tokens[tokens.length - 1]}".`
+          : `Your sentence ends in "${tokens[tokens.length - 1]}", which is not a verb. After omdat, dat, of and als the finite verb goes last.`,
     })
   }
 
@@ -201,13 +201,13 @@ export function checkCompletion(rule: StemRule, text: string): CheckResult[] {
     const known = firstEntry !== null
     results.push({
       id: 'inversie-start',
-      label: 'Werkwoord vooraan',
+      label: 'Verb at the front',
       status: !known ? 'warn' : firstEntry.verb ? 'ok' : 'fail',
       detail: !known
-        ? `Ik ken "${tokens[0]}" niet, dus ik kan niet zien of het een werkwoord is. Controleer zelf of de persoonsvorm vóór het onderwerp staat.`
+        ? `I do not know "${tokens[0]}", so I cannot tell whether it is a verb. Check yourself that the finite verb comes before the subject.`
         : firstEntry.verb
-          ? `Goed: je begint met "${tokens[0]}".`
-          : `Je begint met "${tokens[0]}". Na een bepaling vooraan komt eerst de persoonsvorm: "Morgen bel ik u".`,
+          ? `Good: you start with "${tokens[0]}".`
+          : `You start with "${tokens[0]}". After a phrase at the front the finite verb comes first: "Morgen bel ik u".`,
     })
   }
 
@@ -219,22 +219,22 @@ export function checkCompletion(rule: StemRule, text: string): CheckResult[] {
     const verbAt = opening.findIndex((token) => lookupWord(token)?.verb)
     results.push({
       id: 'tweede-plaats',
-      label: 'Persoonsvorm vooraan',
+      label: 'Finite verb near the front',
       status: verbAt === -1 ? 'warn' : 'ok',
       detail:
         verbAt === -1
-          ? 'Ik vind vooraan geen werkwoord. Na want staat de persoonsvorm vlak achter het onderwerp: "want ik ben ziek". Ik herken alleen veelgebruikte werkwoorden, dus kijk zelf ook.'
-          : `Goed: "${opening[verbAt]}" staat vooraan, vlak achter het onderwerp.`,
+          ? 'I cannot find a verb near the front. After want the finite verb sits right behind the subject: "want ik ben ziek". I only recognise common verbs, so check for yourself too.'
+          : `Good: "${opening[verbAt]}" is near the front, right behind the subject.`,
     })
   }
 
   results.push({
     id: 'leesteken',
-    label: 'Leesteken',
+    label: 'Punctuation',
     status: /[.?!]$/.test(trimmed) ? 'ok' : 'warn',
     detail: /[.?!]$/.test(trimmed)
-      ? 'Je zin eindigt met een leesteken.'
-      : 'Zet een punt (of vraagteken) aan het eind van de zin.',
+      ? 'Your sentence ends with a punctuation mark.'
+      : 'Put a full stop (or a question mark) at the end of the sentence.',
   })
 
   return results

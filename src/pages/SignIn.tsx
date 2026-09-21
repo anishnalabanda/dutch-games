@@ -21,21 +21,21 @@ export function SignIn() {
     <div className="signin">
       <div className="signin-card">
         <h1>Inburgering A2</h1>
-        <p className="signin-lead">Vul je e-mailadres in om te beginnen.</p>
+        <p className="signin-lead">Enter your email address to start.</p>
         <p className="signin-note">
-          Geen wachtwoord, geen e-mail om te openen. Je voortgang hoort bij dit adres, dus vul
-          hetzelfde adres in op je telefoon en je laptop.
+          No password, no email to open. Your progress belongs to this address, so enter the same
+          address on your phone and on your laptop.
         </p>
         <form className="signin-form" onSubmit={handleSubmit}>
           <input
             type="email"
             required
             autoFocus
-            placeholder="jij@email.com"
+            placeholder="you@email.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
-          <Button type="submit">Beginnen</Button>
+          <Button type="submit">Start</Button>
         </form>
       </div>
     </div>

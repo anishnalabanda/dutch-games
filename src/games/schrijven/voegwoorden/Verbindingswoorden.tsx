@@ -122,9 +122,9 @@ export function Verbindingswoorden() {
         <div className="g-done">
           <FeedbackBox
             correct
-            message={`Klaar! Alle ${items.length} zinnen zijn goed verbonden. Beste streak: ${state.bestStreak}.`}
+            message={`Done. All ${items.length} sentences are joined correctly. Best streak: ${state.bestStreak}.`}
           />
-          <Button onClick={restart}>Opnieuw oefenen</Button>
+          <Button onClick={restart}>Practise again</Button>
         </div>
       </Shell>
     )
@@ -139,7 +139,7 @@ export function Verbindingswoorden() {
     if (correct) {
       message = `${CONNECTOR_MEANINGS[current.connector]}. ${needsMove ? ORDER_RULES.sub : ORDER_RULES.main}`
     } else if (!connectorOk) {
-      message = `Hier past "${current.connector}": ${CONNECTOR_MEANINGS[current.connector]}.`
+      message = `This sentence needs "${current.connector}": ${CONNECTOR_MEANINGS[current.connector]}.`
     } else {
       message = needsMove ? ORDER_RULES.sub : ORDER_RULES.main
     }
@@ -152,7 +152,7 @@ export function Verbindingswoorden() {
       progress={{ value: state.completedIds.length, max: items.length }}
     >
       <div className="g-row">
-        <Tag>{pick === null ? 'Kies het voegwoord' : 'Zet de volgorde goed'}</Tag>
+        <Tag>{pick === null ? 'Choose the connector' : 'Get the word order right'}</Tag>
         <StreakBadge label="Streak" value={state.streak} />
       </div>
 
@@ -176,7 +176,7 @@ export function Verbindingswoorden() {
       </div>
 
       <div>
-        <span className="g-label">1 &middot; Welk voegwoord?</span>
+        <span className="g-label">1 &middot; Which connector?</span>
         <div className="g-chips">
           {current.options.map((option) => (
             <button
@@ -193,21 +193,21 @@ export function Verbindingswoorden() {
       </div>
 
       <div>
-        <span className="g-label">2 &middot; Wat gebeurt er met de persoonsvorm?</span>
+        <span className="g-label">2 &middot; What happens to the finite verb?</span>
         <div className="g-chips">
           <button
             className={`g-chip ${order === 'same' ? 'g-chip-selected' : ''}`}
             disabled={pick === null || order !== null}
             onClick={() => decideOrder('same')}
           >
-            Volgorde blijft hetzelfde
+            Order stays the same
           </button>
           <button
             className={`g-chip ${order === 'end' ? 'g-chip-selected' : ''}`}
             disabled={pick === null || order !== null}
             onClick={() => decideOrder('end')}
           >
-            Werkwoord naar het eind
+            Verb moves to the end
           </button>
         </div>
       </div>
@@ -217,7 +217,7 @@ export function Verbindingswoorden() {
           <FeedbackBox correct={correct} message={message} />
           {!correct && (
             <p className="g-answer-key">
-              Juiste zin:{' '}
+              Right sentence:{' '}
               <strong>
                 {current.clause1} {current.connector}{' '}
                 {(SUBORDINATING.includes(current.connector) ? verbToEnd(current) : current.clause2).join(
@@ -231,8 +231,8 @@ export function Verbindingswoorden() {
       )}
 
       <div className="g-actions">
-        {order !== null && correct && <Button onClick={advance}>Volgende</Button>}
-        {order !== null && !correct && <Button onClick={retry}>Probeer opnieuw</Button>}
+        {order !== null && correct && <Button onClick={advance}>Next</Button>}
+        {order !== null && !correct && <Button onClick={retry}>Try again</Button>}
       </div>
     </Shell>
   )

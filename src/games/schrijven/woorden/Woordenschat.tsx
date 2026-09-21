@@ -114,9 +114,9 @@ export function Woordenschat() {
         <div className="g-done">
           <FeedbackBox
             correct
-            message={`Klaar! Je hebt alle ${items.length} woorden actief opgeschreven. Beste streak: ${state.bestStreak}.`}
+            message={`Done. You wrote out all ${items.length} words yourself. Best streak: ${state.bestStreak}.`}
           />
-          <Button onClick={restart}>Opnieuw oefenen</Button>
+          <Button onClick={restart}>Practise again</Button>
         </div>
       </Shell>
     )
@@ -138,9 +138,9 @@ export function Woordenschat() {
 
       {/* Departure board row: the English rolls in, the Dutch has to be typed. */}
       <div className={`ws-row ${verdict ? 'ws-row-flipped' : ''}`}>
-        <span className="ws-row-label">Engels</span>
+        <span className="ws-row-label">English</span>
         <span className="ws-row-en">{current.en}</span>
-        <span className="ws-row-label">Nederlands</span>
+        <span className="ws-row-label">Dutch</span>
         {verdict ? (
           <span className={`ws-row-nl ${solved ? 'ws-row-nl-ok' : 'ws-row-nl-alert'}`}>
             {current.nl}
@@ -152,8 +152,8 @@ export function Woordenschat() {
             autoFocus
             autoComplete="off"
             spellCheck={false}
-            aria-label="Typ het Nederlandse woord"
-            placeholder="typ het Nederlandse woord"
+            aria-label="Type the Dutch word"
+            placeholder="type the Dutch word"
             onChange={(e) => setTyped(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === 'Enter') check()
@@ -165,19 +165,19 @@ export function Woordenschat() {
       <div className="ws-clock" aria-hidden="true">
         <div className="ws-clock-bar" style={{ width: `${verdict ? 0 : pct}%` }} />
       </div>
-      <p className="g-hint">{verdict ? 'Rij geflipt.' : `Nog ${left} seconden.`}</p>
+      <p className="g-hint">{verdict ? 'Row flipped.' : `${left} seconds left.`}</p>
 
       {verdict && (
         <FeedbackBox
           correct={verdict === 'goed'}
           message={
             verdict === 'goed'
-              ? 'Goed geschreven, met het juiste lidwoord.'
+              ? 'Spelled right, with the correct article.'
               : verdict === 'lidwoord'
-                ? `Het woord klopt. Schrijf het lidwoord er wel bij: "${current.nl}", de/het telt mee in het examen.`
+                ? `The word is right. Write the article with it: "${current.nl}". De and het are marked in the exam.`
                 : verdict === 'tijd'
-                  ? `De tijd was op. Het woord is "${current.nl}".`
-                  : `Nog niet. Het woord is "${current.nl}".`
+                  ? `Time was up. The word is "${current.nl}".`
+                  : `Not yet. The word is "${current.nl}".`
           }
         />
       )}
@@ -185,11 +185,13 @@ export function Woordenschat() {
       <div className="g-actions">
         {!verdict && (
           <Button onClick={check} disabled={typed.trim() === ''}>
-            Controleer
+            Check
           </Button>
         )}
-        {solved && <Button onClick={advance}>Volgende</Button>}
-        {(verdict === 'fout' || verdict === 'tijd') && <Button onClick={retry}>Nog een keer</Button>}
+        {solved && <Button onClick={advance}>Next</Button>}
+        {(verdict === 'fout' || verdict === 'tijd') && (
+          <Button onClick={retry}>Once more</Button>
+        )}
       </div>
     </Shell>
   )

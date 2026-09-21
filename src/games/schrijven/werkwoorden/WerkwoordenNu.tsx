@@ -6,13 +6,70 @@ import { FeedbackBox } from '../../../components/FeedbackBox'
 import { StreakBadge } from '../../../components/StreakBadge'
 import { Tag } from '../../../components/Tag'
 import { useDrill } from '../../useDrill'
-import { items, RULE_EXPLANATIONS, RULE_LABELS, type VerbItem } from './data'
+import {
+  CONJUGATIONS,
+  FORM_ROWS,
+  items,
+  RULE_EXPLANATIONS,
+  RULE_LABELS,
+  type FormKey,
+  type VerbItem,
+} from './data'
 import './WerkwoordenNu.css'
 
 const STORE_KEY = 'nl.schrijven.werkwoorden'
 
 function isCorrect(item: VerbItem, choice: string): boolean {
   return choice === item.answer || (item.accept ?? []).includes(choice)
+}
+
+/**
+ * Which row of the table this sentence was actually asking for. An inversion
+ * item spells its answer exactly like the ik-form (werk jij? / ik werk), so the
+ * rule decides, not the spelling.
+ */
+function isHere(item: VerbItem, key: FormKey | 'vraag', form: string): boolean {
+  if (item.rule === 'inversie-jij') return key === 'vraag'
+  return key !== 'vraag' && form.toLowerCase() === item.answer.toLowerCase()
+}
+
+/**
+ * The whole present tense of this verb, shown once the answer is right: the
+ * item asks for one form, and seeing the other five is what turns it into a
+ * rule instead of a fact.
+ */
+function FormTable({ item }: { item: VerbItem }) {
+  const conj = CONJUGATIONS[item.infinitive]
+  if (!conj) return null
+  return (
+    <div className="wn-forms">
+      <p className="wn-forms-title">
+        Every present-tense form of <strong>{item.infinitive}</strong> ({item.gloss})
+      </p>
+      <p className="wn-forms-legend">The form this sentence needed is marked.</p>
+      <dl className="wn-forms-grid">
+        {FORM_ROWS.map((row) => (
+          <div
+            key={row.key}
+            className={`wn-forms-row ${isHere(item, row.key, conj[row.key]) ? 'wn-forms-row-here' : ''}`}
+          >
+            <dt>
+              <span className="wn-forms-pronoun">{row.pronoun}</span>{' '}
+              <strong className="wn-forms-form">{conj[row.key]}</strong>
+            </dt>
+            <dd>{row.role}</dd>
+          </div>
+        ))}
+        <div className={`wn-forms-row ${isHere(item, 'vraag', conj.vraag) ? 'wn-forms-row-here' : ''}`}>
+          <dt>
+            <strong className="wn-forms-form">{conj.vraag}</strong>
+          </dt>
+          <dd>question with the verb first, so the -t drops</dd>
+        </div>
+      </dl>
+      <p className="wn-forms-note">{conj.note}</p>
+    </div>
+  )
 }
 
 export function WerkwoordenNu() {
@@ -57,9 +114,9 @@ export function WerkwoordenNu() {
         <div className="g-done">
           <FeedbackBox
             correct
-            message={`Klaar! Alle ${items.length} werkwoorden had je in één keer goed. Beste streak: ${drill.state.bestStreak}.`}
+            message={`Done. You got all ${items.length} verbs right first time. Best streak: ${drill.state.bestStreak}.`}
           />
-          <Button onClick={drill.restart}>Opnieuw oefenen</Button>
+          <Button onClick={drill.restart}>Practise again</Button>
         </div>
       </Shell>
     )
@@ -88,7 +145,7 @@ export function WerkwoordenNu() {
       </p>
 
       <p className="g-hint">
-        Hele werkwoord: <strong>{current.infinitive}</strong>{' '}
+        Infinitive: <strong>{current.infinitive}</strong>{' '}
         <span className="wn-gloss">({current.gloss})</span>
       </p>
 
@@ -97,14 +154,14 @@ export function WerkwoordenNu() {
           className="wn-dial-step"
           onClick={() => move(-1)}
           disabled={locked}
-          aria-label="Vorige vorm"
+          aria-label="Previous form"
         >
           &#9650;
         </button>
         <div
           className="wn-drum"
           role="radiogroup"
-          aria-label="Kies de juiste vorm"
+          aria-label="Choose the right form"
           onKeyDown={(e) => {
             if (e.key === 'ArrowUp') {
               e.preventDefault()
@@ -133,7 +190,7 @@ export function WerkwoordenNu() {
           className="wn-dial-step"
           onClick={() => move(1)}
           disabled={locked}
-          aria-label="Volgende vorm"
+          aria-label="Next form"
         >
           &#9660;
         </button>
@@ -146,21 +203,22 @@ export function WerkwoordenNu() {
             message={
               correct
                 ? RULE_EXPLANATIONS[current.rule]
-                : `${RULE_EXPLANATIONS[current.rule]} Hier moet het "${current.answer}" zijn.`
+                : `${RULE_EXPLANATIONS[current.rule]} Here it has to be "${current.answer}".`
             }
           />
+          {correct && <FormTable item={current} />}
           {!correct && current.accept && current.accept.length > 0 && (
             <p className="g-answer-key">
-              Ook goed: <strong>{current.accept.join(', ')}</strong>
+              Also correct: <strong>{current.accept.join(', ')}</strong>
             </p>
           )}
         </>
       )}
 
       <div className="g-actions">
-        {!locked && <Button onClick={lockIn}>Vastzetten</Button>}
-        {locked && correct && <Button onClick={drill.advance}>Volgende</Button>}
-        {locked && !correct && <Button onClick={retry}>Probeer opnieuw</Button>}
+        {!locked && <Button onClick={lockIn}>Lock in</Button>}
+        {locked && correct && <Button onClick={drill.advance}>Next</Button>}
+        {locked && !correct && <Button onClick={retry}>Try again</Button>}
       </div>
     </Shell>
   )

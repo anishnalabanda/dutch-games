@@ -120,9 +120,9 @@ export function UofJe() {
         <div className="g-done">
           <FeedbackBox
             correct
-            message={`Klaar! Alle ${messages.length} berichten staan in het juiste register.`}
+            message={`Done. All ${messages.length} messages are in the right register.`}
           />
-          <Button onClick={restart}>Opnieuw oefenen</Button>
+          <Button onClick={restart}>Practise again</Button>
         </div>
       </Shell>
     )
@@ -137,23 +137,23 @@ export function UofJe() {
       progress={{ value: state.completedIds.length, max: messages.length }}
     >
       <div className="g-row">
-        <Tag>{current.register === 'formeel' ? 'Formeel?' : 'Informeel?'}</Tag>
+        <Tag>{current.register === 'formeel' ? 'Formal?' : 'Informal?'}</Tag>
         <StreakBadge label="Streak" value={state.streak} />
       </div>
 
       <div className="uj-envelope">
         <div className="uj-envelope-row">
-          <span className="g-label">Aan</span>
+          <span className="g-label">To</span>
           <strong>{current.recipient}</strong>
         </div>
         <div className="uj-envelope-row">
-          <span className="g-label">Onderwerp</span>
+          <span className="g-label">Subject</span>
           <span>{current.subject}</span>
         </div>
       </div>
 
       <p className="g-hint">
-        Tik op de gemarkeerde woorden tot het hele bericht bij deze ontvanger past.
+        Tap the marked words until the whole message fits this recipient.
       </p>
 
       <div className="g-worksheet uj-message">
@@ -172,7 +172,7 @@ export function UofJe() {
               className={`uj-toggle ${wrong ? 'uj-toggle-alert' : ''} ${right ? 'uj-toggle-ok' : ''}`}
               onClick={() => toggleAt(index)}
               disabled={checked}
-              aria-label={`${part.label}: ${part[value]}, tik om te wisselen`}
+              aria-label={`${part.label}: ${part[value]}, tap to switch`}
             >
               {part[value]}
             </button>
@@ -185,16 +185,16 @@ export function UofJe() {
           correct={correct}
           message={
             correct
-              ? `Klopt: ${current.recipient} is ${current.relation}. ${REGISTER_RULES[current.register]}`
-              : `Nog ${wrongCount} ${wrongCount === 1 ? 'woord past' : 'woorden passen'} niet. ${current.recipient} is ${current.relation}. ${REGISTER_RULES[current.register]} ${CONSISTENCY_RULE}`
+              ? `Right: ${current.recipient} is ${current.relation}. ${REGISTER_RULES[current.register]}`
+              : `${wrongCount} ${wrongCount === 1 ? 'word does' : 'words do'} not fit yet. ${current.recipient} is ${current.relation}. ${REGISTER_RULES[current.register]} ${CONSISTENCY_RULE}`
           }
         />
       )}
 
       <div className="g-actions">
-        {!checked && <Button onClick={check}>Controleer</Button>}
-        {checked && correct && <Button onClick={advance}>Volgende</Button>}
-        {checked && !correct && <Button onClick={retry}>Pas aan</Button>}
+        {!checked && <Button onClick={check}>Check</Button>}
+        {checked && correct && <Button onClick={advance}>Next</Button>}
+        {checked && !correct && <Button onClick={retry}>Adjust</Button>}
       </div>
     </Shell>
   )

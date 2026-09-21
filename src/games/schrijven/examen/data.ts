@@ -19,12 +19,12 @@ export interface WritingTask {
 
 /** The DUO criteria, ticked by the writer: the part no local check can do. */
 export const RUBRIC = [
-  'Alle punten uit de opdracht staan er echt in, niet alleen een woord ervan.',
-  'De aanhef en de afsluiting passen bij deze ontvanger.',
-  'Ik gebruik overal u (of overal je), niet door elkaar.',
-  'In elke zin staat de persoonsvorm op de tweede plaats; na omdat/dat staat hij achteraan.',
-  'Werkwoorden, meervouden en lastige woorden zijn goed gespeld.',
-  'Elke zin begint met een hoofdletter en eindigt met een punt.',
+  'Every point from the brief is really covered, not just hinted at with one word.',
+  'The opening and the closing fit this recipient.',
+  'I use u everywhere (or je everywhere), never the two mixed.',
+  'In every sentence the finite verb is in second position; after omdat/dat it is last.',
+  'Verbs, plurals and tricky words are spelled correctly.',
+  'Every sentence starts with a capital letter and ends with a full stop.',
 ]
 
 export const tasks: WritingTask[] = [
@@ -114,76 +114,76 @@ export interface SentenceStem {
   models: string[]
 }
 
-/** Level 1: zinnen afmaken, the bridge from tile-assembly to free writing. */
+/** Level 1: finishing sentences, the bridge from tile-assembly to free writing. */
 export const stems: SentenceStem[] = [
   {
     id: 's1',
     stem: 'Ik kan vrijdag niet komen, omdat',
     rule: 'bijzin',
-    hint: 'Na omdat gaat de persoonsvorm naar het eind van de zin.',
+    hint: 'After omdat the finite verb moves to the end of the clause.',
     models: ['ik die dag moet werken.', 'ik een afspraak bij de dokter heb.'],
   },
   {
     id: 's2',
     stem: 'Ik schrijf u deze e-mail omdat',
     rule: 'bijzin',
-    hint: 'Na omdat staat het werkwoord achteraan.',
+    hint: 'After omdat the verb goes last.',
     models: ['ik een vraag over mijn contract heb.', 'de verwarming al een week kapot is.'],
   },
   {
     id: 's3',
     stem: 'Als het morgen regent,',
     rule: 'inversie',
-    hint: 'De zin begint met een bijzin, dus de hoofdzin begint met het werkwoord.',
+    hint: 'The sentence opens with a subordinate clause, so the main clause starts with the verb.',
     models: ['blijf ik thuis.', 'ga ik met de bus.'],
   },
   {
     id: 's4',
     stem: 'Ik ben vandaag niet op mijn werk, want',
     rule: 'hoofdzin',
-    hint: 'Na want blijft de volgorde gewoon: onderwerp, dan de persoonsvorm.',
+    hint: 'After want the order stays normal: subject, then the finite verb.',
     models: ['ik ben ziek.', 'mijn dochter heeft koorts.'],
   },
   {
     id: 's5',
     stem: 'Kunt u mij laten weten of',
     rule: 'bijzin',
-    hint: 'Na of gaat de persoonsvorm naar het eind.',
+    hint: 'After of the finite verb moves to the end.',
     models: ['de afspraak doorgaat?', 'ik nog papieren mee moet nemen?'],
   },
   {
     id: 's6',
     stem: 'Morgen',
     rule: 'inversie',
-    hint: 'De zin begint met een tijdsbepaling, dus eerst het werkwoord, dan het onderwerp.',
+    hint: 'The sentence opens with a time phrase, so the verb comes first and the subject after it.',
     models: ['ga ik naar de tandarts.', 'bel ik u weer.'],
   },
   {
     id: 's7',
     stem: 'Mijn dochter kan deze week niet naar school komen, omdat',
     rule: 'bijzin',
-    hint: 'Na omdat staat de persoonsvorm achteraan.',
+    hint: 'After omdat the finite verb goes last.',
     models: ['zij ziek is.', 'zij griep heeft.'],
   },
   {
     id: 's8',
     stem: 'Ik hoop dat',
     rule: 'bijzin',
-    hint: 'Na dat gaat het werkwoord naar het eind.',
+    hint: 'After dat the verb moves to the end.',
     models: ['u mij snel kunt helpen.', 'het probleem deze week opgelost is.'],
   },
   {
     id: 's9',
     stem: 'Na het werk',
     rule: 'inversie',
-    hint: 'Begin je met een bepaling, dan volgt eerst het werkwoord.',
+    hint: 'If you start with a phrase, the verb comes next.',
     models: ['haal ik de kinderen op.', 'doe ik de boodschappen.'],
   },
   {
     id: 's10',
     stem: 'Ik wil graag een nieuwe afspraak maken, want',
     rule: 'hoofdzin',
-    hint: 'Na want verandert de volgorde niet.',
+    hint: 'After want the word order does not change.',
     models: ['ik moet die dag werken.', 'ik ben dan op vakantie.'],
   },
 ]

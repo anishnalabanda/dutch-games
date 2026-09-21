@@ -26,28 +26,28 @@ export interface PerfectItem {
 export const KIND_LABELS: Record<ParticipleKind, string> = {
   'kofschip-t': "'t kofschip: -t",
   'kofschip-d': "'t kofschip: -d",
-  'stam-op-t': 'Stam op -t',
-  'geen-ge': 'Geen ge-',
-  onregelmatig: 'Onregelmatig',
-  scheidbaar: 'Scheidbaar werkwoord',
+  'stam-op-t': 'Stem ends in -t',
+  'geen-ge': 'No ge-',
+  onregelmatig: 'Irregular',
+  scheidbaar: 'Separable verb',
 }
 
 export const KIND_EXPLANATIONS: Record<ParticipleKind, string> = {
   'kofschip-t':
-    "De stam eindigt op een letter uit 't kofschip (t, k, f, s, ch, p). Het deelwoord krijgt dus ge- + stam + -t.",
+    "The stem ends in a letter from 't kofschip (t, k, f, s, ch, p), so the participle is ge- + stem + -t.",
   'kofschip-d':
-    "De stam eindigt niet op een letter uit 't kofschip. Het deelwoord krijgt dus ge- + stam + -d.",
-  'stam-op-t': 'De stam eindigt al op een -t. Er komt geen tweede -t bij.',
+    "The stem does not end in a letter from 't kofschip, so the participle is ge- + stem + -d.",
+  'stam-op-t': 'The stem already ends in -t, so no second -t is added.',
   'geen-ge':
-    'Werkwoorden die beginnen met be-, ge-, ver-, ont- of her- krijgen geen ge- in het voltooid deelwoord.',
-  onregelmatig: 'Dit deelwoord is onregelmatig. Deze vorm leer je uit je hoofd.',
+    'Verbs starting with be-, ge-, ver-, ont- or her- take no ge- in the past participle.',
+  onregelmatig: 'This participle is irregular, so the form has to be memorised.',
   scheidbaar:
-    'Bij een scheidbaar werkwoord komt ge- niet vooraan, maar in het midden: op + ge + beld = opgebeld. Het deelwoord blijft hier wél aan elkaar.',
+    'With a separable verb the ge- does not go at the front but in the middle: op + ge + beld = opgebeld. The participle is still written as one word.',
 }
 
 export const AUX_EXPLANATIONS: Record<AuxKind, string> = {
-  hebben: 'De meeste werkwoorden krijgen hebben.',
-  zijn: 'Werkwoorden van verandering of van beweging naar een plek krijgen zijn: gaan, komen, blijven, worden, zijn, beginnen, verhuizen, vertrekken, gebeuren.',
+  hebben: 'Most verbs take hebben.',
+  zijn: 'Verbs of change, or of movement to a place, take zijn: gaan, komen, blijven, worden, zijn, beginnen, verhuizen, vertrekken, gebeuren.',
 }
 
 /** Shown in the game as a reminder panel. */
