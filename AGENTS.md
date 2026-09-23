@@ -356,8 +356,12 @@ register (`u` vs `je`), spelling, punctuation.
      the frequent irregulars, **scheidbare deelwoorden waar `ge-` in het midden komt**
      (`opgebeld`, `meegenomen`), participle at the end of the sentence.
    - Mechanic: two-slot boarding pass, pick the hulpwerkwoord, then type the voltooid
-     deelwoord, with 't kofschip on screen as a reminder panel. Also covers separable
-     verbs (opbellen → opgebeld).
+     deelwoord. Also covers separable verbs (opbellen → opgebeld).
+   - A reference card stays on screen: the recipe (`ge + stem + t/d`) and both decisions
+     that fill it in, each written as the case on the left and what to do on the right
+     (`ENDING_RULES` and `GE_RULES` in its `data.ts`). It replaced a single sentence that
+     named the six letters without ever showing the decision.
+   - **Give up** reveals the answer and counts the item as missed, so it comes round again.
    - 33 items.
 4. `nl.schrijven.spelling`: **Spellingmachine**, core, *built*
    - Drills: open/closed syllables (`man`/`mannen`, `boom`/`bomen`), `-d`/`-t`/`-dt`

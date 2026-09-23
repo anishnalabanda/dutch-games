@@ -9,15 +9,36 @@ import { useDrill } from '../../useDrill'
 import { normalize } from '../../normalize'
 import {
   AUX_EXPLANATIONS,
+  ENDING_RULES,
+  ENDING_TRAP,
+  GE_RULES,
   items,
   KIND_EXPLANATIONS,
   KIND_LABELS,
   KOFSCHIP_LETTERS,
+  type CardRule,
   type PerfectItem,
 } from './data'
 import './GisterenGedaan.css'
 
 const STORE_KEY = 'nl.schrijven.voltooid'
+
+/** One "in this case → do this" line of the reference card. */
+function RuleRows({ rules }: { rules: CardRule[] }) {
+  return (
+    <dl className="vg-rules">
+      {rules.map((rule) => (
+        <div key={rule.when} className="vg-rule">
+          <dt>{rule.when}</dt>
+          <dd>
+            <strong>{rule.result}</strong>
+            <span className="vg-rule-example">{rule.example}</span>
+          </dd>
+        </div>
+      ))}
+    </dl>
+  )
+}
 
 /** Which half went wrong, so the feedback can name the actual mistake. */
 function grade(item: PerfectItem, aux: string | null, participle: string) {
@@ -183,19 +204,32 @@ export function GisterenGedaan() {
         />
       </div>
 
-      <div className="vg-kofschip" aria-label="'t kofschip: the letters that take -t">
-        <span className="g-label">&apos;t kofschip</span>
-        <div className="vg-kofschip-letters">
-          {KOFSCHIP_LETTERS.map((letter) => (
-            <span key={letter} className="vg-kofschip-letter">
-              {letter}
-            </span>
-          ))}
-        </div>
-        <p className="g-hint">
-          Does the stem end in one of these letters? Then -t. Otherwise -d. Irregular verbs do not
-          follow this rule.
+      {/* The reference card: both decisions that build a participle, each one
+          written as the case on the left and what to do on the right. */}
+      <div className="vg-card">
+        <p className="vg-recipe">
+          ge <span>+</span> stem <span>+</span> t / d
         </p>
+
+        <div className="vg-card-part">
+          <div className="vg-card-head">
+            <span className="g-label">1 &middot; The ending</span>
+            <div className="vg-kofschip-letters" aria-label="'t kofschip: t, k, f, s, ch, p">
+              {KOFSCHIP_LETTERS.map((letter) => (
+                <span key={letter} className="vg-kofschip-letter">
+                  {letter}
+                </span>
+              ))}
+            </div>
+          </div>
+          <RuleRows rules={ENDING_RULES} />
+          <p className="vg-trap">{ENDING_TRAP}</p>
+        </div>
+
+        <div className="vg-card-part">
+          <span className="g-label">2 &middot; The ge-</span>
+          <RuleRows rules={GE_RULES} />
+        </div>
       </div>
 
       {locked && (

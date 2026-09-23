@@ -53,6 +53,34 @@ export const AUX_EXPLANATIONS: Record<AuxKind, string> = {
 /** Shown in the game as a reminder panel. */
 export const KOFSCHIP_LETTERS = ['t', 'k', 'f', 's', 'ch', 'p']
 
+export interface CardRule {
+  when: string
+  /** Naming it `then` would make the object thenable, and break an await. */
+  result: string
+  example: string
+}
+
+/**
+ * The reference card on screen while you answer. It used to be one sentence
+ * that said what the six letters mean without ever showing the decision, so
+ * each half is now laid out as "in this case → do this", with an example.
+ */
+export const ENDING_RULES: CardRule[] = [
+  { when: 'stem ends in t k f s ch p', result: 'add -t', example: 'werk → gewerkt' },
+  { when: 'anything else', result: 'add -d', example: 'woon → gewoond' },
+]
+
+/** Verbs whose infinitive has a v or a z: the written stem lies about the sound. */
+export const ENDING_TRAP =
+  'Careful with verhuizen and leven: the stem is written verhuis and leef, but the z and v are not kofschip letters, so they take -d: verhuisd, geleefd.'
+
+export const GE_RULES: CardRule[] = [
+  { when: 'most verbs', result: 'ge- at the front', example: 'werken → gewerkt' },
+  { when: 'after be- ge- ver- ont- her-', result: 'no ge- at all', example: 'betalen → betaald' },
+  { when: 'separable verbs', result: 'ge- in the middle', example: 'opbellen → opgebeld' },
+  { when: 'irregular verbs', result: 'learn the whole word', example: 'doen → gedaan' },
+]
+
 export const items: PerfectItem[] = [
   {
     id: 'p1',

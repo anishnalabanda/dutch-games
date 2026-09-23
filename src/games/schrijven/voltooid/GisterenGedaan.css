@@ -46,16 +46,98 @@
   color: var(--muted);
 }
 
-.vg-kofschip {
+/* The reference card: the recipe, then the two decisions that fill it in. */
+.vg-card {
   border: 1px dashed var(--line);
   border-radius: var(--radius);
   padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.vg-recipe {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: var(--text-lg);
+  letter-spacing: 0.04em;
+  color: var(--amber);
+}
+.vg-recipe span {
+  color: var(--muted);
+  padding: 0 var(--space-1);
+}
+
+.vg-card-part {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.vg-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+/* "in this case" on the left, "do this" on the right, so the decision is the
+   shape of the panel rather than something to read out of a sentence. */
+.vg-rules {
+  margin: 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-1) var(--space-3);
+  align-items: baseline;
+}
+.vg-rule {
+  display: contents;
+}
+.vg-rules dt,
+.vg-rules dd {
+  margin: 0;
+  font-size: var(--text-sm);
+}
+.vg-rules dt {
+  color: var(--muted);
+}
+.vg-rules dt::after {
+  content: ' \2192';
+  color: var(--line);
+}
+.vg-rules dd {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-3);
+}
+.vg-rule-example {
+  color: var(--muted);
+  font-family: var(--font-heading);
+  letter-spacing: 0.02em;
+}
+
+.vg-trap {
+  margin: 0;
+  font-size: var(--text-xs);
+  color: var(--muted);
+}
+
+/* Two columns need room. On a phone the case goes on its own line with the
+   answer indented under it, rather than both fighting over the width. */
+@media (max-width: 560px) {
+  .vg-rules {
+    grid-template-columns: 1fr;
+    gap: var(--space-0) var(--space-2);
+  }
+  .vg-rules dd {
+    padding: 0 0 var(--space-2) var(--space-3);
+  }
 }
 
 .vg-kofschip-letters {
   display: flex;
   gap: var(--space-2);
-  margin-bottom: var(--space-2);
 }
 
 .vg-kofschip-letter {
