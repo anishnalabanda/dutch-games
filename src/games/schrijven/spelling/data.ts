@@ -51,8 +51,10 @@ export const RULE_EXPLANATIONS: Record<SpellRule, string> = {
     'The other way round, the double consonant drops as soon as the syllable closes (zitten → ik zit).',
   'lange-klank':
     'A long sound in an open syllable is written with one vowel (boom → bomen, maken → ik maak).',
-  'v-f': 'At the end of a syllable the v becomes an f (schrijven → ik schrijf, brief → brieven).',
-  'z-s': 'At the end of a syllable the z becomes an s (lezen → ik lees, huis → huizen).',
+  'v-f':
+    'A word never ends in v: at the end it becomes f (schrijven → ik schrijf). When a vowel follows, the f turns back into v (brief → brieven).',
+  'z-s':
+    'A word never ends in z: at the end it becomes s (lezen → ik lees). When a vowel follows, the s turns back into z (huis → huizen).',
   apostrof:
     "Does the word end in a lone a, i, o, u or y? Then the plural takes 's (foto → foto's).",
   's-meervoud': 'Words ending in -el, -em, -en, -er or -je take -s in the plural.',
