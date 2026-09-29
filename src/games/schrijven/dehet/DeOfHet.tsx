@@ -5,39 +5,27 @@ import { GlossedText } from '../../../components/GlossedText'
 import { FeedbackBox } from '../../../components/FeedbackBox'
 import { StreakBadge } from '../../../components/StreakBadge'
 import { Tag } from '../../../components/Tag'
-import { useGameProgress } from '../../useGameProgress'
-import { ADJ_RULES, ARTICLE_PATTERNS, items, type Article, type NounItem } from './data'
+import { useDrill } from '../../useDrill'
+import { ADJ_RULES, ARTICLE_PATTERNS, items, type Article } from './data'
 import './DeOfHet.css'
 
 const STORE_KEY = 'nl.schrijven.dehet'
 
-interface DeHetState {
-  done: boolean
-  completedIds: string[]
-  streak: number
-  bestStreak: number
-}
-
-const initialState: DeHetState = { done: false, completedIds: [], streak: 0, bestStreak: 0 }
-
-function nextItem(completedIds: string[]): NounItem | null {
-  return items.find((item) => !completedIds.includes(item.id)) ?? null
-}
-
 export function DeOfHet() {
-  const { state, loaded, save } = useGameProgress<DeHetState>(STORE_KEY, initialState)
-  const [current, setCurrent] = useState<NounItem | null>(null)
+  const drill = useDrill(STORE_KEY, items)
   const [sorted, setSorted] = useState<Article | null>(null)
   const [ending, setEnding] = useState<string | null>(null)
-  const [missed, setMissed] = useState(false)
 
+  const current = drill.current
+  const currentId = current?.id
+
+  // Clear both steps for each new presentation, including a repeat of a missed word.
   useEffect(() => {
-    if (!loaded) return
-    setCurrent(nextItem(state.completedIds))
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loaded])
+    setSorted(null)
+    setEnding(null)
+  }, [currentId, drill.round])
 
-  if (!loaded) return null
+  if (!drill.loaded) return null
 
   const articleOk = current ? sorted === current.article : false
   const needsFollow = Boolean(current?.follow)
@@ -45,61 +33,30 @@ export function DeOfHet() {
   const finished = sorted !== null && articleOk && (!needsFollow || ending !== null)
   const correct = articleOk && endingOk
 
-  function complete(item: NounItem, firstTry: boolean) {
-    const completedIds = state.completedIds.includes(item.id)
-      ? state.completedIds
-      : [...state.completedIds, item.id]
-    const streak = firstTry ? state.streak + 1 : 0
-    save({
-      ...state,
-      completedIds,
-      streak,
-      bestStreak: Math.max(state.bestStreak, streak),
-      done: completedIds.length === items.length,
-    })
-  }
-
   function sort(choice: Article) {
     if (!current || sorted !== null) return
     setSorted(choice)
     if (choice !== current.article) {
-      setMissed(true)
-      save({ ...state, streak: 0 })
+      drill.miss()
       return
     }
     // A word without a follow-up question is finished as soon as it is sorted.
-    if (!current.follow) complete(current, !missed)
+    if (!current.follow) drill.hit()
   }
 
   function chooseEnding(option: string) {
     if (!current?.follow || ending !== null) return
     setEnding(option)
     if (option !== current.follow.answer) {
-      setMissed(true)
-      save({ ...state, streak: 0 })
+      drill.miss()
       return
     }
-    complete(current, !missed)
+    drill.hit()
   }
 
   function retry() {
     setSorted(null)
     setEnding(null)
-  }
-
-  function advance() {
-    setCurrent(nextItem(state.completedIds))
-    setSorted(null)
-    setEnding(null)
-    setMissed(false)
-  }
-
-  function restart() {
-    save({ ...initialState, bestStreak: state.bestStreak })
-    setCurrent(items[0])
-    setSorted(null)
-    setEnding(null)
-    setMissed(false)
   }
 
   if (!current) {
@@ -112,8 +69,11 @@ export function DeOfHet() {
               <p key={pattern}>{pattern}</p>
             ))}
           </div>
-          <FeedbackBox correct message={`Done. All ${items.length} words are sorted correctly.`} />
-          <Button onClick={restart}>Practise again</Button>
+          <FeedbackBox
+            correct
+            message={`Done. You sorted all ${items.length} words right first time. Best streak: ${drill.state.bestStreak}.`}
+          />
+          <Button onClick={drill.restart}>Practise again</Button>
         </div>
       </Shell>
     )
@@ -123,11 +83,11 @@ export function DeOfHet() {
     <Shell
       title="De of het"
       backTo="/schrijven"
-      progress={{ value: state.completedIds.length, max: items.length }}
+      progress={{ value: drill.mastered, max: drill.total }}
     >
       <div className="g-row">
         <Tag>{sorted === null ? 'Sort the word' : 'Which ending?'}</Tag>
-        <StreakBadge label="Streak" value={state.streak} />
+        <StreakBadge label="Streak" value={drill.state.streak} />
       </div>
 
       <div className="dh-card">
@@ -192,7 +152,7 @@ export function DeOfHet() {
       )}
 
       <div className="g-actions">
-        {sorted !== null && correct && finished && <Button onClick={advance}>Next</Button>}
+        {sorted !== null && correct && finished && <Button onClick={drill.advance}>Next</Button>}
         {sorted !== null && !correct && <Button onClick={retry}>Try again</Button>}
       </div>
     </Shell>

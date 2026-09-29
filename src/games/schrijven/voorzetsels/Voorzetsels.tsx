@@ -5,25 +5,12 @@ import { GlossedText } from '../../../components/GlossedText'
 import { FeedbackBox } from '../../../components/FeedbackBox'
 import { StreakBadge } from '../../../components/StreakBadge'
 import { Tag } from '../../../components/Tag'
-import { useGameProgress } from '../../useGameProgress'
+import { useDrill } from '../../useDrill'
 import { matchesAnswer } from '../../normalize'
-import { items, MONTHS, RULE_EXPLANATIONS, type PrepItem } from './data'
+import { items, MONTHS, RULE_EXPLANATIONS } from './data'
 import './Voorzetsels.css'
 
 const STORE_KEY = 'nl.schrijven.voorzetsels'
-
-interface VoorzetselsState {
-  done: boolean
-  completedIds: string[]
-  streak: number
-  bestStreak: number
-}
-
-const initialState: VoorzetselsState = { done: false, completedIds: [], streak: 0, bestStreak: 0 }
-
-function nextItem(completedIds: string[]): PrepItem | null {
-  return items.find((item) => !completedIds.includes(item.id)) ?? null
-}
 
 function pad(n: number): string {
   return n.toString().padStart(2, '0')
@@ -66,20 +53,22 @@ function ClockFace({ hour, minute }: { hour: number; minute: number }) {
 }
 
 export function Voorzetsels() {
-  const { state, loaded, save } = useGameProgress<VoorzetselsState>(STORE_KEY, initialState)
-  const [current, setCurrent] = useState<PrepItem | null>(null)
+  const drill = useDrill(STORE_KEY, items)
   const [typed, setTyped] = useState('')
   const [picked, setPicked] = useState<string | null>(null)
   const [checked, setChecked] = useState(false)
-  const [missed, setMissed] = useState(false)
 
+  const current = drill.current
+  const currentId = current?.id
+
+  // Clear the answer for each new presentation, including a repeat of a missed item.
   useEffect(() => {
-    if (!loaded) return
-    setCurrent(nextItem(state.completedIds))
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loaded])
+    setTyped('')
+    setPicked(null)
+    setChecked(false)
+  }, [currentId, drill.round])
 
-  if (!loaded) return null
+  if (!drill.loaded) return null
 
   const correct = !current
     ? false
@@ -87,64 +76,24 @@ export function Voorzetsels() {
       ? picked === current.answer
       : matchesAnswer(typed, current.answer, current.accept)
 
-  function complete(item: PrepItem) {
-    const firstTry = !missed
-    const completedIds = state.completedIds.includes(item.id)
-      ? state.completedIds
-      : [...state.completedIds, item.id]
-    const streak = firstTry ? state.streak + 1 : 0
-    save({
-      ...state,
-      completedIds,
-      streak,
-      bestStreak: Math.max(state.bestStreak, streak),
-      done: completedIds.length === items.length,
-    })
-  }
-
   function check() {
     if (!current || current.kind === 'zin' || typed.trim() === '') return
     setChecked(true)
-    if (!matchesAnswer(typed, current.answer, current.accept)) {
-      setMissed(true)
-      save({ ...state, streak: 0 })
-      return
-    }
-    complete(current)
+    if (matchesAnswer(typed, current.answer, current.accept)) drill.hit()
+    else drill.miss()
   }
 
   function pick(option: string) {
     if (!current || current.kind !== 'zin' || checked) return
     setPicked(option)
     setChecked(true)
-    if (option !== current.answer) {
-      setMissed(true)
-      save({ ...state, streak: 0 })
-      return
-    }
-    complete(current)
+    if (option === current.answer) drill.hit()
+    else drill.miss()
   }
 
   function retry() {
     setChecked(false)
     setPicked(null)
-  }
-
-  function advance() {
-    setCurrent(nextItem(state.completedIds))
-    setTyped('')
-    setPicked(null)
-    setChecked(false)
-    setMissed(false)
-  }
-
-  function restart() {
-    save({ ...initialState, bestStreak: state.bestStreak })
-    setCurrent(items[0])
-    setTyped('')
-    setPicked(null)
-    setChecked(false)
-    setMissed(false)
   }
 
   if (!current) {
@@ -153,9 +102,9 @@ export function Voorzetsels() {
         <div className="g-done">
           <FeedbackBox
             correct
-            message={`Done. All ${items.length} prepositions, times and dates are right. Best streak: ${state.bestStreak}.`}
+            message={`Done. All ${items.length} prepositions, times and dates right first time. Best streak: ${drill.state.bestStreak}.`}
           />
-          <Button onClick={restart}>Practise again</Button>
+          <Button onClick={drill.restart}>Practise again</Button>
         </div>
       </Shell>
     )
@@ -165,7 +114,7 @@ export function Voorzetsels() {
     <Shell
       title="Op maandag om negen uur"
       backTo="/schrijven"
-      progress={{ value: state.completedIds.length, max: items.length }}
+      progress={{ value: drill.mastered, max: drill.total }}
     >
       <div className="g-row">
         <Tag>
@@ -175,7 +124,7 @@ export function Voorzetsels() {
               ? 'Which date?'
               : 'Which preposition?'}
         </Tag>
-        <StreakBadge label="Streak" value={state.streak} />
+        <StreakBadge label="Streak" value={drill.state.streak} />
       </div>
 
       {current.kind === 'zin' ? (
@@ -262,7 +211,7 @@ export function Voorzetsels() {
             Check
           </Button>
         )}
-        {checked && correct && <Button onClick={advance}>Next</Button>}
+        {checked && correct && <Button onClick={drill.advance}>Next</Button>}
         {checked && !correct && <Button onClick={retry}>Try again</Button>}
       </div>
     </Shell>

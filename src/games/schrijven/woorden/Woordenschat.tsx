@@ -4,25 +4,12 @@ import { Button } from '../../../components/Button'
 import { FeedbackBox } from '../../../components/FeedbackBox'
 import { StreakBadge } from '../../../components/StreakBadge'
 import { Tag } from '../../../components/Tag'
-import { useGameProgress } from '../../useGameProgress'
+import { useDrill } from '../../useDrill'
 import { normalize } from '../../normalize'
 import { items, SECONDS_PER_ITEM, THEME_LABELS, type VocabItem } from './data'
 import './Woordenschat.css'
 
 const STORE_KEY = 'nl.schrijven.woorden'
-
-interface WoordenState {
-  done: boolean
-  completedIds: string[]
-  streak: number
-  bestStreak: number
-}
-
-const initialState: WoordenState = { done: false, completedIds: [], streak: 0, bestStreak: 0 }
-
-function nextItem(completedIds: string[]): VocabItem | null {
-  return items.find((item) => !completedIds.includes(item.id)) ?? null
-}
 
 type Verdict = 'goed' | 'lidwoord' | 'fout' | 'tijd'
 
@@ -35,54 +22,43 @@ function judge(item: VocabItem, typed: string): Verdict {
 }
 
 export function Woordenschat() {
-  const { state, loaded, save } = useGameProgress<WoordenState>(STORE_KEY, initialState)
-  const [current, setCurrent] = useState<VocabItem | null>(null)
+  const drill = useDrill(STORE_KEY, items)
   const [typed, setTyped] = useState('')
   const [verdict, setVerdict] = useState<Verdict | null>(null)
   const [left, setLeft] = useState(SECONDS_PER_ITEM)
-  const [missed, setMissed] = useState(false)
 
+  const current = drill.current
+  const currentId = current?.id
+  const { miss } = drill
+
+  // Fresh row for each new presentation, including a repeat of a missed word.
   useEffect(() => {
-    if (!loaded) return
-    setCurrent(nextItem(state.completedIds))
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loaded])
+    setTyped('')
+    setVerdict(null)
+    setLeft(SECONDS_PER_ITEM)
+  }, [currentId, drill.round])
 
-  // The row flips when the clock runs out: the answer is shown, nothing is lost.
+  // The row flips when the clock runs out: the answer is shown, and the word comes round again.
   useEffect(() => {
     if (!current || verdict !== null) return
     if (left <= 0) {
       setVerdict('tijd')
-      setMissed(true)
+      miss()
       return
     }
     const id = window.setTimeout(() => setLeft((s) => s - 1), 1000)
     return () => window.clearTimeout(id)
-  }, [left, current, verdict])
+  }, [left, current, verdict, miss])
 
-  if (!loaded) return null
+  if (!drill.loaded) return null
 
   function check() {
     if (!current || typed.trim() === '' || verdict !== null) return
     const result = judge(current, typed)
     setVerdict(result)
-    if (result === 'fout') {
-      setMissed(true)
-      save({ ...state, streak: 0 })
-      return
-    }
-    const firstTry = !missed && result === 'goed'
-    const completedIds = state.completedIds.includes(current.id)
-      ? state.completedIds
-      : [...state.completedIds, current.id]
-    const streak = firstTry ? state.streak + 1 : 0
-    save({
-      ...state,
-      completedIds,
-      streak,
-      bestStreak: Math.max(state.bestStreak, streak),
-      done: completedIds.length === items.length,
-    })
+    // A missing article is still a miss: de and het are marked in the exam.
+    if (result === 'goed') drill.hit()
+    else drill.miss()
   }
 
   function retry() {
@@ -91,32 +67,15 @@ export function Woordenschat() {
     setLeft(SECONDS_PER_ITEM)
   }
 
-  function advance() {
-    setCurrent(nextItem(state.completedIds))
-    setTyped('')
-    setVerdict(null)
-    setLeft(SECONDS_PER_ITEM)
-    setMissed(false)
-  }
-
-  function restart() {
-    save({ ...initialState, bestStreak: state.bestStreak })
-    setCurrent(items[0])
-    setTyped('')
-    setVerdict(null)
-    setLeft(SECONDS_PER_ITEM)
-    setMissed(false)
-  }
-
   if (!current) {
     return (
       <Shell title="Woordenschat per thema" backTo="/schrijven">
         <div className="g-done">
           <FeedbackBox
             correct
-            message={`Done. You wrote out all ${items.length} words yourself. Best streak: ${state.bestStreak}.`}
+            message={`Done. You wrote all ${items.length} words right first time. Best streak: ${drill.state.bestStreak}.`}
           />
-          <Button onClick={restart}>Practise again</Button>
+          <Button onClick={drill.restart}>Practise again</Button>
         </div>
       </Shell>
     )
@@ -129,11 +88,11 @@ export function Woordenschat() {
     <Shell
       title="Woordenschat per thema"
       backTo="/schrijven"
-      progress={{ value: state.completedIds.length, max: items.length }}
+      progress={{ value: drill.mastered, max: drill.total }}
     >
       <div className="g-row">
         <Tag>{THEME_LABELS[current.theme]}</Tag>
-        <StreakBadge label="Streak" value={state.streak} />
+        <StreakBadge label="Streak" value={drill.state.streak} />
       </div>
 
       {/* Departure board row: the English rolls in, the Dutch has to be typed. */}
@@ -188,7 +147,7 @@ export function Woordenschat() {
             Check
           </Button>
         )}
-        {solved && <Button onClick={advance}>Next</Button>}
+        {solved && <Button onClick={drill.advance}>Next</Button>}
         {(verdict === 'fout' || verdict === 'tijd') && (
           <Button onClick={retry}>Once more</Button>
         )}

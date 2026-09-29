@@ -5,41 +5,31 @@ import { GlossedText } from '../../../components/GlossedText'
 import { FeedbackBox } from '../../../components/FeedbackBox'
 import { Tag } from '../../../components/Tag'
 import { Tooltip } from '../../../components/Tooltip'
-import { useGameProgress } from '../../useGameProgress'
-import { fieldMatches, fields, FORMAT_HELP, personas, type Persona } from './data'
+import { useDrill } from '../../useDrill'
+import { fieldMatches, fields, FORMAT_HELP, personas } from './data'
 import './FormulierInvullen.css'
 
 const STORE_KEY = 'nl.schrijven.formulier'
-
-interface FormulierState {
-  done: boolean
-  completedIds: string[]
-  bestScore: number
-}
-
-const initialState: FormulierState = { done: false, completedIds: [], bestScore: 0 }
-
-function nextPersona(completedIds: string[]): Persona | null {
-  return personas.find((p) => !completedIds.includes(p.id)) ?? null
-}
 
 function emptyForm(): Record<string, string> {
   return Object.fromEntries(fields.map((f) => [f.id, '']))
 }
 
 export function FormulierInvullen() {
-  const { state, loaded, save } = useGameProgress<FormulierState>(STORE_KEY, initialState)
-  const [current, setCurrent] = useState<Persona | null>(null)
+  const drill = useDrill(STORE_KEY, personas)
   const [values, setValues] = useState<Record<string, string>>(emptyForm)
   const [checked, setChecked] = useState(false)
 
-  useEffect(() => {
-    if (!loaded) return
-    setCurrent(nextPersona(state.completedIds))
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loaded])
+  const current = drill.current
+  const currentId = current?.id
 
-  if (!loaded) return null
+  // Clear the form for each new presentation, including a repeat of a missed one.
+  useEffect(() => {
+    setValues(emptyForm())
+    setChecked(false)
+  }, [currentId, drill.round])
+
+  if (!drill.loaded) return null
 
   const results = current
     ? fields.map((field) => ({
@@ -56,33 +46,8 @@ export function FormulierInvullen() {
     const bad = fields.filter(
       (field) => !fieldMatches(field.type, values[field.id] ?? '', current.values[field.id]),
     )
-    const score = fields.length - bad.length
-    if (bad.length > 0) {
-      save({ ...state, bestScore: Math.max(state.bestScore, score) })
-      return
-    }
-    const completedIds = state.completedIds.includes(current.id)
-      ? state.completedIds
-      : [...state.completedIds, current.id]
-    save({
-      ...state,
-      completedIds,
-      bestScore: Math.max(state.bestScore, score),
-      done: completedIds.length === personas.length,
-    })
-  }
-
-  function advance() {
-    setCurrent(nextPersona(state.completedIds))
-    setValues(emptyForm())
-    setChecked(false)
-  }
-
-  function restart() {
-    save({ ...initialState, bestScore: state.bestScore })
-    setCurrent(personas[0])
-    setValues(emptyForm())
-    setChecked(false)
+    if (bad.length > 0) drill.miss()
+    else drill.hit()
   }
 
   if (!current) {
@@ -91,9 +56,9 @@ export function FormulierInvullen() {
         <div className="g-done">
           <FeedbackBox
             correct
-            message={`Done. You filled in all ${personas.length} forms without a mistake.`}
+            message={`Done. You filled in all ${personas.length} forms right first time.`}
           />
-          <Button onClick={restart}>Practise again</Button>
+          <Button onClick={drill.restart}>Practise again</Button>
         </div>
       </Shell>
     )
@@ -103,10 +68,10 @@ export function FormulierInvullen() {
     <Shell
       title="Formulier invullen"
       backTo="/schrijven"
-      progress={{ value: state.completedIds.length, max: personas.length }}
+      progress={{ value: drill.mastered, max: drill.total }}
     >
       <div className="g-row">
-        <Tag>Form {state.completedIds.length + 1} of {personas.length}</Tag>
+        <Tag>Form {drill.mastered + 1} of {drill.total}</Tag>
       </div>
 
       <div className="g-worksheet fi-persona">
@@ -161,7 +126,7 @@ export function FormulierInvullen() {
 
       <div className="g-actions">
         {!allOk && <Button onClick={check}>Check</Button>}
-        {allOk && <Button onClick={advance}>Next form</Button>}
+        {allOk && <Button onClick={drill.advance}>Next form</Button>}
       </div>
     </Shell>
   )

@@ -1,26 +1,40 @@
 /**
  * How many items of a game are finished, read straight from whatever it saved.
  *
- * Games store their progress in one of two shapes: `useDrill` games keep the
- * ids they have *mastered* (right on the first attempt), the older hand-rolled
- * games keep `completedIds` (right eventually). Schrijfopdracht keeps two
- * lists, one per level, and its bar counts both. Summing whichever of these
- * keys is present covers every game without the exam page knowing which is
- * which.
+ * Drill games (`useDrill`) keep the ids they have *mastered*: right on the
+ * first attempt. Schrijfopdracht is not a drill, since the owner marks their
+ * own handwritten work, and keeps one list per level (`stemIds`,
+ * `completedIds`); its bar counts both.
+ *
+ * Any other save is from before a game moved to `useDrill`, when an item
+ * counted once it was right *eventually*, and a miss followed by a correct
+ * retry was enough. That measured exposure, not mastery, so it counts for
+ * nothing here: the game has to be played again under the first-time rule.
  */
-const COUNTED_KEYS = ['mastered', 'completedIds', 'stemIds'] as const
+type Saved = Record<string, unknown>
 
-export function countFinished(saved: unknown): number {
-  if (!saved || typeof saved !== 'object') return 0
-  const record = saved as Record<string, unknown>
-  let total = 0
-  for (const key of COUNTED_KEYS) {
-    const value = record[key]
-    if (Array.isArray(value)) total += value.length
-  }
-  return total
+function asRecord(saved: unknown): Saved | null {
+  return saved && typeof saved === 'object' ? (saved as Saved) : null
 }
 
-export function isDone(saved: unknown): boolean {
-  return Boolean(saved && typeof saved === 'object' && (saved as { done?: boolean }).done)
+function length(value: unknown): number {
+  return Array.isArray(value) ? value.length : 0
+}
+
+export function countFinished(saved: unknown): number {
+  const record = asRecord(saved)
+  if (!record) return 0
+  if (Array.isArray(record.mastered)) return record.mastered.length
+  if (Array.isArray(record.stemIds)) return record.stemIds.length + length(record.completedIds)
+  return 0
+}
+
+/**
+ * Done means every item counted, checked against the game's current total, so
+ * a game that gains items stops being done until the new ones are mastered too.
+ */
+export function isDone(saved: unknown, total: number): boolean {
+  const record = asRecord(saved)
+  if (!record || !record.done) return false
+  return countFinished(record) >= total
 }

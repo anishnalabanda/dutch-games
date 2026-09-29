@@ -26,8 +26,8 @@ export interface SpellItem {
 
 export const MODE_LABELS: Record<SpellMode, string> = {
   meervoud: 'singular → plural',
-  ikvorm: 'infinitive → ik-form',
-  hijvorm: 'infinitive → hij / jij',
+  ikvorm: 'infinitive → ik-form (now)',
+  hijvorm: 'infinitive → hij / jij (now)',
   inversie: 'infinitive → question with jij',
 }
 
@@ -35,8 +35,8 @@ export const RULE_LABELS: Record<SpellRule, string> = {
   verdubbel: 'Double the consonant',
   'enkel-medeklinker': 'Double consonant drops',
   'lange-klank': 'Long sound, one vowel',
-  'v-f': 'v becomes f',
-  'z-s': 'z becomes s',
+  'v-f': 'v or f',
+  'z-s': 'z or s',
   apostrof: "Plural with 's",
   's-meervoud': 'Plural with -s',
   onregelmatig: 'Irregular',
@@ -48,9 +48,9 @@ export const RULE_EXPLANATIONS: Record<SpellRule, string> = {
   verdubbel:
     'A short sound in a closed syllable stays short: double the consonant when a syllable is added (man → mannen).',
   'enkel-medeklinker':
-    'The other way round, the double consonant drops as soon as the syllable closes (zitten → ik zit).',
+    'A double consonant drops when nothing follows it, since one is enough to keep the sound short (zitten → ik zit).',
   'lange-klank':
-    'A long sound in an open syllable is written with one vowel (boom → bomen, maken → ik maak).',
+    'A long sound at the end of a syllable is written with one vowel (boom → bomen). When a consonant closes the syllable, the vowel doubles to stay long (maken → ik maak).',
   'v-f':
     'A word never ends in v: at the end it becomes f (schrijven → ik schrijf). When a vowel follows, the f turns back into v (brief → brieven).',
   'z-s':
@@ -61,6 +61,14 @@ export const RULE_EXPLANATIONS: Record<SpellRule, string> = {
   onregelmatig: 'This plural is irregular, so it has to be memorised.',
   dt: 'Stem + t. Does the stem already end in a d? Then you still write -dt: hij wordt, jij vindt.',
   'dt-inversie': 'Does jij come after the verb? Then the -t drops: jij wordt, but word jij?',
+}
+
+/** The answer as a learner would write it: with its pronoun, or filled into the cue. */
+export function answerInContext(item: SpellItem): string {
+  if (item.mode === 'ikvorm') return `ik ${item.to}`
+  if (item.mode === 'hijvorm' && item.cue) return `${item.cue} ${item.to}`
+  if (item.mode === 'inversie' && item.cue) return item.cue.replace('___', item.to)
+  return item.to
 }
 
 export const items: SpellItem[] = [

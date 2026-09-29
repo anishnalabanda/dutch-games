@@ -5,31 +5,11 @@ import { GlossedText } from '../../../components/GlossedText'
 import { FeedbackBox } from '../../../components/FeedbackBox'
 import { StreakBadge } from '../../../components/StreakBadge'
 import { Tag } from '../../../components/Tag'
-import { useGameProgress } from '../../useGameProgress'
+import { useDrill } from '../../useDrill'
 import { items, RULE_EXPLANATIONS, RULE_LABELS, type NegItem, type NegWord } from './data'
 import './NietOfGeen.css'
 
 const STORE_KEY = 'nl.schrijven.nietgeen'
-
-interface NietGeenState {
-  done: boolean
-  completedIds: string[]
-  streak: number
-  bestStreak: number
-  correctFirstTry: number
-}
-
-const initialState: NietGeenState = {
-  done: false,
-  completedIds: [],
-  streak: 0,
-  bestStreak: 0,
-  correctFirstTry: 0,
-}
-
-function nextItem(completedIds: string[]): NegItem | null {
-  return items.find((item) => !completedIds.includes(item.id)) ?? null
-}
 
 /** The full sentence with the negation in place, for the answer key. */
 function renderAnswer(item: NegItem): string {
@@ -39,19 +19,20 @@ function renderAnswer(item: NegItem): string {
 }
 
 export function NietOfGeen() {
-  const { state, loaded, save } = useGameProgress<NietGeenState>(STORE_KEY, initialState)
-  const [current, setCurrent] = useState<NegItem | null>(null)
+  const drill = useDrill(STORE_KEY, items)
   const [word, setWord] = useState<NegWord | null>(null)
   const [placed, setPlaced] = useState<number | null>(null)
-  const [missed, setMissed] = useState(false)
 
+  const current = drill.current
+  const currentId = current?.id
+
+  // Clear the choice for each new presentation, including a repeat of a missed item.
   useEffect(() => {
-    if (!loaded) return
-    setCurrent(nextItem(state.completedIds))
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loaded])
+    setWord(null)
+    setPlaced(null)
+  }, [currentId, drill.round])
 
-  if (!loaded) return null
+  if (!drill.loaded) return null
 
   const wordOk = current ? word === current.word : false
   const placeOk = current ? placed === current.position : false
@@ -60,44 +41,13 @@ export function NietOfGeen() {
   function place(gap: number) {
     if (!current || word === null || placed !== null) return
     setPlaced(gap)
-    if (word !== current.word || gap !== current.position) {
-      setMissed(true)
-      save({ ...state, streak: 0 })
-      return
-    }
-    const firstTry = !missed
-    const completedIds = state.completedIds.includes(current.id)
-      ? state.completedIds
-      : [...state.completedIds, current.id]
-    const streak = firstTry ? state.streak + 1 : 0
-    save({
-      ...state,
-      completedIds,
-      streak,
-      bestStreak: Math.max(state.bestStreak, streak),
-      correctFirstTry: firstTry ? state.correctFirstTry + 1 : state.correctFirstTry,
-      done: completedIds.length === items.length,
-    })
+    if (word === current.word && gap === current.position) drill.hit()
+    else drill.miss()
   }
 
   function retry() {
     setPlaced(null)
     setWord(null)
-  }
-
-  function advance() {
-    setCurrent(nextItem(state.completedIds))
-    setWord(null)
-    setPlaced(null)
-    setMissed(false)
-  }
-
-  function restart() {
-    save({ ...initialState, bestStreak: state.bestStreak })
-    setCurrent(items[0])
-    setWord(null)
-    setPlaced(null)
-    setMissed(false)
   }
 
   if (!current) {
@@ -106,9 +56,9 @@ export function NietOfGeen() {
         <div className="g-done">
           <FeedbackBox
             correct
-            message={`Done. All ${items.length} negations are in the right place. Best streak: ${state.bestStreak}.`}
+            message={`Done. You placed all ${items.length} negations right first time. Best streak: ${drill.state.bestStreak}.`}
           />
-          <Button onClick={restart}>Practise again</Button>
+          <Button onClick={drill.restart}>Practise again</Button>
         </div>
       </Shell>
     )
@@ -120,11 +70,11 @@ export function NietOfGeen() {
     <Shell
       title="Niet of geen"
       backTo="/schrijven"
-      progress={{ value: state.completedIds.length, max: items.length }}
+      progress={{ value: drill.mastered, max: drill.total }}
     >
       <div className="g-row">
         <Tag>{placed === null ? 'Choose and place' : RULE_LABELS[current.rule]}</Tag>
-        <StreakBadge label="Streak" value={state.streak} />
+        <StreakBadge label="Streak" value={drill.state.streak} />
       </div>
 
       <p className="g-hint">
@@ -191,7 +141,7 @@ export function NietOfGeen() {
       )}
 
       <div className="g-actions">
-        {placed !== null && correct && <Button onClick={advance}>Next</Button>}
+        {placed !== null && correct && <Button onClick={drill.advance}>Next</Button>}
         {placed !== null && !correct && <Button onClick={retry}>Try again</Button>}
       </div>
     </Shell>

@@ -5,46 +5,37 @@ import { GlossedText } from '../../../components/GlossedText'
 import { FeedbackBox } from '../../../components/FeedbackBox'
 import { Tag } from '../../../components/Tag'
 import { Tooltip } from '../../../components/Tooltip'
-import { useGameProgress } from '../../useGameProgress'
+import { useDrill } from '../../useDrill'
 import { shuffle } from '../../normalize'
-import { situations, STRUCTURE_RULE, type Situation } from './data'
+import { situations, STRUCTURE_RULE } from './data'
 import './BerichtBouwstenen.css'
 
 const STORE_KEY = 'nl.schrijven.bouwstenen'
 
-interface BouwstenenState {
-  done: boolean
-  completedIds: string[]
-  bestFirstTry: number
-}
-
-const initialState: BouwstenenState = { done: false, completedIds: [], bestFirstTry: 0 }
-
-function nextSituation(completedIds: string[]): Situation | null {
-  return situations.find((s) => !completedIds.includes(s.id)) ?? null
-}
-
 export function BerichtBouwstenen() {
-  const { state, loaded, save } = useGameProgress<BouwstenenState>(STORE_KEY, initialState)
-  const [current, setCurrent] = useState<Situation | null>(null)
+  const drill = useDrill(STORE_KEY, situations)
   const [picks, setPicks] = useState<(number | null)[]>([])
   const [checked, setChecked] = useState(false)
 
-  // Shuffle each slot's pile so the right block is not always in the same place.
+  const current = drill.current
+  const currentId = current?.id
+
+  // Shuffle each slot's pile so the right block is not always in the same place,
+  // and reshuffle when a missed message comes round again.
   const piles = useMemo(
     () => (current ? current.slots.map((slot) => shuffle(slot.options)) : []),
-    [current],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [currentId, drill.round],
   )
 
+  // Clear the picks for each new presentation, including a repeat of a missed message.
   useEffect(() => {
-    if (!loaded) return
-    const first = nextSituation(state.completedIds)
-    setCurrent(first)
-    setPicks(first ? first.slots.map(() => null) : [])
+    setPicks(current ? current.slots.map(() => null) : [])
+    setChecked(false)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loaded])
+  }, [currentId, drill.round])
 
-  if (!loaded) return null
+  if (!drill.loaded) return null
 
   const chosen = current
     ? picks.map((pick, slotIndex) => (pick === null ? null : piles[slotIndex][pick]))
@@ -62,33 +53,11 @@ export function BerichtBouwstenen() {
     if (!current || !complete) return
     setChecked(true)
     const bad = chosen.filter((c) => c !== null && !c.ok).length
-    if (bad > 0) return
-    const completedIds = state.completedIds.includes(current.id)
-      ? state.completedIds
-      : [...state.completedIds, current.id]
-    save({
-      ...state,
-      completedIds,
-      bestFirstTry: state.bestFirstTry,
-      done: completedIds.length === situations.length,
-    })
+    if (bad > 0) drill.miss()
+    else drill.hit()
   }
 
   function retry() {
-    setChecked(false)
-  }
-
-  function advance() {
-    const next = nextSituation(state.completedIds)
-    setCurrent(next)
-    setPicks(next ? next.slots.map(() => null) : [])
-    setChecked(false)
-  }
-
-  function restart() {
-    save({ ...initialState, bestFirstTry: state.bestFirstTry })
-    setCurrent(situations[0])
-    setPicks(situations[0].slots.map(() => null))
     setChecked(false)
   }
 
@@ -98,9 +67,9 @@ export function BerichtBouwstenen() {
         <div className="g-done">
           <FeedbackBox
             correct
-            message={`Done. You built all ${situations.length} messages correctly.`}
+            message={`Done. You built all ${situations.length} messages right first time.`}
           />
-          <Button onClick={restart}>Practise again</Button>
+          <Button onClick={drill.restart}>Practise again</Button>
         </div>
       </Shell>
     )
@@ -110,7 +79,7 @@ export function BerichtBouwstenen() {
     <Shell
       title="Bericht bouwstenen"
       backTo="/schrijven"
-      progress={{ value: state.completedIds.length, max: situations.length }}
+      progress={{ value: drill.mastered, max: drill.total }}
     >
       <div className="g-row">
         <Tag>{current.register === 'formeel' ? 'Formal message' : 'Informal message'}</Tag>
@@ -196,7 +165,7 @@ export function BerichtBouwstenen() {
             Check
           </Button>
         )}
-        {checked && allOk && <Button onClick={advance}>Next message</Button>}
+        {checked && allOk && <Button onClick={drill.advance}>Next message</Button>}
         {checked && !allOk && <Button onClick={retry}>Adjust</Button>}
       </div>
     </Shell>

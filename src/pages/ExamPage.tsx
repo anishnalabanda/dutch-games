@@ -37,7 +37,7 @@ export function ExamPage() {
   }
 
   const core = examGames.filter((g) => g.core)
-  const coreDone = core.filter((g) => isDone(saved[g.id])).length
+  const coreDone = core.filter((g) => isDone(saved[g.id], g.total)).length
 
   return (
     <div className="exam-page">
@@ -56,7 +56,7 @@ export function ExamPage() {
         <div className="exam-page-grid">
           {examGames.map((g) => {
             const finished = countFinished(saved[g.id])
-            const done = isDone(saved[g.id])
+            const done = isDone(saved[g.id], g.total)
             return (
               <Link key={g.id} to={`/${exam.id}/${gameSlug(g.id)}`} className="exam-page-game-link">
                 <Card className={done ? 'exam-page-game-done' : ''}>

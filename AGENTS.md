@@ -17,7 +17,8 @@ baseline. Learning happens through **playing games**, not reading lessons.
 ### Current exam status (keep updated as games are completed)
 - Lezen: cleared (no games needed)
 - Luisteren: in progress (baseline practice exam: 18/25)
-- Schrijven: in progress (3 of 14 games built, roadmap in section 13)
+- Schrijven: in progress (all 14 games built, roadmap in section 13; done now means
+  every item right first time, so older right-eventually saves no longer count)
 - KNM: question source is the owner's *NT2 KNM 1000 vragen* book
 - Spreken: not started, no date
 - ONA: portfolio + interview, not a knowledge test (a task checklist, not games)
@@ -236,10 +237,12 @@ words like *in*, *op* and *je* as Dutch.
   hover/focus tooltip, like a glossed word. `GamePage` publishes the manifest entry through
   `CurrentGameProvider` (`src/games/currentGame.tsx`) and `Shell` reads it, so a game never
   repeats its own metadata and `Shell` never imports the manifest (that would be a cycle).
-- The per-exam page shows a bar per game: `countFinished` (`src/games/progress.ts`) reads
-  whichever list a game saved, since `useDrill` games store `mastered` and the older ones
-  store `completedIds`, and Schrijfopdracht stores one list per level and counts both.
-  A new game needs no change there as long as it uses one of those keys.
+- The per-exam page shows a bar per game: `countFinished` (`src/games/progress.ts`) counts
+  `mastered` for drill games, and both per-level lists for Schrijfopdracht (the only game
+  that is not a drill, since the owner marks their own handwritten work). A save with
+  only `completedIds` predates `useDrill` (right *eventually*, not first time) and counts
+  as zero. `isDone` checks the count against the game's current `total`, so adding items
+  to a finished game reopens it. A new drill game needs no change there.
 - **Hub = home route** (`/`): lists exams as cards, each showing its per-exam progress
   ("X of Y games done", core vs optional distinguished), linking into that exam's games.
 - Every game reads/writes only its own `nl.<exam>.<game>` key via the store.

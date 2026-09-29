@@ -5,7 +5,7 @@ import { GlossedText } from '../../../components/GlossedText'
 import { FeedbackBox } from '../../../components/FeedbackBox'
 import { StreakBadge } from '../../../components/StreakBadge'
 import { Tag } from '../../../components/Tag'
-import { useGameProgress } from '../../useGameProgress'
+import { useDrill } from '../../useDrill'
 import {
   CONSISTENCY_RULE,
   isToggle,
@@ -18,24 +18,6 @@ import './UofJe.css'
 
 const STORE_KEY = 'nl.schrijven.uofje'
 
-interface UofJeState {
-  done: boolean
-  completedIds: string[]
-  streak: number
-  bestStreak: number
-}
-
-const initialState: UofJeState = {
-  done: false,
-  completedIds: [],
-  streak: 0,
-  bestStreak: 0,
-}
-
-function nextMessage(completedIds: string[]): RegisterMessage | null {
-  return messages.find((m) => !completedIds.includes(m.id)) ?? null
-}
-
 /** Toggles start on a mix of registers, so there is always something to fix. */
 function startingChoices(message: RegisterMessage): Register[] {
   const toggles = message.parts.filter(isToggle)
@@ -44,21 +26,21 @@ function startingChoices(message: RegisterMessage): Register[] {
 }
 
 export function UofJe() {
-  const { state, loaded, save } = useGameProgress<UofJeState>(STORE_KEY, initialState)
-  const [current, setCurrent] = useState<RegisterMessage | null>(null)
+  const drill = useDrill(STORE_KEY, messages)
   const [choices, setChoices] = useState<Register[]>([])
   const [checked, setChecked] = useState(false)
-  const [missed, setMissed] = useState(false)
 
+  const current = drill.current
+  const currentId = current?.id
+
+  // Reset the toggles for each new presentation, including a repeat of a missed message.
   useEffect(() => {
-    if (!loaded) return
-    const first = nextMessage(state.completedIds)
-    setCurrent(first)
-    setChoices(first ? startingChoices(first) : [])
+    setChoices(current ? startingChoices(current) : [])
+    setChecked(false)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loaded])
+  }, [currentId, drill.round])
 
-  if (!loaded) return null
+  if (!drill.loaded) return null
 
   const wrongCount = current ? choices.filter((c) => c !== current.register).length : 0
   const correct = checked && wrongCount === 0
@@ -75,43 +57,12 @@ export function UofJe() {
   function check() {
     if (!current) return
     setChecked(true)
-    if (choices.some((c) => c !== current.register)) {
-      setMissed(true)
-      save({ ...state, streak: 0 })
-      return
-    }
-    const firstTry = !missed
-    const completedIds = state.completedIds.includes(current.id)
-      ? state.completedIds
-      : [...state.completedIds, current.id]
-    const streak = firstTry ? state.streak + 1 : 0
-    save({
-      ...state,
-      completedIds,
-      streak,
-      bestStreak: Math.max(state.bestStreak, streak),
-      done: completedIds.length === messages.length,
-    })
+    if (choices.some((c) => c !== current.register)) drill.miss()
+    else drill.hit()
   }
 
   function retry() {
     setChecked(false)
-  }
-
-  function advance() {
-    const next = nextMessage(state.completedIds)
-    setCurrent(next)
-    setChoices(next ? startingChoices(next) : [])
-    setChecked(false)
-    setMissed(false)
-  }
-
-  function restart() {
-    save({ ...initialState, bestStreak: state.bestStreak })
-    setCurrent(messages[0])
-    setChoices(startingChoices(messages[0]))
-    setChecked(false)
-    setMissed(false)
   }
 
   if (!current) {
@@ -120,9 +71,9 @@ export function UofJe() {
         <div className="g-done">
           <FeedbackBox
             correct
-            message={`Done. All ${messages.length} messages are in the right register.`}
+            message={`Done. You put all ${messages.length} messages in the right register first time. Best streak: ${drill.state.bestStreak}.`}
           />
-          <Button onClick={restart}>Practise again</Button>
+          <Button onClick={drill.restart}>Practise again</Button>
         </div>
       </Shell>
     )
@@ -134,11 +85,11 @@ export function UofJe() {
     <Shell
       title="U of je"
       backTo="/schrijven"
-      progress={{ value: state.completedIds.length, max: messages.length }}
+      progress={{ value: drill.mastered, max: drill.total }}
     >
       <div className="g-row">
         <Tag>{current.register === 'formeel' ? 'Formal?' : 'Informal?'}</Tag>
-        <StreakBadge label="Streak" value={state.streak} />
+        <StreakBadge label="Streak" value={drill.state.streak} />
       </div>
 
       <div className="uj-envelope">
@@ -193,7 +144,7 @@ export function UofJe() {
 
       <div className="g-actions">
         {!checked && <Button onClick={check}>Check</Button>}
-        {checked && correct && <Button onClick={advance}>Next</Button>}
+        {checked && correct && <Button onClick={drill.advance}>Next</Button>}
         {checked && !correct && <Button onClick={retry}>Adjust</Button>}
       </div>
     </Shell>

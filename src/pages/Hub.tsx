@@ -3,6 +3,7 @@ import { ExamCard } from '../components/ExamCard'
 import { AuthBar } from '../components/AuthBar'
 import { exams } from '../games/exams'
 import { games } from '../games/manifest'
+import { isDone } from '../games/progress'
 import { useProgressStore } from '../store/StoreProvider'
 
 export function Hub() {
@@ -14,11 +15,7 @@ export function Hub() {
     store.all().then((data) => {
       if (cancelled) return
       const done: Record<string, boolean> = {}
-      for (const [key, value] of Object.entries(data)) {
-        if (value && typeof value === 'object' && (value as { done?: boolean }).done) {
-          done[key] = true
-        }
-      }
+      for (const g of games) done[g.id] = isDone(data[g.id], g.total)
       setDoneKeys(done)
     })
     return () => {

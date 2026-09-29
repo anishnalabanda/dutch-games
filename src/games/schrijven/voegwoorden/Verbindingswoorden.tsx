@@ -5,7 +5,7 @@ import { GlossedText } from '../../../components/GlossedText'
 import { FeedbackBox } from '../../../components/FeedbackBox'
 import { StreakBadge } from '../../../components/StreakBadge'
 import { Tag } from '../../../components/Tag'
-import { useGameProgress } from '../../useGameProgress'
+import { useDrill } from '../../useDrill'
 import {
   CONNECTOR_MEANINGS,
   items,
@@ -18,26 +18,6 @@ import './Verbindingswoorden.css'
 
 const STORE_KEY = 'nl.schrijven.voegwoorden'
 
-interface VoegwoordenState {
-  done: boolean
-  completedIds: string[]
-  streak: number
-  bestStreak: number
-  correctFirstTry: number
-}
-
-const initialState: VoegwoordenState = {
-  done: false,
-  completedIds: [],
-  streak: 0,
-  bestStreak: 0,
-  correctFirstTry: 0,
-}
-
-function nextItem(completedIds: string[]): ConnItem | null {
-  return items.find((item) => !completedIds.includes(item.id)) ?? null
-}
-
 /** Clause 2 with the finite verb moved to the end. */
 function verbToEnd(item: ConnItem): string[] {
   const words = [...item.clause2]
@@ -47,19 +27,20 @@ function verbToEnd(item: ConnItem): string[] {
 }
 
 export function Verbindingswoorden() {
-  const { state, loaded, save } = useGameProgress<VoegwoordenState>(STORE_KEY, initialState)
-  const [current, setCurrent] = useState<ConnItem | null>(null)
+  const drill = useDrill(STORE_KEY, items)
   const [pick, setPick] = useState<Connector | null>(null)
   const [order, setOrder] = useState<'same' | 'end' | null>(null)
-  const [missed, setMissed] = useState(false)
 
+  const current = drill.current
+  const currentId = current?.id
+
+  // Clear the choice for each new presentation, including a repeat of a missed item.
   useEffect(() => {
-    if (!loaded) return
-    setCurrent(nextItem(state.completedIds))
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loaded])
+    setPick(null)
+    setOrder(null)
+  }, [currentId, drill.round])
 
-  if (!loaded) return null
+  if (!drill.loaded) return null
 
   const connectorOk = current ? pick === current.connector : false
   const needsMove = current ? SUBORDINATING.includes(current.connector) : false
@@ -76,44 +57,13 @@ export function Verbindingswoorden() {
     setOrder(choice)
     const rightConnector = pick === current.connector
     const rightOrder = SUBORDINATING.includes(current.connector) ? choice === 'end' : choice === 'same'
-    if (!rightConnector || !rightOrder) {
-      setMissed(true)
-      save({ ...state, streak: 0 })
-      return
-    }
-    const firstTry = !missed
-    const completedIds = state.completedIds.includes(current.id)
-      ? state.completedIds
-      : [...state.completedIds, current.id]
-    const streak = firstTry ? state.streak + 1 : 0
-    save({
-      ...state,
-      completedIds,
-      streak,
-      bestStreak: Math.max(state.bestStreak, streak),
-      correctFirstTry: firstTry ? state.correctFirstTry + 1 : state.correctFirstTry,
-      done: completedIds.length === items.length,
-    })
+    if (rightConnector && rightOrder) drill.hit()
+    else drill.miss()
   }
 
   function retry() {
     setOrder(null)
     setPick(null)
-  }
-
-  function advance() {
-    setCurrent(nextItem(state.completedIds))
-    setPick(null)
-    setOrder(null)
-    setMissed(false)
-  }
-
-  function restart() {
-    save({ ...initialState, bestStreak: state.bestStreak })
-    setCurrent(items[0])
-    setPick(null)
-    setOrder(null)
-    setMissed(false)
   }
 
   if (!current) {
@@ -122,9 +72,9 @@ export function Verbindingswoorden() {
         <div className="g-done">
           <FeedbackBox
             correct
-            message={`Done. All ${items.length} sentences are joined correctly. Best streak: ${state.bestStreak}.`}
+            message={`Done. You joined all ${items.length} sentences right first time. Best streak: ${drill.state.bestStreak}.`}
           />
-          <Button onClick={restart}>Practise again</Button>
+          <Button onClick={drill.restart}>Practise again</Button>
         </div>
       </Shell>
     )
@@ -149,11 +99,11 @@ export function Verbindingswoorden() {
     <Shell
       title="Verbindingswoorden"
       backTo="/schrijven"
-      progress={{ value: state.completedIds.length, max: items.length }}
+      progress={{ value: drill.mastered, max: drill.total }}
     >
       <div className="g-row">
         <Tag>{pick === null ? 'Choose the connector' : 'Get the word order right'}</Tag>
-        <StreakBadge label="Streak" value={state.streak} />
+        <StreakBadge label="Streak" value={drill.state.streak} />
       </div>
 
       <p className="g-hint">{current.english}</p>
@@ -231,7 +181,7 @@ export function Verbindingswoorden() {
       )}
 
       <div className="g-actions">
-        {order !== null && correct && <Button onClick={advance}>Next</Button>}
+        {order !== null && correct && <Button onClick={drill.advance}>Next</Button>}
         {order !== null && !correct && <Button onClick={retry}>Try again</Button>}
       </div>
     </Shell>

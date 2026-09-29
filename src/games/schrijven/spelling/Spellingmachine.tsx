@@ -4,91 +4,47 @@ import { Button } from '../../../components/Button'
 import { FeedbackBox } from '../../../components/FeedbackBox'
 import { StreakBadge } from '../../../components/StreakBadge'
 import { Tag } from '../../../components/Tag'
-import { useGameProgress } from '../../useGameProgress'
+import { useDrill } from '../../useDrill'
 import { normalize } from '../../normalize'
-import { items, MODE_LABELS, RULE_EXPLANATIONS, RULE_LABELS, type SpellItem } from './data'
+import {
+  answerInContext,
+  items,
+  MODE_LABELS,
+  RULE_EXPLANATIONS,
+  RULE_LABELS,
+} from './data'
 import './Spellingmachine.css'
 
 const STORE_KEY = 'nl.schrijven.spelling'
 
-interface SpellingState {
-  done: boolean
-  completedIds: string[]
-  streak: number
-  bestStreak: number
-  correctFirstTry: number
-}
-
-const initialState: SpellingState = {
-  done: false,
-  completedIds: [],
-  streak: 0,
-  bestStreak: 0,
-  correctFirstTry: 0,
-}
-
-function nextItem(completedIds: string[]): SpellItem | null {
-  return items.find((item) => !completedIds.includes(item.id)) ?? null
-}
-
 export function Spellingmachine() {
-  const { state, loaded, save } = useGameProgress<SpellingState>(STORE_KEY, initialState)
-  const [current, setCurrent] = useState<SpellItem | null>(null)
+  const drill = useDrill(STORE_KEY, items)
   const [typed, setTyped] = useState('')
   const [checked, setChecked] = useState(false)
-  const [missed, setMissed] = useState(false)
 
+  const current = drill.current
+  const currentId = current?.id
+
+  // Empty the field for each new presentation, including a repeat of a missed word.
   useEffect(() => {
-    if (!loaded) return
-    setCurrent(nextItem(state.completedIds))
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loaded])
+    setTyped('')
+    setChecked(false)
+  }, [currentId, drill.round])
 
-  if (!loaded) return null
+  if (!drill.loaded) return null
 
   const correct = current ? normalize(typed) === normalize(current.to) : false
 
   function check() {
     if (!current || typed.trim() === '') return
     setChecked(true)
-    if (normalize(typed) !== normalize(current.to)) {
-      setMissed(true)
-      save({ ...state, streak: 0 })
-      return
-    }
-    const firstTry = !missed
-    const completedIds = state.completedIds.includes(current.id)
-      ? state.completedIds
-      : [...state.completedIds, current.id]
-    const streak = firstTry ? state.streak + 1 : 0
-    save({
-      ...state,
-      completedIds,
-      streak,
-      bestStreak: Math.max(state.bestStreak, streak),
-      correctFirstTry: firstTry ? state.correctFirstTry + 1 : state.correctFirstTry,
-      done: completedIds.length === items.length,
-    })
+    if (normalize(typed) === normalize(current.to)) drill.hit()
+    else drill.miss()
   }
 
   function retry() {
     setChecked(false)
     setTyped('')
-  }
-
-  function advance() {
-    setCurrent(nextItem(state.completedIds))
-    setTyped('')
-    setChecked(false)
-    setMissed(false)
-  }
-
-  function restart() {
-    save({ ...initialState, bestStreak: state.bestStreak })
-    setCurrent(items[0])
-    setTyped('')
-    setChecked(false)
-    setMissed(false)
   }
 
   if (!current) {
@@ -97,9 +53,9 @@ export function Spellingmachine() {
         <div className="g-done">
           <FeedbackBox
             correct
-            message={`Done. All ${items.length} words are spelled correctly. Best streak: ${state.bestStreak}.`}
+            message={`Done. You spelled all ${items.length} words right first time. Best streak: ${drill.state.bestStreak}.`}
           />
-          <Button onClick={restart}>Practise again</Button>
+          <Button onClick={drill.restart}>Practise again</Button>
         </div>
       </Shell>
     )
@@ -109,11 +65,11 @@ export function Spellingmachine() {
     <Shell
       title="Spellingmachine"
       backTo="/schrijven"
-      progress={{ value: state.completedIds.length, max: items.length }}
+      progress={{ value: drill.mastered, max: drill.total }}
     >
       <div className="g-row">
         <Tag>{RULE_LABELS[current.rule]}</Tag>
-        <StreakBadge label="Streak" value={state.streak} />
+        <StreakBadge label="Streak" value={drill.state.streak} />
       </div>
 
       <p className="g-label">{MODE_LABELS[current.mode]}</p>
@@ -162,7 +118,7 @@ export function Spellingmachine() {
             message={
               correct
                 ? RULE_EXPLANATIONS[current.rule]
-                : `${RULE_EXPLANATIONS[current.rule]} The right word is "${current.to}".`
+                : `${RULE_EXPLANATIONS[current.rule]} The right answer is "${answerInContext(current)}".`
             }
           />
         </>
@@ -174,7 +130,7 @@ export function Spellingmachine() {
             Check
           </Button>
         )}
-        {checked && correct && <Button onClick={advance}>Next</Button>}
+        {checked && correct && <Button onClick={drill.advance}>Next</Button>}
         {checked && !correct && <Button onClick={retry}>Try again</Button>}
       </div>
     </Shell>

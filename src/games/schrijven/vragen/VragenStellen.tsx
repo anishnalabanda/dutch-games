@@ -5,93 +5,48 @@ import { GlossedText } from '../../../components/GlossedText'
 import { FeedbackBox } from '../../../components/FeedbackBox'
 import { StreakBadge } from '../../../components/StreakBadge'
 import { Tag } from '../../../components/Tag'
-import { useGameProgress } from '../../useGameProgress'
+import { useDrill } from '../../useDrill'
 import { matchesAnswer } from '../../normalize'
-import { items, TYPE_RULES, type QuestionItem } from './data'
+import { items, TYPE_RULES } from './data'
 import './VragenStellen.css'
 
 const STORE_KEY = 'nl.schrijven.vragen'
 
-interface VragenState {
-  done: boolean
-  completedIds: string[]
-  streak: number
-  bestStreak: number
-  correctFirstTry: number
-}
-
-const initialState: VragenState = {
-  done: false,
-  completedIds: [],
-  streak: 0,
-  bestStreak: 0,
-  correctFirstTry: 0,
-}
-
-function nextItem(completedIds: string[]): QuestionItem | null {
-  return items.find((item) => !completedIds.includes(item.id)) ?? null
-}
-
 export function VragenStellen() {
-  const { state, loaded, save } = useGameProgress<VragenState>(STORE_KEY, initialState)
-  const [current, setCurrent] = useState<QuestionItem | null>(null)
+  const drill = useDrill(STORE_KEY, items)
   const [typed, setTyped] = useState('')
   const [checked, setChecked] = useState(false)
-  const [missed, setMissed] = useState(false)
   const [showHint, setShowHint] = useState(false)
 
-  useEffect(() => {
-    if (!loaded) return
-    setCurrent(nextItem(state.completedIds))
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loaded])
+  const current = drill.current
+  const currentId = current?.id
 
-  if (!loaded) return null
+  // Clear the input for each new presentation, including a repeat of a missed item.
+  useEffect(() => {
+    setTyped('')
+    setChecked(false)
+    setShowHint(false)
+  }, [currentId, drill.round])
+
+  if (!drill.loaded) return null
 
   const correct = current ? matchesAnswer(typed, current.question, current.accept) : false
 
   function check() {
     if (!current || typed.trim() === '') return
     setChecked(true)
-    if (!matchesAnswer(typed, current.question, current.accept)) {
-      setMissed(true)
-      save({ ...state, streak: 0 })
-      return
-    }
-    const firstTry = !missed && !showHint
-    const completedIds = state.completedIds.includes(current.id)
-      ? state.completedIds
-      : [...state.completedIds, current.id]
-    const streak = firstTry ? state.streak + 1 : 0
-    save({
-      ...state,
-      completedIds,
-      streak,
-      bestStreak: Math.max(state.bestStreak, streak),
-      correctFirstTry: firstTry ? state.correctFirstTry + 1 : state.correctFirstTry,
-      done: completedIds.length === items.length,
-    })
+    if (matchesAnswer(typed, current.question, current.accept)) drill.hit()
+    else drill.miss()
+  }
+
+  // A question written with the hint open is not right first time, so it comes round again.
+  function openHint() {
+    setShowHint(true)
+    drill.miss()
   }
 
   function retry() {
     setChecked(false)
-  }
-
-  function advance() {
-    setCurrent(nextItem(state.completedIds))
-    setTyped('')
-    setChecked(false)
-    setMissed(false)
-    setShowHint(false)
-  }
-
-  function restart() {
-    save({ ...initialState, bestStreak: state.bestStreak })
-    setCurrent(items[0])
-    setTyped('')
-    setChecked(false)
-    setMissed(false)
-    setShowHint(false)
   }
 
   if (!current) {
@@ -100,9 +55,9 @@ export function VragenStellen() {
         <div className="g-done">
           <FeedbackBox
             correct
-            message={`Done. All ${items.length} questions are phrased correctly. Best streak: ${state.bestStreak}.`}
+            message={`Done. You wrote all ${items.length} questions right first time. Best streak: ${drill.state.bestStreak}.`}
           />
-          <Button onClick={restart}>Practise again</Button>
+          <Button onClick={drill.restart}>Practise again</Button>
         </div>
       </Shell>
     )
@@ -112,11 +67,11 @@ export function VragenStellen() {
     <Shell
       title="Vragen stellen"
       backTo="/schrijven"
-      progress={{ value: state.completedIds.length, max: items.length }}
+      progress={{ value: drill.mastered, max: drill.total }}
     >
       <div className="g-row">
         <Tag>{current.type === 'janee' ? 'Yes/no question' : 'Question word question'}</Tag>
-        <StreakBadge label="Streak" value={state.streak} />
+        <StreakBadge label="Streak" value={drill.state.streak} />
       </div>
 
       <p className="g-hint">
@@ -181,13 +136,13 @@ export function VragenStellen() {
               Check
             </Button>
             {!showHint && (
-              <Button variant="secondary" onClick={() => setShowHint(true)}>
+              <Button variant="secondary" onClick={openHint}>
                 Hint
               </Button>
             )}
           </>
         )}
-        {checked && correct && <Button onClick={advance}>Next</Button>}
+        {checked && correct && <Button onClick={drill.advance}>Next</Button>}
         {checked && !correct && <Button onClick={retry}>Try again</Button>}
       </div>
     </Shell>

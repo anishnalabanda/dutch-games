@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useGameProgress } from './useGameProgress'
 import { shuffle } from './normalize'
 
@@ -41,6 +41,26 @@ function requeue(queue: string[]): string[] {
   return [...rest, head]
 }
 
+/**
+ * Keeps only the drill's own fields. A game that moved to `useDrill` still has
+ * its old save, whose `completedIds` and `done` came from the weaker
+ * right-eventually rule; spreading that back into every write would carry the
+ * old `done: true` along. `done` is recomputed from mastery, and ids of items
+ * that no longer exist are dropped.
+ */
+function clean(saved: DrillState, items: DrillItem[]): DrillState {
+  const ids = new Set(items.map((item) => item.id))
+  const mastered = Array.isArray(saved.mastered) ? saved.mastered.filter((id) => ids.has(id)) : []
+  return {
+    done: mastered.length === items.length,
+    mastered,
+    streak: saved.streak ?? 0,
+    bestStreak: saved.bestStreak ?? 0,
+    attempts: saved.attempts ?? 0,
+    correctFirstTry: saved.correctFirstTry ?? 0,
+  }
+}
+
 export interface Drill<T> {
   loaded: boolean
   state: DrillState
@@ -67,7 +87,8 @@ export interface Drill<T> {
  * been answered correctly first time: not merely answered correctly once.
  */
 export function useDrill<T extends DrillItem>(key: string, items: T[]): Drill<T> {
-  const { state, loaded, save } = useGameProgress<DrillState>(key, initialDrillState)
+  const { state: saved, loaded, save } = useGameProgress<DrillState>(key, initialDrillState)
+  const state = useMemo(() => clean(saved, items), [saved, items])
   const [queue, setQueue] = useState<string[]>([])
   const [missed, setMissed] = useState(false)
   const [masteredNow, setMasteredNow] = useState(false)
