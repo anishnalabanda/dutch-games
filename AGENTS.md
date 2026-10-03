@@ -195,9 +195,12 @@ sync status, switch address).
 amber marker), and `<GlossedText text="..." />` tokenises any Dutch string and wraps known
 words in `WordTile`, so a whole sentence or message gets per-word tooltips without a gloss
 being written next to it. Use it for every Dutch sentence a game shows: **not** inside a
-`<button>`, since the word tooltips are focusable themselves. Words that are a noun in one
-reading and a verb form in another (`werk`, `vraag`, `fiets`) are deliberately not flagged
-as verbs. When a game adds new Dutch text, add its new words to the glossary.
+`<button>`, since the word tooltips are focusable themselves. A choice made of Dutch text
+(a block, an option) is a `role="radio"` element with `tabIndex={0}` and Enter/Space
+handling instead, so it can hold `GlossedText` (see Bericht bouwstenen). Words that are a
+noun in one reading and a verb form in another (`werk`, `vraag`, `fiets`) are deliberately
+not flagged as verbs. When a game adds new Dutch text, add its new words to the glossary;
+`npm run check:content` lists the missing ones for the games it covers.
 
 ### Which language each string is in (strict)
 The split is by role, not by screen:
@@ -373,11 +376,17 @@ register (`u` vs `je`), spelling, punctuation.
      infinitief); the owner types the result before the slider snaps.
    - Raised in priority: the exam is handwritten, so spelling is unassisted.
 5. `nl.schrijven.formulier`: **Formulier invullen**, core, *built*
-   - Drills: field vocabulary (`voornaam`, `achternaam`, `geboortedatum`,
-     `geboorteplaats`, `nationaliteit`, `burgerservicenummer`, `postcode`, `handtekening`)
-     and the formats DUO expects (`1234 AB`, `03-03-1990`, 9-digit BSN).
-   - Mechanic: a real fillable form that validates format per field, with a hovering gloss
-     on each label.
+   - Drills: field vocabulary (`voornaam`, `geboortedatum`, `burgerservicenummer`,
+     `woonplaats`, `handtekening` …), the formats a form expects (`1234 AB`, `03-03-1990`,
+     9-digit BSN, today's date), and above all the **open questions** a form asks
+     (`Waarom wilt u …?`, `Wanneer kunt u …?`), answered in a whole, formal sentence.
+   - Mechanic: an exam-style task line and a blank form, no source text. The owner fills
+     in their own (or made-up) details, checked for format only and never saved, then
+     answers 3 open questions. The answers get the capstone's kind of mechanical checks
+     (`formulier/checks.ts`: capital and full stop, 4+ words, a word that fits the
+     question, no `je`, `-dt`, inversion, verb last after `omdat`) and a model answer.
+     It used to give the details as Dutch prose to copy, which drilled reading, not writing.
+   - 14 forms, 42 open questions.
    - Pulled forward: a formulier is 1 of the 4 opdrachten, roughly a quarter of the exam,
      and the most predictable, most learnable quarter.
 6. `nl.schrijven.uofje`: **U of je**, core, *built*

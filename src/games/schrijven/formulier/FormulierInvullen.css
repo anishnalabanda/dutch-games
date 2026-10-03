@@ -1,11 +1,104 @@
-.fi-persona {
-  font-size: var(--text-base);
+.fi-brief {
+  border-left: 3px solid var(--amber);
+  padding-left: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
 }
 
-.fi-fictional {
-  font-family: var(--font-body);
+.fi-situation {
+  margin: 0;
+  color: var(--paper);
+  font-size: var(--text-md);
+  line-height: 1.6;
+}
+
+/* The form itself: one bordered sheet, like the paper one on the exam. */
+.fi-sheet {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.fi-title {
+  margin: 0;
+  font-family: var(--font-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--paper);
+}
+
+.fi-questions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.fi-question-text {
+  margin: 0;
+  color: var(--paper);
+  font-size: var(--text-base);
+  line-height: 1.6;
+}
+
+.fi-answer {
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.fi-notes {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.fi-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--text-sm);
+}
+.fi-note strong {
+  color: var(--paper);
+}
+.fi-note-ok span {
+  color: var(--ok);
+}
+.fi-note-warn span {
+  color: var(--amber);
+}
+.fi-note-fail span {
+  color: var(--alert);
+}
+
+.fi-model {
+  border-left: 3px solid var(--ok);
+  font-size: var(--text-base);
+  padding: var(--space-2) var(--space-3);
+}
+
+.fi-model-label {
+  display: block;
+  font-family: var(--font-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
   font-size: var(--text-xs);
   color: #6b7684;
+}
+
+.fi-honesty {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--text-xs);
+  line-height: 1.6;
+  border: 1px dashed var(--line);
+  border-radius: var(--radius);
+  padding: var(--space-2) var(--space-3);
 }
 
 .fi-form {

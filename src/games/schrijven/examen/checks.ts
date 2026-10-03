@@ -12,15 +12,16 @@ export interface CheckResult {
 
 const OPENINGS = /^(geachte|beste|hoi|hallo|lieve|dag)\b/i
 const CLOSINGS = /(met vriendelijke groet|vriendelijke groet|hartelijke groet|met groet|groeten|groetjes|hoogachtend)/i
-const INFORMAL = /\b(je|jij|jou|jouw|jullie|joh)\b/gi
+// Shared with Formulier invullen, whose open questions get the same checks.
+export const INFORMAL = /\b(je|jij|jou|jouw|jullie|joh)\b/gi
 const FORMAL = /\b(u|uw)\b/gi
 
 /** Finite verb forms common enough at A2 to check word order against. */
-const FRONTED = /^(morgen|vandaag|gisteren|overmorgen|vanavond|vanmiddag|vanmorgen|daarna|daarom|hierbij|volgende week|vorige week|nu|straks|misschien|helaas)\b/i
-const SUBJECT_PRONOUNS = /^(ik|je|jij|u|hij|zij|ze|het|we|wij|jullie)\b/i
+export const FRONTED = /^(morgen|vandaag|gisteren|overmorgen|vanavond|vanmiddag|vanmorgen|daarna|daarom|hierbij|volgende week|vorige week|nu|straks|misschien|helaas)\b/i
+export const SUBJECT_PRONOUNS = /^(ik|je|jij|u|hij|zij|ze|het|we|wij|jullie)\b/i
 
-const DT_MISSING = /\b(hij|zij|ze|het|je|jij|u|mijn \w+)\s+(word|vind|houd|antwoord|beslis)\b/gi
-const DT_EXTRA = /\bik\s+(wordt|vindt|houdt|antwoordt)\b/gi
+export const DT_MISSING = /\b(hij|zij|ze|het|je|jij|u|mijn \w+)\s+(word|vind|houd|antwoord|beslis)\b/gi
+export const DT_EXTRA = /\bik\s+(wordt|vindt|houdt|antwoordt)\b/gi
 
 function sentences(text: string): string[] {
   return text

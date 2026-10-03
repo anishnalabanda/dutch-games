@@ -25,7 +25,7 @@ import { items as nietgeen } from './schrijven/nietgeen/data'
 import { items as voegwoorden } from './schrijven/voegwoorden/data'
 import { items as vragen } from './schrijven/vragen/data'
 import { messages } from './schrijven/uofje/data'
-import { personas } from './schrijven/formulier/data'
+import { forms } from './schrijven/formulier/data'
 import { situations } from './schrijven/bouwstenen/data'
 import { items as woorden } from './schrijven/woorden/data'
 import { items as voorzetsels } from './schrijven/voorzetsels/data'
@@ -117,7 +117,7 @@ export const games: RegisteredGame[] = [
     title: 'Formulier invullen',
     subtitle: 'Filling in forms',
     core: true,
-    total: personas.length,
+    total: forms.length,
     component: FormulierInvullen,
   },
   {

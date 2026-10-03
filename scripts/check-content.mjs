@@ -85,24 +85,50 @@ for (const m of r.messages) {
 console.log(`uofje: ${r.messages.length} messages`)
 
 const f = await import(`${base}/schrijven/formulier/data.ts`)
-for (const p of f.personas) {
-  for (const field of f.fields) {
-    const expected = p.values[field.id]
-    ok(expected !== undefined, `formulier ${p.id}: missing value for ${field.id}`)
-    if (expected === undefined) continue
-    ok(f.fieldMatches(field.type, expected, expected), `formulier ${p.id}: ${field.id} fails its own validator`)
-    const prose = p.intro.join(' ')
-    if (field.type === 'text' && field.id !== 'handtekening' && field.id !== 'datum') {
-      ok(prose.toLowerCase().includes(expected.toLowerCase()), `formulier ${p.id}: "${expected}" (${field.id}) not findable in the intro text`)
+const fc = await import(`${base}/schrijven/formulier/checks.ts`)
+const formIds = new Set()
+let questionCount = 0
+for (const form of f.forms) {
+  ok(!formIds.has(form.id), `formulier: duplicate id ${form.id}`)
+  formIds.add(form.id)
+  ok(form.questions.length === 3, `formulier ${form.id}: expected 3 open questions`)
+  ok(new Set(form.fields.map(x => x.id)).size === form.fields.length, `formulier ${form.id}: duplicate field id`)
+  for (const q of form.questions) {
+    questionCount += 1
+    // Model answers are what the owner copies the habits of: no warnings either.
+    for (const r of fc.checkAnswer(q, q.model)) {
+      ok(r.status === 'ok', `formulier ${form.id}/${q.id}: model answer gets "${r.label}" ${r.status}: ${r.detail}`)
     }
   }
 }
-// A wrongly formatted date must be rejected, and a loose one accepted.
-ok(f.fieldMatches('date', '3-3-1990', '03-03-1990'), 'formulier: 3-3-1990 should be accepted')
-ok(!f.fieldMatches('date', '1990-03-03', '03-03-1990'), 'formulier: reversed date should be rejected')
-ok(f.fieldMatches('postcode', '3512ab', '3512 AB'), 'formulier: postcode without space should be accepted')
-ok(!f.fieldMatches('bsn', '12345678', '123456782'), 'formulier: 8-digit BSN should be rejected')
-console.log(`formulier: ${f.personas.length} personas x ${f.fields.length} fields`)
+// The answer checker must catch the classic slips.
+const someQ = f.forms[0].questions[2]
+const flagged = (text) => fc.checkAnswer(someQ, text).filter(r => r.status !== 'ok').map(r => r.id)
+ok(flagged('zaterdag').includes('lengte'), 'formulier: a one-word answer should fail "lengte"')
+ok(flagged('ik kom op zaterdag').includes('zin'), 'formulier: no capital and no full stop should fail "zin"')
+ok(flagged('Ik vind boeken heel mooi.').includes('antwoord'), 'formulier: an answer with no time should fail "antwoord"')
+ok(flagged('Op zaterdag ik kom naar de bibliotheek.').includes('inversie'), 'formulier: "Op zaterdag ik kom" should warn on inversion')
+ok(flagged('Ik kom op zaterdag, als je wilt.').includes('register'), 'formulier: "je" on a form should fail register')
+// Field formats: the right one passes, the usual wrong ones do not.
+const now = new Date(2026, 9, 3)
+const fieldCases = [
+  ['birthdate', '03-03-1990', true], ['birthdate', '3-3-1990', true], ['birthdate', '1990-03-03', false],
+  ['birthdate', '31-02-1990', false], ['birthdate', '03-03-2030', false],
+  ['today', '03-10-2026', true], ['today', '04-10-2026', false],
+  ['postcode', '3512 AB', true], ['postcode', '3512 ab', false], ['postcode', '0512 AB', false],
+  ['bsn', '123456782', true], ['bsn', '12345678', false],
+  ['tel', '06-12345678', true], ['tel', '0612345678', true], ['tel', '612345678', false],
+  ['email', 'sara.haddad@mail.nl', true], ['email', 'sara.haddad@mail', false],
+  ['name', 'Sara', true], ['name', 'sara', false], ['name', 'van der Berg', true],
+  ['fullname', 'Sara Haddad', true], ['fullname', 'Sara', false],
+  ['street', 'Kerkstraat 12', true], ['street', 'Molenweg 5b', true], ['street', 'kerkstraat 12', false], ['street', 'Kerkstraat', false],
+  ['place', 'Utrecht', true], ['place', "'s-Hertogenbosch", true], ['place', 'utrecht', false],
+  ['gender', 'vrouw', true], ['gender', 'female', false],
+]
+for (const [kind, value, expected] of fieldCases) {
+  ok(f.fieldValid(kind, value, now) === expected, `formulier: ${kind} "${value}" should be ${expected ? 'accepted' : 'rejected'}`)
+}
+console.log(`formulier: ${f.forms.length} forms, ${questionCount} open questions, model answers pass`)
 
 const b = await import(`${base}/schrijven/bouwstenen/data.ts`)
 for (const sit of b.situations) {
@@ -114,6 +140,31 @@ for (const sit of b.situations) {
   }
 }
 console.log(`bouwstenen: ${b.situations.length} situations`)
+
+// Every Dutch word these games show must have a gloss, or it renders without a
+// tooltip (AGENTS.md section 7). Names and places are not glossed.
+const glossary = await import(`${base}/glossary.ts`)
+const NOT_GLOSSED = new Set([
+  'anish', 'nalabanda', 'anna', 'sam', 'jan', 'vries', 'linde', 'brug', 'oost', 'vers', 'wetering',
+  'noord', 'utrecht', 'kerkstraat', 'yoga', 'a',
+])
+const unglossed = new Map()
+function needsGloss(where, text) {
+  for (const word of text.match(/[A-Za-zÀ-ÿ]+(?:['’-][A-Za-zÀ-ÿ]+)*/g) ?? []) {
+    if (NOT_GLOSSED.has(word.toLowerCase()) || glossary.lookupWord(word)) continue
+    if (!unglossed.has(word.toLowerCase())) unglossed.set(word.toLowerCase(), where)
+  }
+}
+for (const sit of b.situations) {
+  for (const point of sit.brief) needsGloss(`bouwstenen ${sit.id}`, point)
+  for (const slot of sit.slots) for (const o of slot.options) needsGloss(`bouwstenen ${sit.id}`, o.text)
+}
+for (const form of f.forms) {
+  needsGloss(`formulier ${form.id}`, `${form.title} ${form.situation}`)
+  for (const q of form.questions) needsGloss(`formulier ${form.id}`, `${q.question} ${q.model}`)
+}
+for (const [word, where] of unglossed) ok(false, `${where}: "${word}" has no glossary entry`)
+console.log(`glossary: bouwstenen and formulier checked for missing words`)
 
 const d = await import(`${base}/schrijven/voorzetsels/data.ts`)
 const names = ['zondag','maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag']

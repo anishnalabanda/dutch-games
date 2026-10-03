@@ -119,20 +119,29 @@ export function BerichtBouwstenen() {
               <span className="bb-slot-name">{slot.label}</span>
             </Tooltip>
           </span>
-          <div className="bb-pile">
+          {/* A block is a radio, not a <button>: a button cannot hold the focusable
+              word tooltips, and the Dutch on it needs them like any other Dutch. */}
+          <div className="bb-pile" role="radiogroup" aria-label={slot.gloss}>
             {piles[slotIndex].map((option, optionIndex) => {
               const selected = picks[slotIndex] === optionIndex
               const mark = checked && selected ? (option.ok ? 'bb-block-ok' : 'bb-block-alert') : ''
               return (
-                <button
+                <div
                   key={option.text}
-                  className={`bb-block ${selected ? 'bb-block-selected' : ''} ${mark}`}
-                  disabled={checked}
-                  aria-pressed={selected}
+                  role="radio"
+                  tabIndex={0}
+                  aria-checked={selected}
+                  aria-disabled={checked}
+                  className={`bb-block ${selected ? 'bb-block-selected' : ''} ${mark} ${checked ? 'bb-block-locked' : ''}`}
                   onClick={() => pickBlock(slotIndex, optionIndex)}
+                  onKeyDown={(e) => {
+                    if (e.key !== 'Enter' && e.key !== ' ') return
+                    e.preventDefault()
+                    pickBlock(slotIndex, optionIndex)
+                  }}
                 >
-                  {option.text}
-                </button>
+                  <GlossedText text={option.text} />
+                </div>
               )
             })}
           </div>

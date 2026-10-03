@@ -57,11 +57,15 @@
   cursor: pointer;
   transition: border-color var(--transition-fast);
 }
-.bb-block:hover:not(:disabled),
+.bb-block:hover:not(.bb-block-locked),
 .bb-block:focus-visible {
   border-left-color: var(--amber);
 }
-.bb-block:disabled {
+.bb-block:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 1px;
+}
+.bb-block-locked {
   cursor: default;
 }
 .bb-block-selected {
