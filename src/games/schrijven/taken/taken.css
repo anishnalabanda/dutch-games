@@ -1,0 +1,407 @@
+/* Exam writing tasks: the brief, the printed frame, the checklist and the hints. */
+
+.tk-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.tk-pick {
+  min-width: 2.25rem;
+  height: 2.25rem;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  color: var(--muted);
+  font-family: var(--font-heading);
+  font-size: var(--text-base);
+  cursor: pointer;
+  transition: border-color var(--transition-fast);
+}
+.tk-pick:hover,
+.tk-pick:focus-visible {
+  border-color: var(--amber);
+}
+.tk-pick-done {
+  border-color: var(--ok);
+  color: var(--ok);
+}
+.tk-pick-current {
+  background: var(--amber);
+  border-color: var(--amber);
+  color: var(--ink);
+}
+
+.tk-tags {
+  display: flex;
+  gap: var(--space-1);
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.tk-all-done {
+  margin: 0;
+  color: var(--ok);
+  font-size: var(--text-sm);
+}
+
+/* The brief, as the exam prints it. */
+.tk-brief {
+  border-left: 3px solid var(--amber);
+  padding-left: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.tk-title {
+  margin: 0;
+  font-family: var(--font-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--paper);
+}
+
+.tk-line {
+  margin: 0;
+  color: var(--paper);
+  font-size: var(--text-base);
+  line-height: 1.6;
+}
+
+.tk-bullets {
+  margin: 0;
+  padding-left: var(--space-4);
+  color: var(--paper);
+  line-height: 1.6;
+}
+
+.tk-pictures {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.tk-picture {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 4.5rem;
+  height: 4.5rem;
+  padding: 0 var(--space-2);
+  background: var(--worksheet);
+  color: var(--ink);
+  border-radius: var(--radius);
+  font-size: 2.25rem;
+  line-height: 1;
+}
+
+/* The space to write in, on a light "paper" surface. */
+.tk-paper {
+  background: var(--worksheet);
+  color: var(--ink);
+  border-radius: var(--radius);
+  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  font-family: var(--font-reading);
+}
+
+.tk-printed {
+  margin: 0;
+  font-size: var(--text-md);
+}
+
+.tk-write {
+  width: 100%;
+  background: #fffdf7;
+  color: var(--ink);
+  border: 1px dashed #b9b2a2;
+  border-radius: var(--radius);
+  padding: var(--space-2) var(--space-3);
+  font-family: var(--font-reading);
+  font-size: var(--text-md);
+  line-height: 1.6;
+  resize: vertical;
+}
+.tk-write:focus-visible,
+.tk-name:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 2px;
+}
+
+.tk-name {
+  width: 100%;
+  max-width: 16rem;
+  background: #fffdf7;
+  color: var(--ink);
+  border: none;
+  border-bottom: 1px dashed #b9b2a2;
+  padding: var(--space-1) var(--space-2);
+  font-family: var(--font-reading);
+  font-size: var(--text-md);
+}
+.tk-name::placeholder {
+  color: #8a8478;
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+}
+
+/* E-mail window: header rows, then the paper. */
+.tk-mail {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--panel);
+}
+
+.tk-mail-bar {
+  background: var(--line);
+  color: var(--paper);
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--text-sm);
+}
+
+.tk-mail-head {
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  font-size: var(--text-sm);
+}
+.tk-mail-head div {
+  display: grid;
+  grid-template-columns: 6rem 1fr;
+  gap: var(--space-2);
+  border-bottom: 1px solid var(--line);
+  padding-bottom: var(--space-1);
+}
+.tk-mail-head dt {
+  color: var(--muted);
+  font-family: var(--font-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: var(--text-xs);
+}
+.tk-mail-head dd {
+  margin: 0;
+  color: var(--paper);
+  overflow-wrap: anywhere;
+}
+.tk-mail .tk-paper {
+  border-radius: 0;
+}
+
+.tk-note {
+  border: 1px solid #b9b2a2;
+}
+
+.tk-krant {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.tk-krant-lead {
+  margin: 0;
+  color: var(--paper);
+  font-weight: 600;
+}
+.tk-box {
+  border: 1px solid #b9b2a2;
+}
+
+/* The memorised frame for the task type. */
+.tk-template {
+  border: 1px dashed var(--amber);
+  border-radius: var(--radius);
+  padding: var(--space-2) var(--space-3);
+  color: var(--paper);
+}
+.tk-template summary {
+  cursor: pointer;
+  font-family: var(--font-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: var(--text-sm);
+  color: var(--amber);
+}
+.tk-template ol {
+  margin: var(--space-2) 0;
+  padding-left: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+.tk-template li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 var(--space-2);
+}
+.tk-template-nl {
+  font-family: var(--font-reading);
+  font-size: var(--text-md);
+}
+.tk-template-role {
+  color: var(--muted);
+  font-size: var(--text-xs);
+}
+.tk-template p {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--text-xs);
+  line-height: 1.6;
+}
+
+/* What the examiner looks for. */
+.tk-checklist ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.tk-point {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-1) var(--space-2);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--line);
+  border-radius: var(--radius);
+  padding: var(--space-2) var(--space-3);
+  color: var(--paper);
+  font-size: var(--text-sm);
+}
+.tk-point-label {
+  flex: 1;
+  min-width: 10rem;
+}
+.tk-point-mark {
+  font-family: var(--font-heading);
+  width: 1rem;
+  color: var(--muted);
+}
+.tk-point-ok {
+  border-left-color: var(--ok);
+}
+.tk-point-ok .tk-point-mark {
+  color: var(--ok);
+}
+.tk-point-missing {
+  border-left-color: var(--alert);
+}
+.tk-point-missing .tk-point-mark {
+  color: var(--alert);
+}
+
+.tk-cover {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--muted);
+  font-size: var(--text-xs);
+  cursor: pointer;
+}
+.tk-cover input {
+  accent-color: var(--amber);
+}
+
+/* Hints and results. */
+.tk-hint {
+  border: 1px solid var(--amber);
+  border-radius: var(--radius);
+  padding: var(--space-3);
+  background: color-mix(in srgb, var(--amber) 8%, var(--panel));
+  color: var(--paper);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.tk-hint strong {
+  color: var(--amber);
+}
+.tk-hint p {
+  margin: 0;
+  font-size: var(--text-sm);
+  line-height: 1.6;
+}
+.tk-hint-advice {
+  border-color: var(--muted);
+  background: var(--panel);
+}
+.tk-hint-advice strong {
+  color: var(--paper);
+}
+
+.tk-hint-dutch {
+  background: var(--worksheet);
+  color: var(--ink);
+  border-radius: var(--radius);
+  padding: var(--space-2) var(--space-3);
+  font-family: var(--font-reading);
+  font-size: var(--text-md);
+}
+.tk-hint-dutch .g-label {
+  color: #6b7684;
+}
+
+.tk-hint-more {
+  color: var(--muted);
+  font-size: var(--text-xs) !important;
+}
+
+.tk-not-finished {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.tk-issues {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+.tk-issues li {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: var(--space-2) var(--space-3);
+  color: var(--paper);
+  font-size: var(--text-sm);
+}
+.tk-issues p {
+  margin: var(--space-1) 0 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+.tk-issues .tk-advice-example {
+  color: var(--paper);
+  font-family: var(--font-reading);
+  font-size: var(--text-base);
+}
+
+.tk-model {
+  white-space: pre-line;
+}
+
+.tk-honesty {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--text-xs);
+  line-height: 1.6;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tk-pick {
+    transition: none;
+  }
+}

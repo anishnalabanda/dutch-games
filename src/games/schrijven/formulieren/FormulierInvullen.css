@@ -1,0 +1,129 @@
+/* The form itself, laid out like the exam's: a bordered sheet with grey section bars. */
+.fo-sheet {
+  background: var(--worksheet);
+  color: var(--ink);
+  border-radius: var(--radius);
+  border: 1px solid #b9b2a2;
+  overflow: hidden;
+}
+
+.fo-title {
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  text-align: center;
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  font-weight: 700;
+  text-transform: none;
+  letter-spacing: normal;
+  border-bottom: 1px solid #b9b2a2;
+}
+
+.fo-section {
+  border-left: 3px solid transparent;
+}
+.fo-section + .fo-section {
+  border-top: 1px solid #b9b2a2;
+}
+
+.fo-heading {
+  margin: 0;
+  padding: var(--space-1) var(--space-3);
+  background: #d9d4c8;
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.fo-row {
+  display: grid;
+  grid-template-columns: minmax(8rem, 2fr) 3fr;
+  border-top: 1px solid #d9d4c8;
+  border-left: 3px solid transparent;
+}
+
+.fo-label {
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-sm);
+  border-right: 1px solid #d9d4c8;
+}
+.fo-label-name {
+  border-bottom: 1px dotted #6b7684;
+}
+
+.fo-input,
+.fo-answer {
+  width: 100%;
+  background: #fffdf7;
+  color: var(--ink);
+  border: none;
+  padding: var(--space-2) var(--space-3);
+  font-family: var(--font-reading);
+  font-size: var(--text-base);
+}
+.fo-input:focus-visible,
+.fo-answer:focus-visible,
+.fo-option:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: -2px;
+}
+
+.fo-answer {
+  display: block;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.fo-target,
+.fo-row.fo-target {
+  border-left-color: var(--amber);
+}
+
+.fo-options {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-1) var(--space-3);
+}
+
+.fo-option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) 0;
+  font-size: var(--text-sm);
+  cursor: pointer;
+}
+
+.fo-radio {
+  width: 0.9rem;
+  height: 0.9rem;
+  flex: none;
+  border: 1.5px solid var(--ink);
+  border-radius: 50%;
+}
+.fo-option-selected .fo-radio {
+  background: radial-gradient(circle, var(--ink) 45%, transparent 50%);
+}
+
+.fo-example {
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  border-top: 1px dashed #b9b2a2;
+  font-family: var(--font-reading);
+  border-left: 3px solid var(--ok);
+}
+.fo-example .g-label {
+  color: #6b7684;
+}
+
+@media (max-width: 30rem) {
+  .fo-row {
+    grid-template-columns: 1fr;
+  }
+  .fo-label {
+    border-right: none;
+    padding-bottom: 0;
+  }
+}

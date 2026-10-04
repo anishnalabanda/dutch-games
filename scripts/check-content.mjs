@@ -84,52 +84,6 @@ for (const m of r.messages) {
 }
 console.log(`uofje: ${r.messages.length} messages`)
 
-const f = await import(`${base}/schrijven/formulier/data.ts`)
-const fc = await import(`${base}/schrijven/formulier/checks.ts`)
-const formIds = new Set()
-let questionCount = 0
-for (const form of f.forms) {
-  ok(!formIds.has(form.id), `formulier: duplicate id ${form.id}`)
-  formIds.add(form.id)
-  ok(form.questions.length === 3, `formulier ${form.id}: expected 3 open questions`)
-  ok(new Set(form.fields.map(x => x.id)).size === form.fields.length, `formulier ${form.id}: duplicate field id`)
-  for (const q of form.questions) {
-    questionCount += 1
-    // Model answers are what the owner copies the habits of: no warnings either.
-    for (const r of fc.checkAnswer(q, q.model)) {
-      ok(r.status === 'ok', `formulier ${form.id}/${q.id}: model answer gets "${r.label}" ${r.status}: ${r.detail}`)
-    }
-  }
-}
-// The answer checker must catch the classic slips.
-const someQ = f.forms[0].questions[2]
-const flagged = (text) => fc.checkAnswer(someQ, text).filter(r => r.status !== 'ok').map(r => r.id)
-ok(flagged('zaterdag').includes('lengte'), 'formulier: a one-word answer should fail "lengte"')
-ok(flagged('ik kom op zaterdag').includes('zin'), 'formulier: no capital and no full stop should fail "zin"')
-ok(flagged('Ik vind boeken heel mooi.').includes('antwoord'), 'formulier: an answer with no time should fail "antwoord"')
-ok(flagged('Op zaterdag ik kom naar de bibliotheek.').includes('inversie'), 'formulier: "Op zaterdag ik kom" should warn on inversion')
-ok(flagged('Ik kom op zaterdag, als je wilt.').includes('register'), 'formulier: "je" on a form should fail register')
-// Field formats: the right one passes, the usual wrong ones do not.
-const now = new Date(2026, 9, 3)
-const fieldCases = [
-  ['birthdate', '03-03-1990', true], ['birthdate', '3-3-1990', true], ['birthdate', '1990-03-03', false],
-  ['birthdate', '31-02-1990', false], ['birthdate', '03-03-2030', false],
-  ['today', '03-10-2026', true], ['today', '04-10-2026', false],
-  ['postcode', '3512 AB', true], ['postcode', '3512 ab', false], ['postcode', '0512 AB', false],
-  ['bsn', '123456782', true], ['bsn', '12345678', false],
-  ['tel', '06-12345678', true], ['tel', '0612345678', true], ['tel', '612345678', false],
-  ['email', 'sara.haddad@mail.nl', true], ['email', 'sara.haddad@mail', false],
-  ['name', 'Sara', true], ['name', 'sara', false], ['name', 'van der Berg', true],
-  ['fullname', 'Sara Haddad', true], ['fullname', 'Sara', false],
-  ['street', 'Kerkstraat 12', true], ['street', 'Molenweg 5b', true], ['street', 'kerkstraat 12', false], ['street', 'Kerkstraat', false],
-  ['place', 'Utrecht', true], ['place', "'s-Hertogenbosch", true], ['place', 'utrecht', false],
-  ['gender', 'vrouw', true], ['gender', 'female', false],
-]
-for (const [kind, value, expected] of fieldCases) {
-  ok(f.fieldValid(kind, value, now) === expected, `formulier: ${kind} "${value}" should be ${expected ? 'accepted' : 'rejected'}`)
-}
-console.log(`formulier: ${f.forms.length} forms, ${questionCount} open questions, model answers pass`)
-
 const b = await import(`${base}/schrijven/bouwstenen/data.ts`)
 for (const sit of b.situations) {
   ok(sit.slots.length === 4, `bouwstenen ${sit.id}: expected 4 slots`)
@@ -141,12 +95,123 @@ for (const sit of b.situations) {
 }
 console.log(`bouwstenen: ${b.situations.length} situations`)
 
+// --- The four exam-task games ------------------------------------------------
+const tc = await import(`${base}/schrijven/taken/checks.ts`)
+const textGames = [
+  ['formeel', (await import(`${base}/schrijven/formeel/data.ts`)).tasks],
+  ['informeel', (await import(`${base}/schrijven/informeel/data.ts`)).tasks],
+  ['wijkkrant', (await import(`${base}/schrijven/wijkkrant/data.ts`)).tasks],
+]
+const fo = await import(`${base}/schrijven/formulieren/data.ts`)
+const fc = await import(`${base}/schrijven/formulieren/checks.ts`)
+const ff = await import(`${base}/schrijven/formulieren/fields.ts`)
+
+// A weekday next to a date has to be that date's weekday (in 2026).
+const WEEKDAY_NAMES = ['zondag', 'maandag', 'dinsdag', 'woensdag', 'donderdag', 'vrijdag', 'zaterdag']
+const MONTH_NAMES = ['januari', 'februari', 'maart', 'april', 'mei', 'juni', 'juli', 'augustus', 'september', 'oktober', 'november', 'december']
+function datesAgree(where, text) {
+  for (const m of text.matchAll(/\b(maandag|dinsdag|woensdag|donderdag|vrijdag|zaterdag|zondag) (\d{1,2}) (januari|februari|maart|april|mei|juni|juli|augustus|september|oktober|november|december)\b/g)) {
+    const real = WEEKDAY_NAMES[new Date(Date.UTC(2026, MONTH_NAMES.indexOf(m[3]), Number(m[2]))).getUTCDay()]
+    ok(real === m[1], `${where}: "${m[0]}" is a ${real} in 2026`)
+  }
+}
+
+for (const [game, tasks] of textGames) {
+  const ids = new Set()
+  for (const t of tasks) {
+    ok(!ids.has(t.id), `${game}: duplicate id ${t.id}`)
+    ids.add(t.id)
+    ok(t.points.length >= 3, `${game} ${t.id}: fewer than 3 points`)
+    // The model is what the owner copies the habits of: no issue at all, advice included.
+    for (const issue of tc.textIssues({ task: t, body: t.model, name: 'Anish', covered: new Set() })) {
+      ok(false, `${game} ${t.id}: model answer gets "${issue.title}": ${issue.explain}`)
+    }
+    for (const p of t.points) {
+      ok(tc.hasKeyword(p.example, p.keywords), `${game} ${t.id}/${p.id}: the example doesn't match its own point`)
+      for (const issue of tc.grammarAdvice(p.example)) ok(false, `${game} ${t.id}/${p.id}: example gets "${issue.title}"`)
+      datesAgree(`${game} ${t.id}/${p.id}`, p.example)
+    }
+    datesAgree(`${game} ${t.id}`, t.model)
+  }
+  console.log(`${game}: ${tasks.length} tasks, ${tasks.filter(t => t.exam).length} from the practice exams, model answers pass`)
+}
+
+// The text checker must catch the classic slips.
+const formal = textGames[0][1][0]
+const informal = textGames[1][1][0]
+const flaggedText = (task, body, name = 'Anish') =>
+  tc.textIssues({ task, body, name, covered: new Set() }).map(i => i.id)
+ok(flaggedText(formal, '').includes('leeg'), 'taken: empty text should give "leeg"')
+ok(flaggedText(formal, 'Ik ben ziek.').some(id => id.startsWith('punt-')), 'taken: a one-line text should miss points')
+ok(flaggedText(formal, 'Kun jij mij helpen?').includes('register'), 'taken: je in a formal e-mail should fail register')
+ok(flaggedText(informal, 'Kunt u mij helpen?').includes('register'), 'taken: u in an informal e-mail should fail register')
+ok(flaggedText(formal, 'ik ben ziek.').includes('hoofdletter'), 'taken: a small letter should fail "hoofdletter"')
+ok(flaggedText(formal, 'Ik ben ziek').includes('punt'), 'taken: no full stop should fail "punt"')
+ok(flaggedText(formal, formal.model, '').includes('naam'), 'taken: a missing name should fail "naam"')
+ok(flaggedText(formal, 'Morgen ik kom niet.').includes('inversie'), 'taken: "Morgen ik kom" should warn on inversion')
+ok(flaggedText(formal, 'Op maandag ik kan niet.').includes('inversie'), 'taken: "Op maandag ik kan" should warn on inversion')
+ok(flaggedText(formal, 'Ik kom niet, omdat ik ben ziek.').includes('omdat'), 'taken: "omdat ik ben ziek" should warn')
+ok(!flaggedText(formal, 'Ik kom niet, omdat ik ziek ben.').includes('omdat'), 'taken: "omdat ik ziek ben" is right')
+ok(!flaggedText(formal, 'Ik kom niet, omdat ik moet werken.').includes('omdat'), 'taken: "omdat ik moet werken" is right')
+ok(flaggedText(formal, 'Ik kom niet, want ik ziek ben.').includes('want'), 'taken: "want ik ziek ben" should warn')
+ok(!flaggedText(formal, 'Ik kom niet, want mijn zus gaat trouwen.').includes('want'), 'taken: "want mijn zus gaat trouwen" is right')
+ok(flaggedText(formal, 'Hij word morgen beter.').includes('dt'), 'taken: "hij word" should warn on -dt')
+ok(flaggedText(formal, 'Beste meneer, ik ben ziek.').includes('aanhef'), 'taken: a repeated greeting should be pointed out')
+ok(flaggedText(formal, 'Schrijf dat u de afspraak wilt verzetten.').includes('opdracht'), 'taken: a copied instruction should be pointed out')
+
+// Forms: every example answer passes; the field formats hold.
+const today = new Date(2026, 9, 4)
+let questionCount = 0
+for (const form of fo.forms) {
+  for (const section of form.sections) {
+    if (section.kind === 'choice') ok(section.choice.options.length >= 2, `formulieren ${form.id}: a choice with one option`)
+    if (section.kind !== 'question') continue
+    const q = section.question
+    questionCount += 1
+    for (const issue of fc.answerIssues(q, q.example, false)) ok(false, `formulieren ${form.id}/${q.id}: example gets "${issue.title}": ${issue.explain}`)
+    datesAgree(`formulieren ${form.id}/${q.id}`, q.example)
+  }
+  // A form filled in with the sample values and the examples has nothing left to fix.
+  const values = {}
+  for (const section of form.sections) {
+    if (section.kind === 'fields') for (const field of section.fields) values[field.id] = ff.sampleValue(field.kind, today)
+    else if (section.kind === 'choice') values[section.choice.id] = section.choice.options[0]
+    else values[section.question.id] = section.question.example
+  }
+  for (const issue of fc.formIssues({ form, values, covered: new Set(), today })) ok(false, `formulieren ${form.id}: a filled-in form still gets "${issue.title}"`)
+}
+const someQ = fo.forms[0].sections.find(s => s.kind === 'question').question
+const flaggedAnswer = (text) => fc.answerIssues(someQ, text, false).map(i => i.id.replace(`${someQ.id}-`, ''))
+ok(flaggedAnswer('Soep.').includes('lengte'), 'formulieren: a one-word answer should fail "lengte"')
+ok(flaggedAnswer('ik wil soep leren koken').includes('hoofdletter'), 'formulieren: no capital should fail')
+ok(flaggedAnswer('Ik wil graag iets nieuws doen.').includes('antwoord'), 'formulieren: an answer without a dish should fail "antwoord"')
+ok(flaggedAnswer('Ik wil soep koken, als je wilt.').includes('register'), 'formulieren: je on a form should fail register')
+const fieldCases = [
+  ['birthdate', '03-03-1990', true], ['birthdate', '3-3-1990', true], ['birthdate', '1990-03-03', false],
+  ['birthdate', '31-02-1990', false], ['birthdate', '03-03-2030', false],
+  ['today', '04-10-2026', true], ['today', '05-10-2026', false],
+  ['postcode', '3512 AB', true], ['postcode', '3512 ab', false], ['postcode', '0512 AB', false],
+  ['bsn', '123456782', true], ['bsn', '12345678', false],
+  ['tel', '06-12345678', true], ['tel', '0612345678', true], ['tel', '612345678', false],
+  ['email', 'sara.haddad@mail.nl', true], ['email', 'sara.haddad@mail', false],
+  ['fullname', 'Sara Haddad', true], ['fullname', 'Sara', false], ['fullname', 'Sara van der Berg', true],
+  ['street', 'Kerkstraat 12', true], ['street', 'Molenweg 5b', true], ['street', 'kerkstraat 12', false], ['street', 'Kerkstraat', false],
+  ['place', 'Utrecht', true], ['place', "'s-Hertogenbosch", true], ['place', 'utrecht', false],
+]
+for (const [kind, value, expected] of fieldCases) {
+  ok(ff.fieldValid(kind, value, today) === expected, `formulieren: ${kind} "${value}" should be ${expected ? 'accepted' : 'rejected'}`)
+}
+console.log(`formulieren: ${fo.forms.length} forms, ${questionCount} open questions, examples pass, filled-in forms pass`)
+
 // Every Dutch word these games show must have a gloss, or it renders without a
 // tooltip (AGENTS.md section 7). Names and places are not glossed.
 const glossary = await import(`${base}/glossary.ts`)
 const NOT_GLOSSED = new Set([
   'anish', 'nalabanda', 'anna', 'sam', 'jan', 'vries', 'linde', 'brug', 'oost', 'vers', 'wetering',
   'noord', 'utrecht', 'kerkstraat', 'yoga', 'a',
+  'visser', 'boer', 'sanne', 'smit', 'bakker', 'jansen', 'noor', 'peters', 'koster', 'dekker', 'hendriks',
+  'mulder', 'yasmina', 'lotte', 'fatma', 'daan', 'mark', 'sara', 'tim', 'lisa', 'emma', 'ilse', 'ruben',
+  'rotterdam', 'amsterdam', 'molenstraat', 'b', 'x',
 ])
 const unglossed = new Map()
 function needsGloss(where, text) {
@@ -159,12 +224,29 @@ for (const sit of b.situations) {
   for (const point of sit.brief) needsGloss(`bouwstenen ${sit.id}`, point)
   for (const slot of sit.slots) for (const o of slot.options) needsGloss(`bouwstenen ${sit.id}`, o.text)
 }
-for (const form of f.forms) {
-  needsGloss(`formulier ${form.id}`, `${form.title} ${form.situation}`)
-  for (const q of form.questions) needsGloss(`formulier ${form.id}`, `${q.question} ${q.model}`)
+for (const [game, tasks] of textGames) {
+  for (const t of tasks) {
+    const frame = t.frame.kind === 'mail' ? [t.frame.subject, t.frame.greeting, t.frame.closing]
+      : t.frame.kind === 'note' ? [t.frame.greeting, ...t.frame.closing] : [t.frame.lead]
+    const texts = [t.title, t.situation, t.intro ?? '', ...t.bullets, ...t.instructions, ...frame, t.model,
+      ...t.points.flatMap(p => [p.starter, p.example])]
+    for (const text of texts) needsGloss(`${game} ${t.id}`, text)
+  }
 }
+for (const form of fo.forms) {
+  const texts = [form.title, form.situation, form.formTitle, ...form.instructions]
+  for (const section of form.sections) {
+    if (section.kind === 'fields') texts.push(section.heading, ...section.fields.map(f => f.label))
+    else if (section.kind === 'choice') texts.push(section.choice.heading, ...section.choice.options)
+    else texts.push(section.question.question, section.question.starter, section.question.example)
+  }
+  for (const text of texts) needsGloss(`formulieren ${form.id}`, text)
+}
+needsGloss('frame', 'Van Aan Onderwerp')
+const tpl = await import(`${base}/schrijven/taken/templates.ts`)
+for (const [name, template] of Object.entries(tpl)) for (const line of template.lines) needsGloss(`template ${name}`, line.nl)
 for (const [word, where] of unglossed) ok(false, `${where}: "${word}" has no glossary entry`)
-console.log(`glossary: bouwstenen and formulier checked for missing words`)
+console.log(`glossary: bouwstenen and the four exam-task games checked for missing words`)
 
 const d = await import(`${base}/schrijven/voorzetsels/data.ts`)
 const names = ['zondag','maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag']
@@ -207,33 +289,6 @@ for (const it of dh.items) {
   ok(expectE === it.follow.answer.endsWith('e'), `dehet ${it.id}: adjective ending contradicts the rule`)
 }
 console.log(`dehet: ${dh.items.length} items`)
-
-const ex = await import(`${base}/schrijven/examen/data.ts`)
-const checks = await import(`${base}/schrijven/examen/checks.ts`)
-for (const task of ex.tasks) {
-  const results = checks.runChecks(task, task.model)
-  for (const res of results) {
-    ok(res.status !== 'fail', `examen ${task.id}: own model answer fails check "${res.label}" — ${res.detail}`)
-  }
-}
-// The checker must actually catch a bad message.
-const bad = 'hoi,\n\nik ben ziek. morgen ik bel je. hij word beter.\n'
-const badResults = checks.runChecks(ex.tasks[0], bad)
-const failing = badResults.filter(r => r.status !== 'ok').map(r => r.id)
-for (const id of ['punten', 'register', 'dt', 'hoofdletters', 'inversie', 'afsluiting', 'lengte']) {
-  ok(failing.includes(id), `examen: deliberately bad text was not flagged by "${id}"`)
-}
-console.log(`examen: ${ex.tasks.length} tasks, model answers pass, bad text flagged by ${failing.length} checks`)
-
-for (const stem of ex.stems) {
-  for (const model of stem.models) {
-    const res = checks.checkCompletion(stem.rule, model)
-    for (const r of res) {
-      ok(r.status !== 'fail', `examen stem ${stem.id}: model "${model}" fails its own check "${r.label}" — ${r.detail}`)
-    }
-  }
-}
-console.log(`examen: ${ex.stems.length} stems, model completions pass their own rule check`)
 
 if (problems.length) {
   console.log(`\n${problems.length} PROBLEM(S):`)

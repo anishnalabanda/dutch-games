@@ -17,7 +17,7 @@ baseline. Learning happens through **playing games**, not reading lessons.
 ### Current exam status (keep updated as games are completed)
 - Lezen: cleared (no games needed)
 - Luisteren: in progress (baseline practice exam: 18/25)
-- Schrijven: in progress (all 14 games built, roadmap in section 13; done now means
+- Schrijven: in progress (all 16 games built, roadmap in section 13; done now means
   every item right first time, so older right-eventually saves no longer count)
 - KNM: question source is the owner's *NT2 KNM 1000 vragen* book
 - Spreken: not started, no date
@@ -241,8 +241,8 @@ words like *in*, *op* and *je* as Dutch.
   `CurrentGameProvider` (`src/games/currentGame.tsx`) and `Shell` reads it, so a game never
   repeats its own metadata and `Shell` never imports the manifest (that would be a cycle).
 - The per-exam page shows a bar per game: `countFinished` (`src/games/progress.ts`) counts
-  `mastered` for drill games, and both per-level lists for Schrijfopdracht (the only game
-  that is not a drill, since the owner marks their own handwritten work). A save with
+  `mastered` for drill games, and `finished` for the four Schrijven exam-task games
+  (`useTasks`, the only games that are not drills: see below and section 13). A save with
   only `completedIds` predates `useDrill` (right *eventually*, not first time) and counts
   as zero. `isDone` checks the count against the game's current `total`, so adding items
   to a finished game reopens it. A new drill game needs no change there.
@@ -259,6 +259,12 @@ words like *in*, *op* and *je* as Dutch.
   - the progress bar shows mastered / total, so the counter cannot overstate readiness.
   Games supply only the interaction and call `miss()`, `hit()` and `advance()`. Do NOT
   hand-roll a `completedIds` list in a new game: that was the old, weaker rule.
+- **The one exception: the four exam-task games** (`src/games/schrijven/taken/useTasks.ts`).
+  A whole e-mail or form is not a drill item, and the owner chose a completion rule for
+  them: a task is `finished` once it is submitted with every point covered, however many
+  hints it took. They have no wrong answers, only "not finished yet". Drafts are saved
+  (debounced) so a half-written e-mail survives leaving the page, except in the form game,
+  where the owner types personal details and nothing is kept.
 
 ---
 
@@ -283,7 +289,8 @@ words like *in*, *op* and *je* as Dutch.
 Compiles and builds clean; `npm run check:content` passes (it validates the game data
 against itself: answers present in their own option lists, weekdays matching their dates,
 every decoy carrying an explanation, model answers surviving the app's own checker); persists via the store under the right key; **uses `useDrill`
-so completion means mastery, not exposure** (section 8); matches the design system and the
+so completion means mastery, not exposure** (section 8; the four exam-task games use
+`useTasks` instead); matches the design system and the
 Dutch display rule; keyboard- and mobile-usable; respects `prefers-reduced-motion`;
 registered in the manifest so the hub counts it. Aim for **40+ items** per game, spread
 evenly across the rules it teaches, a dozen items is memorised, not learned. Update
@@ -325,21 +332,36 @@ filling in a **formulier**, one or two **korte berichten**, and one or two longe
 writing tasks (a note, card, e-mail or brief that must cover given points).
 Source: <https://www.inburgeren.nl/examen-doen/inhoud-taalexamens-a2-b1-b2.jsp>
 
+**What the three DUO oefenexamens actually set (checked October 2026).** Every one has the
+same four task types, one each:
+- a **formal e-mail** (u) to a docent or chef: 3 or 4 bullets, one of them "Bedenk zelf";
+- an **informal message** (je) to a colleague or fellow student: an e-mail with bullets,
+  or a *briefje* built from pictures instead of bullets;
+- a **formulier**: personal details plus 2 to 4 open questions, often about photos;
+- a **wijkkrant text** about yourself: "Schrijf minimaal drie zinnen op. Denk aan:" and
+  three questions.
+
+The greeting and the closing are printed on the page; the candidate writes the middle and
+signs it. The printed greeting decides the register: meneer/mevrouw + surname means u, a
+first name means je, even after "Beste". The brief says u to the candidate throughout, so
+every bullet has to be turned into ik before it is written. There is no "finish the
+sentence" part, which is why the old capstone's level 1 was dropped.
+
 Because it is handwritten:
 - **Spelling carries more weight** than in a typed exam: no spellcheck, no free
   backspacing. The spelling game is therefore built early, not fourth-from-last.
-- **The capstone is not a plain timed textarea.** Its primary mode is: show the prompt,
-  the owner writes the answer *on paper*, then the app shows the DUO criteria checklist
-  and a model answer to self-check against. A typed mode is acceptable as a secondary
-  composing drill, but never present typing as exam-realistic practice.
+- **The exam-task games are typed practice, and say so.** Typing with hints is how the
+  owner learns what each task needs; every done screen then suggests writing the same
+  task once more on paper.
 - Handwriting speed across 4 tasks in 40 minutes is itself worth rehearsing.
 
 Scoring follows the criteria in section 2: all required points covered, word order,
 register (`u` vs `je`), spelling, punctuation.
 
-**Roadmap (14 games: 13 core, 1 optional).** Ordered so that the task types that are
-*guaranteed* to appear come early, and the capstone stays last. Every entry is one
-`nl.schrijven.*` key, registered in the manifest when built.
+**Roadmap (16 games: 15 core, 1 optional).** The drills come first; the four exam-task
+games, one per task type the exam sets, come last. The manifest order is what the app shows
+and differs from these numbers. Every entry is one `nl.schrijven.*` key, registered in the
+manifest when built.
 
 1. `nl.schrijven.zinnen`: **Zinnen bouwen**, core, *built*
    - Drills: word order across five rules, persoonsvorm op plaats 2, inversie na een
@@ -375,20 +397,16 @@ register (`u` vs `je`), spelling, punctuation.
    - Mechanic: a stretch slider that pulls a word singular → plural (or ik-vorm →
      infinitief); the owner types the result before the slider snaps.
    - Raised in priority: the exam is handwritten, so spelling is unassisted.
-5. `nl.schrijven.formulier`: **Formulier invullen**, core, *built*
-   - Drills: field vocabulary (`voornaam`, `geboortedatum`, `burgerservicenummer`,
-     `woonplaats`, `handtekening` …), the formats a form expects (`1234 AB`, `03-03-1990`,
-     9-digit BSN, today's date), and above all the **open questions** a form asks
-     (`Waarom wilt u …?`, `Wanneer kunt u …?`), answered in a whole, formal sentence.
-   - Mechanic: an exam-style task line and a blank form, no source text. The owner fills
-     in their own (or made-up) details, checked for format only and never saved, then
-     answers 3 open questions. The answers get the capstone's kind of mechanical checks
-     (`formulier/checks.ts`: capital and full stop, 4+ words, a word that fits the
-     question, no `je`, `-dt`, inversion, verb last after `omdat`) and a model answer.
-     It used to give the details as Dutch prose to copy, which drilled reading, not writing.
-   - 14 forms, 42 open questions.
-   - Pulled forward: a formulier is 1 of the 4 opdrachten, roughly a quarter of the exam,
-     and the most predictable, most learnable quarter.
+5. `nl.schrijven.formulieren`: **Formulier invullen**, core, *built*, exam-task game
+   - Replaces the old `nl.schrijven.formulier` drill (a new key, so its old `mastered`
+     save cannot count for the new game).
+   - The exam's form: personal details (the owner's own or made up, checked for format
+     only, never saved), sometimes a choice to tick, and 2 to 4 open questions answered in
+     a whole sentence. Some forms take their content from pictures (emoji stand in for
+     the exam's photos), and a question can need two things at once (`needs` groups:
+     the laptop *and* the watch).
+   - Field formats and samples in `formulieren/fields.ts`, checks in `formulieren/checks.ts`.
+   - 12 forms, 32 open questions; 3 follow the oefenexamens.
 6. `nl.schrijven.uofje`: **U of je**, core, *built*
    - Drills: register, `u/uw` vs `je/jij/jouw`, formal vs informal aanhef and afsluiting
      (`Geachte heer/mevrouw` … `Met vriendelijke groet` vs `Hoi` … `Groetjes`), staying
@@ -434,13 +452,20 @@ register (`u` vs `je`), spelling, punctuation.
 13. `nl.schrijven.dehet`: **De of het**, optional, *built*
     - Drills: article choice and the adjective `-e` (`het grote huis` / `een groot huis`).
     - Mechanic: sort nouns into two lanes, then the adjective ending follows.
-14. `nl.schrijven.examen`: **Schrijfopdracht**, core, *capstone*, *built*
-    - Level 1: **zinnen afmaken**: a sentence stem is given, the owner completes it from
-      scratch. Bridges tile-assembly (game 1) to free writing, and mirrors the
-      sentence-completion part of the exam.
-    - Level 2, the real thing: a prompt with bullet points to cover, on paper, under time.
-    - Mechanic: prompt + timer, then a self-check against the DUO criteria beside a model
-      answer. See "Grading the capstone honestly" below.
+14. `nl.schrijven.wijkkrant`: **Wijkkrant**, core, *built*, exam-task game
+    - A short text about yourself: three "Denk aan" questions, at least three sentences,
+      written in the ik-form. 12 topics; 3 follow the oefenexamens.
+15. `nl.schrijven.informeel`: **Informeel bericht**, core, *built*, exam-task game
+    - An e-mail or a note to someone you say je to. Two of the 12 are picture notes
+      (*Briefje voor een collega*), and *Boek lenen* keeps the "Beste + first name = je"
+      trap. 3 follow the oefenexamens.
+16. `nl.schrijven.formeel`: **Formele e-mail**, core, *built*, exam-task game
+    - An e-mail to someone you say u to: a teacher, a manager, a landlord, a webshop.
+      12 tasks; 3 follow the oefenexamens.
+
+The former capstone, `nl.schrijven.examen` (**Schrijfopdracht**), was removed: its level 1
+(finishing a bare sentence stem) matched nothing in the real exam, and the four exam-task
+games cover its level 2 task by task.
 
 ### Things deliberately NOT separate games
 
@@ -448,27 +473,51 @@ register (`u` vs `je`), spelling, punctuation.
   games. Their word order now lives in game 1 and their perfectum forms in game 3, which
   covers the gap without two more mechanics to design. Modal conjugation
   (`kan`/`kunt`/`kunnen`) sits in game 2.
-- **Zinnen afmaken** is level 1 of the capstone rather than its own game.
+- **Zinnen afmaken** was level 1 of the old capstone and was dropped with it: the exam has
+  no such part.
 - **Imperfectum** (`was`, `had`, `waren`, `hadden`) belongs as a second mode inside game 3,
   not as a fourteenth mechanic. A2 writing uses the perfectum for the past; only these
   few forms are genuinely unavoidable.
 
-### Grading the capstone honestly
+### The exam-task games (14 to 16, and 5)
 
-There is no server or LLM on GitHub Pages, and the real exam is handwritten, so game 14
-**cannot grade the owner's actual exam answer at all**: it never sees it. Say so in-app.
-For anything typed into the optional composing mode it can still check locally: whether
-each required point's keywords appear, a minimum number of sentences, an aanhef and
-afsluiting being present, `u`/`je` used consistently (and no informal words in a formal
-task), the common `-dt` slips, capitals after a full stop, and a verb-second heuristic on
-short sentences. Everything beyond that is a model answer shown side by side plus a
-criteria checklist the owner ticks against their own handwritten page. Never report a
-message as "correct" on the strength of the keyword check alone.
+They share one engine in `src/games/schrijven/taken/` (`TextTaskGame`, `checks.ts`,
+`useTasks.ts`, `parts.tsx`); each game folder holds only its `data.ts` and a thin
+component. The screen mirrors the exam page: the brief and its bullets, then the e-mail
+window, note, newspaper box or form, with the greeting and closing already printed.
+
+- **There are no wrong answers.** A task is either finished or not finished yet.
+- **A template card** (`taken/templates.ts`) sits above the writing space: one fixed frame
+  per task type, with gaps, to learn by heart and fit each task's bullets into. It is how
+  people the owner knows who passed prepared, and it replaced a planned separate
+  template game (the owner chose the card, October 2026).
+- **Hint** works at any time: it reads the text so far and shows the most useful next
+  step. Pressed again on the same problem it goes deeper: what is missing (English), then
+  a Dutch sentence starter, then a whole Dutch example sentence.
+- **Submit** finishes the task when nothing blocking is left, and shows a model answer;
+  otherwise it lists what is still missing.
+- **Blocking:** every point from the brief, the register the printed greeting demands,
+  the minimum number of sentences, a capital and a full stop on every sentence, and the
+  name under the closing. **Advice, never blocking:** inversion after a fronted time or
+  place, the verb after `omdat` and after `want`, `-d`/`-dt`, a greeting or closing
+  written a second time, a line copied from the instructions.
+- **Honesty.** There is no server or LLM on GitHub Pages, so the checks are patterns, not
+  understanding: a point is "found" when one of its typical words appears. Every point
+  the checker cannot find gets an **I covered this** tick, so an answer in unexpected
+  words is never blocked. The app says this under the buttons. Never report a text as
+  good Dutch on the strength of these checks.
+- **Exam content.** The oefenexamens say "Het examen is geheim" and are (c) Ministerie van
+  SZW, and this repo is public, so the 3 tasks per game that follow them keep the
+  situation and the bullets but are reworded, with other names; photos are emoji.
+- `npm run check:content` holds every model answer and example to the app's own checker
+  (no issue at all, advice included), checks that each point's example matches its own
+  keywords, that weekdays agree with dates, that a form filled with the sample values
+  passes, and that the checker still catches a set of deliberate slips.
 
 ### Counting
 
-Schrijven is "ready" when the 13 core games are done. The one optional game sharpens
+Schrijven is "ready" when the 15 core games are done. The one optional game sharpens
 accuracy but nothing in the exam depends on it alone: keep that distinction visible in
-the per-exam counter so "ready" stays honest. Note also that a game counts as done only
+the per-exam counter so "ready" stays honest. Note also that a drill counts as done only
 when every item has been answered correctly *first time* (section 8), so the counter
-reflects mastery rather than exposure.
+reflects mastery rather than exposure; the four exam-task games count tasks finished.

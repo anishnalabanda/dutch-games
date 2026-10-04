@@ -9,11 +9,20 @@ interface ShellProps {
   backTo: string
   progress?: { value: number; max: number }
   streak?: number
+  /** What the progress counter counts: drills count first-time-right answers. */
+  countLabel?: string
   children: ReactNode
 }
 
 /** Standard game screen: header (back link, title, streak), progress bar, body. */
-export function Shell({ title, backTo, progress, streak, children }: ShellProps) {
+export function Shell({
+  title,
+  backTo,
+  progress,
+  streak,
+  countLabel = 'right first time',
+  children,
+}: ShellProps) {
   // The title stays Dutch, so what the game drills lives in the subtitle: on
   // hover or keyboard focus, like every other Dutch word in the app.
   const meta = useCurrentGame()
@@ -38,7 +47,7 @@ export function Shell({ title, backTo, progress, streak, children }: ShellProps)
         <div className="shell-progress">
           <ProgressBar value={progress.value} max={progress.max} />
           <span className="shell-progress-count">
-            {progress.value} of {progress.max} right first time
+            {progress.value} of {progress.max} {countLabel}
           </span>
         </div>
       )}

@@ -8,12 +8,14 @@ import { NietOfGeen } from './schrijven/nietgeen/NietOfGeen'
 import { Verbindingswoorden } from './schrijven/voegwoorden/Verbindingswoorden'
 import { VragenStellen } from './schrijven/vragen/VragenStellen'
 import { UofJe } from './schrijven/uofje/UofJe'
-import { FormulierInvullen } from './schrijven/formulier/FormulierInvullen'
 import { BerichtBouwstenen } from './schrijven/bouwstenen/BerichtBouwstenen'
 import { Woordenschat } from './schrijven/woorden/Woordenschat'
 import { Voorzetsels } from './schrijven/voorzetsels/Voorzetsels'
 import { DeOfHet } from './schrijven/dehet/DeOfHet'
-import { Schrijfopdracht } from './schrijven/examen/Schrijfopdracht'
+import { FormulierInvullen } from './schrijven/formulieren/FormulierInvullen'
+import { Wijkkrant } from './schrijven/wijkkrant/Wijkkrant'
+import { InformeelBericht } from './schrijven/informeel/InformeelBericht'
+import { FormeleEmail } from './schrijven/formeel/FormeleEmail'
 
 // Item counts come from the games' own data, so the hub and the exam page can
 // never quote a total the game does not actually have.
@@ -25,12 +27,14 @@ import { items as nietgeen } from './schrijven/nietgeen/data'
 import { items as voegwoorden } from './schrijven/voegwoorden/data'
 import { items as vragen } from './schrijven/vragen/data'
 import { messages } from './schrijven/uofje/data'
-import { forms } from './schrijven/formulier/data'
 import { situations } from './schrijven/bouwstenen/data'
 import { items as woorden } from './schrijven/woorden/data'
 import { items as voorzetsels } from './schrijven/voorzetsels/data'
 import { items as dehet } from './schrijven/dehet/data'
-import { stems, tasks } from './schrijven/examen/data'
+import { forms } from './schrijven/formulieren/data'
+import { tasks as wijkkrant } from './schrijven/wijkkrant/data'
+import { tasks as informeel } from './schrijven/informeel/data'
+import { tasks as formeel } from './schrijven/formeel/data'
 
 export interface RegisteredGame extends GameMeta {
   component: ComponentType
@@ -56,15 +60,6 @@ export const games: RegisteredGame[] = [
     core: true,
     total: werkwoorden.length,
     component: WerkwoordenNu,
-  },
-  {
-    id: 'nl.schrijven.voltooid',
-    exam: 'schrijven',
-    title: 'Gisteren gedaan',
-    subtitle: 'Perfect tense',
-    core: true,
-    total: voltooid.length,
-    component: GisterenGedaan,
   },
   {
     id: 'nl.schrijven.spelling',
@@ -112,15 +107,6 @@ export const games: RegisteredGame[] = [
     component: UofJe,
   },
   {
-    id: 'nl.schrijven.formulier',
-    exam: 'schrijven',
-    title: 'Formulier invullen',
-    subtitle: 'Filling in forms',
-    core: true,
-    total: forms.length,
-    component: FormulierInvullen,
-  },
-  {
     id: 'nl.schrijven.bouwstenen',
     exam: 'schrijven',
     title: 'Bericht bouwstenen',
@@ -157,13 +143,49 @@ export const games: RegisteredGame[] = [
     component: DeOfHet,
   },
   {
-    id: 'nl.schrijven.examen',
+    id: 'nl.schrijven.voltooid',
     exam: 'schrijven',
-    title: 'Schrijfopdracht',
-    subtitle: 'Full writing task',
+    title: 'Gisteren gedaan',
+    subtitle: 'Perfect tense',
     core: true,
-    total: stems.length + tasks.length,
-    component: Schrijfopdracht,
+    total: voltooid.length,
+    component: GisterenGedaan,
+  },
+  {
+    id: 'nl.schrijven.formulieren',
+    exam: 'schrijven',
+    title: 'Formulier invullen',
+    subtitle: 'Exam task: a form',
+    core: true,
+    total: forms.length,
+    component: FormulierInvullen,
+  },
+  {
+    id: 'nl.schrijven.wijkkrant',
+    exam: 'schrijven',
+    title: 'Wijkkrant',
+    subtitle: 'Exam task: a short text about yourself',
+    core: true,
+    total: wijkkrant.length,
+    component: Wijkkrant,
+  },
+  {
+    id: 'nl.schrijven.informeel',
+    exam: 'schrijven',
+    title: 'Informeel bericht',
+    subtitle: 'Exam task: a message to a colleague or friend (je)',
+    core: true,
+    total: informeel.length,
+    component: InformeelBericht,
+  },
+  {
+    id: 'nl.schrijven.formeel',
+    exam: 'schrijven',
+    title: 'Formele e-mail',
+    subtitle: 'Exam task: an e-mail to a teacher or manager (u)',
+    core: true,
+    total: formeel.length,
+    component: FormeleEmail,
   },
 ]
 
