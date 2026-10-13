@@ -290,6 +290,37 @@ for (const it of dh.items) {
 }
 console.log(`dehet: ${dh.items.length} items`)
 
+// Luisteren word games: one per theme. The drill offers four meanings from the
+// same theme, so meanings must be distinct within it, and a declared pair must
+// exist there (it is always offered as the wrong option).
+const lw = await import(`${base}/luisteren/woorden/data.ts`)
+const lwNl = new Set()
+for (const w of lw.words) {
+  ok(!lwNl.has(w.nl), `luisteren woorden: "${w.nl}" appears twice`)
+  lwNl.add(w.nl)
+  ok(w.nl.trim() === w.nl && w.en.trim() === w.en && w.en.length > 0, `luisteren woorden ${w.id}: stray space or empty meaning`)
+  ok(!/[—–]/.test(w.en), `luisteren woorden ${w.id}: dash in the meaning`)
+}
+for (const theme of lw.THEMES) {
+  const list = lw.wordsByTheme[theme.id]
+  ok(list.length >= 40, `luisteren woorden ${theme.id}: only ${list.length} words (aim for 40+)`)
+  const meanings = new Set()
+  for (const w of list) {
+    ok(!meanings.has(w.en), `luisteren woorden ${theme.id}: two words mean "${w.en}"`)
+    meanings.add(w.en)
+    if (w.pair) {
+      const pair = list.find(o => o.nl === w.pair)
+      ok(pair !== undefined, `luisteren woorden ${w.id}: pair "${w.pair}" is not in the theme`)
+      ok(pair === undefined || pair.pair === undefined || pair.pair === w.nl, `luisteren woorden ${w.id}: pair "${w.pair}" points elsewhere`)
+    }
+    const options = lw.optionsFor(w, list)
+    ok(options.length === 4 && new Set(options).size === 4 && options.includes(w.en), `luisteren woorden ${w.id}: options are not four distinct meanings with the answer`)
+    if (w.pair) ok(options.includes(list.find(o => o.nl === w.pair)?.en), `luisteren woorden ${w.id}: pair not offered`)
+  }
+  ok(lw.themeFromKey(`${lw.STORE_PREFIX}${theme.id}`) === theme.id, `luisteren woorden ${theme.id}: key does not map back`)
+}
+console.log(`luisteren woorden: ${lw.words.length} words in ${lw.THEMES.length} themes`)
+
 if (problems.length) {
   console.log(`\n${problems.length} PROBLEM(S):`)
   for (const p of problems) console.log(' -', p)

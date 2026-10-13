@@ -16,7 +16,11 @@ baseline. Learning happens through **playing games**, not reading lessons.
 
 ### Current exam status (keep updated as games are completed)
 - Lezen: cleared (no games needed)
-- Luisteren: in progress (baseline practice exam: 18/25)
+- Luisteren: in progress (baseline practice exam: 18/25; exam 16 October 2026). 12 word
+  games, one per theme (`src/games/luisteren/woorden/`, keys `nl.luisteren.woorden-<theme>`):
+  a word list with the meaning beneath and browser TTS, plus a hear-it-pick-the-meaning drill.
+  They are extra, not core: knowing words by ear is not being ready, so Luisteren has no
+  core games yet and the DUO oefenexamens remain the real practice.
 - Schrijven: in progress (all 16 games built, roadmap in section 13; done now means
   every item right first time, so older right-eventually saves no longer count)
 - KNM: question source is the owner's *NT2 KNM 1000 vragen* book
@@ -50,6 +54,9 @@ baseline. Learning happens through **playing games**, not reading lessons.
   components. Keep dependencies minimal; no heavy UI framework. No Tailwind unless later
   requested.
 - **Cloud sync: Supabase** (`@supabase/supabase-js`), see section 5.
+- **Optional AI feedback: the Anthropic SDK** (`@anthropic-ai/sdk`), called from the browser
+  with the owner's own key (section 5) and loaded with a dynamic `import()` on first use, so
+  it is a separate chunk nobody without a key downloads. All of it lives in `src/ai/`.
 - Package manager: npm. Node: LTS, pinned in the Actions workflow.
 
 ### Vite config
@@ -146,6 +153,16 @@ session uses `LocalStore` only: playing through a game locally never touches the
 Supabase `progress` table. The `AuthBar` says "Lokaal, geen cloud-sync" so it is clear
 nothing is syncing. Set `VITE_CLOUD_SYNC=on` in a local `.env` to test sync for real.
 Production builds are unaffected.
+
+### The Claude API key (optional, never synced)
+The exam-task games can ask Claude for hints and a review (section 13). The owner pastes
+their own Anthropic API key into the **Claude feedback** panel under those games;
+`src/ai/key.ts` keeps it in `__claude_key__` in localStorage ("Remember on this device") or
+sessionStorage. Like the email key it avoids the `nl.` prefix, so it is never uploaded to
+the open `progress` table. Sign out removes it. The key is checked with a models lookup
+before it is saved. There is deliberately **no proxy**: a server holding one key in front
+of an unauthenticated app would let anyone spend it. Never put a key in `src/config.ts`,
+in `.env`, or anywhere in the repo.
 
 ### Honest caveats to surface in-app where relevant
 - The publishable key is safe to ship, but here it fronts an open table, because sign-in
@@ -496,16 +513,30 @@ window, note, newspaper box or form, with the greeting and closing already print
   a Dutch sentence starter, then a whole Dutch example sentence.
 - **Submit** finishes the task when nothing blocking is left, and shows a model answer;
   otherwise it lists what is still missing.
+- **Try again** on the done screen blanks the writing space (in the form game only the open
+  answers: the personal details and the ticked option stay) and keeps Claude's last review
+  on screen, labelled as feedback on the last attempt, so the task can be rewritten with
+  it in view. The task stays finished; the static model answer is hidden again.
 - **Blocking:** every point from the brief, the register the printed greeting demands,
   the minimum number of sentences, a capital and a full stop on every sentence, and the
   name under the closing. **Advice, never blocking:** inversion after a fronted time or
   place, the verb after `omdat` and after `want`, `-d`/`-dt`, a greeting or closing
   written a second time, a line copied from the instructions.
-- **Honesty.** There is no server or LLM on GitHub Pages, so the checks are patterns, not
-  understanding: a point is "found" when one of its typical words appears. Every point
-  the checker cannot find gets an **I covered this** tick, so an answer in unexpected
-  words is never blocked. The app says this under the buttons. Never report a text as
-  good Dutch on the strength of these checks.
+- **Honesty.** Without a key the checks are patterns, not understanding: a point is
+  "found" when one of its typical words appears. Every point the checker cannot find gets
+  an **I covered this** tick, so an answer in unexpected words is never blocked. The app
+  says this under the buttons. Never report a text as good Dutch on the strength of these
+  checks.
+- **With a Claude key** (`src/ai/`, model `claude-sonnet-5-5`): Hint asks Claude for the
+  one next step (same `Issue` shape, so the three-level ladder still applies; a repeat
+  press on unchanged text reuses it), and Submit asks for a review: a verdict, each point,
+  then **what to write** per question (or per text): the owner's own answer corrected and
+  a stronger A2 example built from their idea, each labelled, and last every correction
+  with its rule in English. A point Claude confirms counts as covered, like the tick; Claude's corrections
+  never block, so the completion rule above is unchanged. Claude is told what the pattern
+  checks found and may overrule them. Any failure (offline, bad key, refusal) falls back to
+  the pattern hint with a one-line reason. The form game sends only the open answers and
+  the ticked option, never the personal details.
 - **Exam content.** The oefenexamens say "Het examen is geheim" and are (c) Ministerie van
   SZW, and this repo is public, so the 3 tasks per game that follow them keep the
   situation and the bullets but are reworded, with other names; photos are emoji.

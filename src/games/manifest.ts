@@ -16,6 +16,7 @@ import { FormulierInvullen } from './schrijven/formulieren/FormulierInvullen'
 import { Wijkkrant } from './schrijven/wijkkrant/Wijkkrant'
 import { InformeelBericht } from './schrijven/informeel/InformeelBericht'
 import { FormeleEmail } from './schrijven/formeel/FormeleEmail'
+import { WoordenLuisteren } from './luisteren/woorden/WoordenLuisteren'
 
 // Item counts come from the games' own data, so the hub and the exam page can
 // never quote a total the game does not actually have.
@@ -35,6 +36,7 @@ import { forms } from './schrijven/formulieren/data'
 import { tasks as wijkkrant } from './schrijven/wijkkrant/data'
 import { tasks as informeel } from './schrijven/informeel/data'
 import { tasks as formeel } from './schrijven/formeel/data'
+import { STORE_PREFIX, THEMES, wordsByTheme } from './luisteren/woorden/data'
 
 export interface RegisteredGame extends GameMeta {
   component: ComponentType
@@ -187,6 +189,18 @@ export const games: RegisteredGame[] = [
     total: formeel.length,
     component: FormeleEmail,
   },
+  // Luisteren: one word game per theme, all on one component that reads its
+  // theme from the id. Extra, not core: knowing the words by ear is not being
+  // ready for the listening exam, so these never make Luisteren read "ready".
+  ...THEMES.map((theme) => ({
+    id: `${STORE_PREFIX}${theme.id}`,
+    exam: 'luisteren' as const,
+    title: theme.title,
+    subtitle: theme.subtitle,
+    core: false,
+    total: wordsByTheme[theme.id].length,
+    component: WoordenLuisteren,
+  })),
 ]
 
 export function gameSlug(id: string): string {

@@ -1,10 +1,14 @@
 import { useEffect, useState } from 'react'
+import { ClaudePanel } from '../../../ai/ClaudePanel'
+import { ClaudeReview, ClaudeStatus } from '../../../ai/ClaudeReview'
+import { textContext } from '../../../ai/feedback'
+import { ABANDONED, useClaudeFeedback } from '../../../ai/useClaudeFeedback'
 import { Shell } from '../../../components/Shell'
 import { Button } from '../../../components/Button'
 import { GlossedText } from '../../../components/GlossedText'
 import { Tag } from '../../../components/Tag'
 import { HONESTY_NOTE, PAPER_NOTE, hasKeyword, textIssues } from './checks'
-import { Advice, Brief, Checklist, HintCard, NotFinished, TaskPicker, TemplateCard, nextHint } from './parts'
+import { Advice, Brief, Checklist, HintCard, NotFinished, TaskPicker, TemplateCard, maxLevel, nextHint } from './parts'
 import type { Template } from './templates'
 import { useTasks } from './useTasks'
 import type { Issue, TextTask } from './types'
@@ -23,6 +27,9 @@ interface TextTaskGameProps {
 
 type Phase = 'write' | 'blocked' | 'done'
 
+/** The writing space, so Try again can put the cursor back in it. */
+const WRITE_ID = 'tk-write'
+
 /**
  * One exam writing task at a time, laid out like the exam page: the brief,
  * then the e-mail window, note or newspaper box with the greeting and closing
@@ -36,9 +43,15 @@ export function TextTaskGame({ storeKey, title, noun, tasks, template }: TextTas
   const [covered, setCovered] = useState<Set<string>>(new Set())
   const [levels, setLevels] = useState<Record<string, number>>({})
   const [hint, setHint] = useState<{ issue: Issue; level: number } | null>(null)
+  /** Writing the task again after it was done, with the last feedback still on screen. */
+  const [retrying, setRetrying] = useState(false)
 
   const task = game.current
   const taskId = task?.id
+  const body = game.draft.body ?? ''
+  const name = game.draft.name ?? ''
+  const context = task ? textContext(task, body) : null
+  const claude = useClaudeFeedback(taskId, context)
 
   // A fresh start for every task opened, including one opened again.
   useEffect(() => {
@@ -47,12 +60,11 @@ export function TextTaskGame({ storeKey, title, noun, tasks, template }: TextTas
     setCovered(new Set())
     setLevels({})
     setHint(null)
+    setRetrying(false)
   }, [taskId])
 
-  if (!game.loaded || !task) return null
+  if (!game.loaded || !task || !context) return null
 
-  const body = game.draft.body ?? ''
-  const name = game.draft.name ?? ''
   const issues = textIssues({ task, body, name, covered })
   const blocking = issues.filter((issue) => issue.blocking)
   const advice = issues.filter((issue) => !issue.blocking)
@@ -63,22 +75,53 @@ export function TextTaskGame({ storeKey, title, noun, tasks, template }: TextTas
     if (phase === 'done') setPhase('write')
   }
 
-  function askHint() {
-    const next = nextHint(issues, levels)
+  /** What the pattern checks found, so Claude can confirm or overrule it. */
+  const findings = issues.map((issue) => `${issue.blocking ? 'Blocking' : 'Advice'}: ${issue.title}`)
+
+  // Arrow functions, not declarations: they keep the narrowing of task and context above.
+  const askHint = async () => {
+    setEvaluated(true)
+    // With a key, Claude picks the next step; without one, or if it fails, the patterns do.
+    const fromClaude = await claude.hint(context, findings)
+    if (fromClaude === ABANDONED) return
+    const next = fromClaude
+      ? { issue: fromClaude, level: Math.min((levels[fromClaude.id] ?? 0) + 1, maxLevel(fromClaude)) }
+      : nextHint(issues, levels)
     setLevels((prev) => ({ ...prev, [next.issue.id]: next.level }))
     setHint(next)
-    setEvaluated(true)
   }
 
-  function submit() {
+  const submit = async () => {
     setEvaluated(true)
     setHint(null)
-    if (blocking.length > 0) {
+    setRetrying(false)
+    // A point Claude confirms counts as covered, as if ticked by hand.
+    const marked = await claude.check(context, findings)
+    if (marked === ABANDONED) return
+    let nowCovered = covered
+    if (marked) {
+      nowCovered = new Set([...covered, ...marked.points.filter((p) => p.covered).map((p) => p.id)])
+      setCovered(nowCovered)
+    }
+    const stillBlocking = textIssues({ task, body, name, covered: nowCovered }).filter((issue) => issue.blocking)
+    if (stillBlocking.length > 0) {
       setPhase('blocked')
       return
     }
     game.finish()
     setPhase('done')
+  }
+
+  /** A blank space to write the task again; the name stays, and so does Claude's last review. */
+  function tryAgain() {
+    game.setDraft({ body: '', name })
+    setPhase('write')
+    setEvaluated(false)
+    setCovered(new Set())
+    setLevels({})
+    setHint(null)
+    setRetrying(true)
+    document.getElementById(WRITE_ID)?.focus()
   }
 
   function cover(id: string, on: boolean) {
@@ -89,6 +132,16 @@ export function TextTaskGame({ storeKey, title, noun, tasks, template }: TextTas
       return next
     })
   }
+
+  const review = claude.review && (
+    <ClaudeReview
+      review={claude.review.review}
+      stale={claude.review.stale}
+      previous={retrying}
+      points={Object.fromEntries(task.points.map((p) => [p.id, p.label]))}
+      parts={{ body: '' }}
+    />
+  )
 
   const allDone = game.finished.size === game.total
   const nextTask = game.nextUnfinished ?? tasks[(game.index + 1) % tasks.length]
@@ -130,6 +183,8 @@ export function TextTaskGame({ storeKey, title, noun, tasks, template }: TextTas
 
       <WritingFrame task={task} body={body} name={name} noun={noun} onEdit={edit} />
 
+      {phase === 'write' && retrying && review}
+
       {phase !== 'done' && (
         <>
           <Checklist
@@ -144,13 +199,18 @@ export function TextTaskGame({ storeKey, title, noun, tasks, template }: TextTas
           />
           {hint && <HintCard issue={hint.issue} level={hint.level} />}
           {phase === 'blocked' && <NotFinished issues={blocking} />}
+          {phase === 'blocked' && review}
+          <ClaudeStatus busy={claude.busy} error={claude.error} />
           <div className="g-actions">
-            <Button variant="secondary" onClick={askHint}>
+            <Button variant="secondary" onClick={askHint} disabled={claude.busy !== null}>
               Hint
             </Button>
-            <Button onClick={submit}>Submit</Button>
+            <Button onClick={submit} disabled={claude.busy !== null}>
+              Submit
+            </Button>
           </div>
           <p className="tk-honesty">{HONESTY_NOTE}</p>
+          <ClaudePanel />
         </>
       )}
 
@@ -163,13 +223,16 @@ export function TextTaskGame({ storeKey, title, noun, tasks, template }: TextTas
               it, not the only one.
             </p>
           </div>
-          <Advice issues={advice} />
+          {review ?? <Advice issues={advice} />}
           <section>
             <span className="g-label">One way to write it</span>
             <ModelAnswer task={task} />
           </section>
           <p className="tk-honesty">{PAPER_NOTE}</p>
           <div className="g-actions">
+            <Button variant="secondary" onClick={tryAgain}>
+              Try again
+            </Button>
             <Button onClick={() => game.select(nextTask.id)}>Next {noun}</Button>
           </div>
         </>
@@ -194,6 +257,7 @@ function WritingFrame({
 }) {
   const textarea = (
     <textarea
+      id={WRITE_ID}
       className="tk-write"
       aria-label={`Your ${noun}`}
       value={body}

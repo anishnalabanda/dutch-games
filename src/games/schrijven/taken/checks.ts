@@ -2,9 +2,10 @@ import { lookupWord } from '../../glossary'
 import type { Issue, Point, Register, TextTask } from './types'
 
 /**
- * Pattern checks for a written exam task. There is no server and no language
- * model on GitHub Pages, so this looks for words and shapes, never meaning:
- * it says what it cannot find, and the owner can tick a point off by hand.
+ * Pattern checks for a written exam task. They look for words and shapes,
+ * never meaning: they say what they cannot find, and the owner can tick a
+ * point off by hand. With a Claude key (`src/ai/`) Claude reads the text as
+ * well, but these still run, offline and for free, and decide what blocks.
  *
  * Issues come back in the order the hint button walks them: first the points
  * from the brief, then register, length and sentence shape (all blocking), then

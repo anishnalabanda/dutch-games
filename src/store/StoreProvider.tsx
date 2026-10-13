@@ -6,6 +6,7 @@ import { SyncedStore } from './SyncedStore'
 import { supabase } from './supabaseClient'
 import { clearEmail, getEmail, normaliseEmail, setEmail } from '../auth/identity'
 import { CLOUD_SYNC_ENABLED } from '../config'
+import { clearClaudeKey } from '../ai/key'
 
 interface StoreContextValue {
   store: ProgressStore
@@ -43,6 +44,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         // Wipe the local copy first: the next address to use this browser must
         // not inherit it, nor upload it as their own on the next merge.
         await localStore.clear()
+        // The API key is the owner's money: it leaves with the address.
+        clearClaudeKey()
         clearEmail()
         setEmailState(null)
       },

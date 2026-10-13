@@ -1,11 +1,15 @@
 import { useEffect, useState, type KeyboardEvent } from 'react'
+import { ClaudePanel } from '../../../ai/ClaudePanel'
+import { ClaudeReview, ClaudeStatus } from '../../../ai/ClaudeReview'
+import { formContext } from '../../../ai/feedback'
+import { ABANDONED, useClaudeFeedback } from '../../../ai/useClaudeFeedback'
 import { Shell } from '../../../components/Shell'
 import { Button } from '../../../components/Button'
 import { GlossedText } from '../../../components/GlossedText'
 import { Tag } from '../../../components/Tag'
 import { Tooltip } from '../../../components/Tooltip'
 import { HONESTY_NOTE } from '../taken/checks'
-import { Advice, Brief, Checklist, HintCard, NotFinished, TaskPicker, TemplateCard, nextHint } from '../taken/parts'
+import { Advice, Brief, Checklist, HintCard, NotFinished, TaskPicker, TemplateCard, maxLevel, nextHint } from '../taken/parts'
 import { FORM_TEMPLATE } from '../taken/templates'
 import { useTasks } from '../taken/useTasks'
 import type { Issue } from '../taken/types'
@@ -19,6 +23,9 @@ const STORE_KEY = 'nl.schrijven.formulieren'
 const TITLE = 'Formulier invullen'
 
 type Phase = 'write' | 'blocked' | 'done'
+
+/** An open question's answer box, so Try again can put the cursor back in it. */
+const answerId = (questionId: string) => `fo-a-${questionId}`
 
 /**
  * Forms as the exam sets them. The owner fills in their own (or made-up)
@@ -35,9 +42,14 @@ export function FormulierInvullen() {
   const [levels, setLevels] = useState<Record<string, number>>({})
   const [hint, setHint] = useState<{ issue: Issue; level: number } | null>(null)
   const [today] = useState(() => new Date())
+  /** Answering the questions again after the form was done, with the last feedback still on screen. */
+  const [retrying, setRetrying] = useState(false)
 
   const form = game.current
   const formId = form?.id
+  // Only the open questions and the ticked option: personal details are never sent.
+  const context = form ? formContext(form, values) : null
+  const claude = useClaudeFeedback(formId, context)
 
   // A blank form for every task opened. Nothing typed here is kept.
   useEffect(() => {
@@ -47,9 +59,10 @@ export function FormulierInvullen() {
     setCovered(new Set())
     setLevels({})
     setHint(null)
+    setRetrying(false)
   }, [formId])
 
-  if (!game.loaded || !form) return null
+  if (!game.loaded || !form || !context) return null
 
   const issues = formIssues({ form, values, covered, today })
   const blocking = issues.filter((issue) => issue.blocking)
@@ -64,22 +77,59 @@ export function FormulierInvullen() {
     if (phase === 'done') setPhase('write')
   }
 
-  function askHint() {
-    const next = nextHint(issues, levels)
+  /** What the pattern checks found about the answers, so Claude can confirm or overrule it. */
+  const findings = issues
+    .filter((issue) => !issue.id.startsWith('veld-'))
+    .map((issue) => `${issue.blocking ? 'Blocking' : 'Advice'}: ${issue.title}`)
+
+  // Arrow functions, not declarations: they keep the narrowing of form and context above.
+  const askHint = async () => {
+    setEvaluated(true)
+    // Claude only sees the answers, so a field still to fill in comes first, from the patterns.
+    const fieldFirst = issues[0]?.id.startsWith('veld-') || issues[0]?.id.startsWith('keuze-')
+    const fromClaude = fieldFirst ? null : await claude.hint(context, findings)
+    if (fromClaude === ABANDONED) return
+    const next = fromClaude
+      ? { issue: fromClaude, level: Math.min((levels[fromClaude.id] ?? 0) + 1, maxLevel(fromClaude)) }
+      : nextHint(issues, levels)
     setLevels((prev) => ({ ...prev, [next.issue.id]: next.level }))
     setHint(next)
-    setEvaluated(true)
   }
 
-  function submit() {
+  const submit = async () => {
     setEvaluated(true)
     setHint(null)
-    if (blocking.length > 0) {
+    setRetrying(false)
+    // A question Claude confirms as answered counts as covered, as if ticked by hand.
+    const marked = await claude.check(context, findings)
+    if (marked === ABANDONED) return
+    let nowCovered = covered
+    if (marked) {
+      nowCovered = new Set([...covered, ...marked.points.filter((p) => p.covered).map((p) => p.id)])
+      setCovered(nowCovered)
+    }
+    if (formIssues({ form, values, covered: nowCovered, today }).some((issue) => issue.blocking)) {
       setPhase('blocked')
       return
     }
     game.finish()
     setPhase('done')
+  }
+
+  /**
+   * The open questions blank again. The personal details and the ticked option
+   * stay: the answers are what is being practised, and Claude's review stays too.
+   */
+  const tryAgain = () => {
+    const questions = form.sections.flatMap((s) => (s.kind === 'question' ? [s.question.id] : []))
+    setValues((prev) => Object.fromEntries(Object.entries(prev).filter(([id]) => !questions.includes(id))))
+    setPhase('write')
+    setEvaluated(false)
+    setCovered(new Set())
+    setLevels({})
+    setHint(null)
+    setRetrying(true)
+    if (questions[0]) document.getElementById(answerId(questions[0]))?.focus()
   }
 
   function cover(id: string, on: boolean) {
@@ -90,6 +140,17 @@ export function FormulierInvullen() {
       return next
     })
   }
+
+  const questionLabels = Object.fromEntries(context.points.map((p) => [p.id, p.label]))
+  const review = claude.review && (
+    <ClaudeReview
+      review={claude.review.review}
+      stale={claude.review.stale}
+      previous={retrying}
+      points={questionLabels}
+      parts={questionLabels}
+    />
+  )
 
   const checklist = form.sections.map((section) => {
     if (section.kind === 'fields') {
@@ -134,7 +195,9 @@ export function FormulierInvullen() {
       <Brief title={form.title} situation={form.situation} pictures={form.pictures} instructions={form.instructions} />
 
       <p className="g-hint">
-        Fill in your own details, or made-up ones: nothing you type on this form is saved or sent.
+        {claude.enabled
+          ? 'Fill in your own details, or made-up ones: they are never saved or sent. Your answers to the questions are sent to Claude to be checked.'
+          : 'Fill in your own details, or made-up ones: nothing you type on this form is saved or sent.'}
       </p>
 
       <TemplateCard template={FORM_TEMPLATE} />
@@ -194,18 +257,25 @@ export function FormulierInvullen() {
         })}
       </div>
 
+      {phase === 'write' && retrying && review}
+
       {phase !== 'done' && (
         <>
           <Checklist items={checklist} evaluated={evaluated} covered={covered} onCover={cover} />
           {hint && <HintCard issue={hint.issue} level={hint.level} />}
           {phase === 'blocked' && <NotFinished issues={blocking} />}
+          {phase === 'blocked' && review}
+          <ClaudeStatus busy={claude.busy} error={claude.error} />
           <div className="g-actions">
-            <Button variant="secondary" onClick={askHint}>
+            <Button variant="secondary" onClick={askHint} disabled={claude.busy !== null}>
               Hint
             </Button>
-            <Button onClick={submit}>Submit</Button>
+            <Button onClick={submit} disabled={claude.busy !== null}>
+              Submit
+            </Button>
           </div>
           <p className="tk-honesty">{HONESTY_NOTE}</p>
+          <ClaudePanel />
         </>
       )}
 
@@ -218,8 +288,11 @@ export function FormulierInvullen() {
               each question is one way to answer it, not the only one.
             </p>
           </div>
-          <Advice issues={advice} />
+          {review ?? <Advice issues={advice} />}
           <div className="g-actions">
+            <Button variant="secondary" onClick={tryAgain}>
+              Try again
+            </Button>
             <Button onClick={() => game.select(nextForm.id)}>Next form</Button>
           </div>
         </>
@@ -295,6 +368,7 @@ function QuestionSection({
       </h4>
       <textarea
         aria-labelledby={`fo-q-${question.id}`}
+        id={answerId(question.id)}
         className="fo-answer"
         rows={3}
         value={value}

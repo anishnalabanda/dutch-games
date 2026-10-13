@@ -27,7 +27,11 @@ export function ExamCard({
         <div className="exam-card-foot">
           <ProgressBar value={coreDone} max={coreTotal} />
           <span className="exam-card-count">
-            {coreTotal === 0 ? 'No games yet' : `${coreDone} of ${coreTotal} core games`}
+            {coreTotal > 0
+              ? `${coreDone} of ${coreTotal} core games`
+              : optionalTotal > 0
+                ? 'No core games yet'
+                : 'No games yet'}
           </span>
           <span className="exam-card-extra">
             {optionalTotal > 0 ? `${optionalDone} of ${optionalTotal} extra` : '\u00a0'}

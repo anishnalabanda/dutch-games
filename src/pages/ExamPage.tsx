@@ -38,6 +38,8 @@ export function ExamPage() {
 
   const core = examGames.filter((g) => g.core)
   const coreDone = core.filter((g) => isDone(saved[g.id], g.total)).length
+  const extra = examGames.filter((g) => !g.core)
+  const extraDone = extra.filter((g) => isDone(saved[g.id], g.total)).length
 
   return (
     <div className="exam-page">
@@ -47,7 +49,9 @@ export function ExamPage() {
       <h1>{exam.title}</h1>
       {examGames.length > 0 && (
         <p className="exam-page-count">
-          {coreDone} of {core.length} core games done
+          {core.length > 0
+            ? `${coreDone} of ${core.length} core games done`
+            : `${extraDone} of ${extra.length} extra games done. No core games yet: these alone do not make you ready.`}
         </p>
       )}
       {examGames.length === 0 ? (

@@ -1,0 +1,173 @@
+/* Word list: Dutch at full size, the meaning on a smaller line beneath. */
+.lw-toolbar {
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: var(--space-3);
+}
+
+.lw-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--muted);
+  font-size: var(--text-sm);
+  cursor: pointer;
+}
+.lw-toggle input {
+  accent-color: var(--amber);
+  width: 1rem;
+  height: 1rem;
+}
+
+.lw-voice {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--muted);
+  font-size: var(--text-sm);
+}
+.lw-voice select {
+  min-width: 0;
+  max-width: 100%;
+  background: var(--panel);
+  color: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: var(--space-1) var(--space-2);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+}
+.lw-voice select:focus-visible {
+  border-color: var(--amber);
+  outline: none;
+}
+
+.lw-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: var(--space-2);
+}
+
+.lw-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--line);
+  border-radius: var(--radius);
+  padding: var(--space-2) var(--space-3);
+  min-width: 0;
+}
+.lw-item-playing {
+  border-left-color: var(--amber);
+}
+
+.lw-play {
+  flex: none;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--board);
+  color: var(--amber);
+  font-size: var(--text-sm);
+  cursor: pointer;
+}
+.lw-play:hover,
+.lw-play:focus-visible {
+  border-color: var(--amber);
+  outline: none;
+}
+
+.lw-text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-0);
+  min-width: 0;
+  flex: 1;
+}
+
+.lw-nl {
+  font-size: var(--text-md);
+  color: var(--paper);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.lw-en {
+  font-size: var(--text-sm);
+  color: var(--muted);
+}
+
+.lw-reveal {
+  align-self: flex-start;
+  background: none;
+  border: none;
+  border-bottom: 1px dotted var(--muted);
+  padding: 0;
+  color: var(--muted);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  cursor: pointer;
+}
+.lw-reveal:hover,
+.lw-reveal:focus-visible {
+  color: var(--amber);
+  border-bottom-color: var(--amber);
+  outline: none;
+}
+
+.lw-known {
+  flex: none;
+  color: var(--ok);
+  font-weight: 700;
+}
+
+.lw-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* Drill: the board says the word; the Dutch appears once answered. */
+.lw-board {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+  background: var(--board);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--amber);
+  border-radius: var(--radius);
+  padding: var(--space-4) var(--space-3);
+}
+
+.lw-board-word {
+  font-family: var(--font-heading);
+  font-size: var(--text-xl);
+  letter-spacing: 0.04em;
+  color: var(--amber);
+}
+
+.lw-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: var(--space-2);
+}
+
+.lw-option {
+  text-align: left;
+}
+
+/* Answered options stay readable: the right one green, a wrong pick red. */
+.lw-option.g-chip-ok:disabled,
+.lw-option.g-chip-alert:disabled {
+  opacity: 1;
+}
