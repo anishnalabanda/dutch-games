@@ -154,6 +154,16 @@ const ENTRIES: Record<ThemeId, Entry[]> = {
   ],
 
   getallen: [
+    ['één', '1'],
+    ['twee', '2'],
+    ['drie', '3'],
+    ['vier', '4'],
+    ['vijf', '5'],
+    ['zes', '6', 'zeven'],
+    ['zeven', '7', 'zes'],
+    ['acht', '8'],
+    ['negen', '9'],
+    ['tien', '10'],
     ['dertien', '13', 'dertig'],
     ['dertig', '30', 'dertien'],
     ['veertien', '14', 'veertig'],
