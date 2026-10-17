@@ -27,7 +27,6 @@ export function WoordenLuisteren() {
   const items = theme ? wordsByTheme[theme] : NO_WORDS
   const drill = useDrill(key, items)
   const speech = useDutchSpeech()
-  const [mode, setMode] = useState<Mode>('list')
 
   if (!meta || !theme) return <p>Unknown game.</p>
   if (!drill.loaded) return null
@@ -40,6 +39,36 @@ export function WoordenLuisteren() {
       progress={{ value: drill.mastered, max: drill.total }}
       countLabel="recognised first time"
     >
+      <VoiceSettings speech={speech} />
+
+      <WordPractice items={items} drill={drill} speech={speech} />
+
+      <p className="g-hint">
+        This is a computer voice reading single words. The exam plays real recordings at normal
+        speed, so do the DUO practice exams on inburgeren.nl as well.
+      </p>
+    </Shell>
+  )
+}
+
+type Speech = ReturnType<typeof useDutchSpeech>
+
+/** The word list and the listen drill with the switch between them: Route volgen uses it too. */
+export function WordPractice({
+  items,
+  drill,
+  speech,
+  next,
+}: {
+  items: ListenWord[]
+  drill: Drill<ListenWord>
+  speech: Speech
+  /** Where to go once every word is recognised. */
+  next?: { label: string; onClick: () => void }
+}) {
+  const [mode, setMode] = useState<Mode>('list')
+  return (
+    <>
       <div className="g-chips" role="group" aria-label="Mode">
         <button
           type="button"
@@ -65,23 +94,14 @@ export function WoordenLuisteren() {
         </button>
       </div>
 
-      <VoiceSettings speech={speech} />
-
       {mode === 'list' ? (
         <WordList items={items} mastered={drill.state.mastered} speech={speech} />
       ) : (
-        <ListenDrill items={items} drill={drill} speech={speech} onList={() => setMode('list')} />
+        <ListenDrill items={items} drill={drill} speech={speech} onList={() => setMode('list')} next={next} />
       )}
-
-      <p className="g-hint">
-        This is a computer voice reading single words. The exam plays real recordings at normal
-        speed, so do the DUO practice exams on inburgeren.nl as well.
-      </p>
-    </Shell>
+    </>
   )
 }
-
-type Speech = ReturnType<typeof useDutchSpeech>
 
 function WordList({
   items,
@@ -197,11 +217,13 @@ function ListenDrill({
   drill,
   speech,
   onList,
+  next,
 }: {
   items: ListenWord[]
   drill: Drill<ListenWord>
   speech: Speech
   onList: () => void
+  next?: { label: string; onClick: () => void }
 }) {
   const [chosen, setChosen] = useState<string | null>(null)
   const [shown, setShown] = useState(false)
@@ -231,7 +253,10 @@ function ListenDrill({
           message={`Done. You recognised all ${items.length} words by ear, first time. Best streak: ${drill.state.bestStreak}.`}
         />
         <div className="g-actions">
-          <Button onClick={drill.restart}>Practise again</Button>
+          {next && <Button onClick={next.onClick}>{next.label}</Button>}
+          <Button variant={next ? 'secondary' : 'primary'} onClick={drill.restart}>
+            Practise again
+          </Button>
           <Button variant="secondary" onClick={onList}>
             Back to the word list
           </Button>

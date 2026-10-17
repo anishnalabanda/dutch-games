@@ -280,6 +280,25 @@ for (const t of rv.TURNS) needsGloss('route options', `Je moet ${rv.TURN_WORD[t]
 for (const p of rv.PARK_PLACES) needsGloss('route options', rv.PARK_PLACE[p])
 needsGloss('route options', rv.PARK_QUESTION)
 console.log(`route: ${rv.routes.length} routes, ${rv.routes.reduce((n, r) => n + r.stops.length, 0)} landmarks`)
+// Step 2: single lines. Each must be a line the messages really say, the traps
+// as well represented as the plain lines, and a parking pair must name both places.
+ok(rv.sentences.length >= 40, `route sentences: only ${rv.sentences.length} (aim for 40+)`)
+ok(new Set(rv.sentences.map(s => s.id)).size === rv.sentences.length, 'route sentences: an id appears twice')
+const routeLines = new Set(rv.routes.flatMap(r => r.sentences))
+const perStyle = {}
+for (const s of rv.sentences) {
+  if (s.kind === 'turn') {
+    ok(routeLines.has(s.stop.sentence), `route sentence "${s.stop.sentence}" is not in any message`)
+    perStyle[s.stop.style] = (perStyle[s.stop.style] ?? 0) + 1
+  } else {
+    ok(s.park !== s.decoy, `route sentence ${s.id}: the answer is also the ruled-out place`)
+    ok(s.lines.some(t => t.includes(rv.PARK_PLACE[s.park])) && s.lines.includes(rv.PARK_REASON[s.decoy]), `route sentence ${s.id}: does not say both places`)
+    for (const t of s.lines) needsGloss(`route sentence ${s.id}`, t)
+  }
+}
+const styleCounts = Object.values(perStyle)
+ok(styleCounts.length === 5 && Math.min(...styleCounts) === Math.max(...styleCounts), `route sentences: uneven across styles ${JSON.stringify(perStyle)}`)
+console.log(`route: ${rv.routeWords.length} words, ${rv.sentences.length} sentences`)
 for (const [word, where] of unglossed) ok(false, `${where}: "${word}" has no glossary entry`)
 console.log(`glossary: bouwstenen and the four exam-task games checked for missing words`)
 
@@ -336,12 +355,14 @@ for (const w of lw.words) {
   ok(w.nl.trim() === w.nl && w.en.trim() === w.en && w.en.length > 0, `luisteren woorden ${w.id}: stray space or empty meaning`)
   ok(!/[—–]/.test(w.en), `luisteren woorden ${w.id}: dash in the meaning`)
 }
-for (const theme of lw.THEMES) {
-  const list = lw.wordsByTheme[theme.id]
-  ok(list.length >= 40, `luisteren woorden ${theme.id}: only ${list.length} words (aim for 40+)`)
+function checkWordList(name, list) {
+  ok(list.length >= 40, `luisteren woorden ${name}: only ${list.length} words (aim for 40+)`)
+  ok(new Set(list.map(w => w.nl)).size === list.length, `luisteren woorden ${name}: a word appears twice`)
   const meanings = new Set()
   for (const w of list) {
-    ok(!meanings.has(w.en), `luisteren woorden ${theme.id}: two words mean "${w.en}"`)
+    ok(w.nl.trim() === w.nl && w.en.trim() === w.en && w.en.length > 0, `luisteren woorden ${w.id}: stray space or empty meaning`)
+    ok(!/[—–]/.test(w.en), `luisteren woorden ${w.id}: dash in the meaning`)
+    ok(!meanings.has(w.en), `luisteren woorden ${name}: two words mean "${w.en}"`)
     meanings.add(w.en)
     if (w.pair) {
       const pair = list.find(o => o.nl === w.pair)
@@ -352,6 +373,11 @@ for (const theme of lw.THEMES) {
     ok(options.length === 4 && new Set(options).size === 4 && options.includes(w.en), `luisteren woorden ${w.id}: options are not four distinct meanings with the answer`)
     if (w.pair) ok(options.includes(list.find(o => o.nl === w.pair)?.en), `luisteren woorden ${w.id}: pair not offered`)
   }
+}
+// Route volgen's first step is a word list on the same screens.
+checkWordList('route volgen', rv.routeWords)
+for (const theme of lw.THEMES) {
+  checkWordList(theme.id, lw.wordsByTheme[theme.id])
   ok(lw.themeFromKey(`${lw.STORE_PREFIX}${theme.id}`) === theme.id, `luisteren woorden ${theme.id}: key does not map back`)
 }
 console.log(`luisteren woorden: ${lw.words.length} words in ${lw.THEMES.length} themes`)

@@ -99,3 +99,10 @@
   color: var(--muted);
   font-size: var(--text-sm);
 }
+
+/* The step switcher: how far each step is, next to its name. */
+.rv-step-count {
+  color: var(--muted);
+  font-family: var(--font-heading);
+  font-variant-numeric: tabular-nums;
+}

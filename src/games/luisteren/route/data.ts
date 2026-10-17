@@ -11,7 +11,12 @@
  *   the building is on is not the turn.
  * The parking line always rules one place out with a reason, so the answer is
  * not simply the last place mentioned.
+ *
+ * The game builds up to a whole message in three steps: the words (`routeWords`),
+ * one line at a time (`sentences`), then the voicemails (`routes`).
  */
+
+import type { ListenWord } from '../woorden/data'
 
 export type Turn = 'L' | 'R' | 'S'
 export type Style = 'plain' | 'als' | 'daar' | 'niet' | 'side'
@@ -172,3 +177,112 @@ function build(spec: RouteSpec, index: number): Route {
 }
 
 export const routes: Route[] = SPECS.map(build)
+
+/**
+ * Step 1: the words the messages are made of, so they are known by ear before a
+ * whole message is played. `[dutch, english, pair]` as in the word games: the
+ * pair is always offered as a wrong meaning.
+ */
+const WORD_ENTRIES: [nl: string, en: string, pair?: string][] = [
+  // Which way
+  ['linksaf', 'turn left', 'rechtsaf'],
+  ['rechtsaf', 'turn right', 'linksaf'],
+  ['rechtdoor', 'straight on'],
+  ['aan je linkerhand', 'on your left-hand side', 'aan je rechterhand'],
+  ['aan je rechterhand', 'on your right-hand side', 'aan je linkerhand'],
+  ['niet linksaf, maar rechtsaf', 'not left, but right', 'niet rechtsaf, maar linksaf'],
+  ['niet rechtsaf, maar linksaf', 'not right, but left', 'niet linksaf, maar rechtsaf'],
+  // The verbs, in the form the messages say them
+  ['ga je', 'you go'],
+  ['sla je', 'you turn (sla je linksaf)'],
+  ['rij je', 'you drive'],
+  ['moet je', 'you have to'],
+  ['kom je bij', 'you come to'],
+  // The small words around the turn
+  ['bij', 'at (by)'],
+  ['als je bij de brug bent', 'when you are at the bridge'],
+  ['eerst', 'first', 'dan'],
+  ['dan', 'then', 'eerst'],
+  ['daar', 'there'],
+  ['niet', 'not'],
+  ['maar', 'but'],
+  // The landmarks
+  ['de brug', 'the bridge'],
+  ['het park', 'the park'],
+  ['de school', 'the school'],
+  ['de bushalte', 'the bus stop'],
+  ['het zwembad', 'the swimming pool'],
+  ['het stoplicht', 'the traffic light'],
+  ['de kerk', 'the church'],
+  ['de bibliotheek', 'the library'],
+  ['de apotheek', 'the pharmacy'],
+  ['het kruispunt', 'the crossroads'],
+  ['het tankstation', 'the petrol station'],
+  ['het station', 'the station'],
+  ['de rotonde', 'the roundabout'],
+  ['de sporthal', 'the sports hall'],
+  ['de bakker', 'the bakery'],
+  // Parking
+  ['parkeren', 'to park'],
+  ['parkeer', 'park (do it)'],
+  ['de parkeerplaats voor bezoekers', 'the visitors\' car park'],
+  ['de parkeergarage', 'the multi-storey car park'],
+  ['aan de overkant', 'on the other side (across the road)'],
+  ['in de straat', 'in the street'],
+  ['vol', 'full', 'dicht'],
+  ['dicht', 'closed', 'vol'],
+  ['duur', 'expensive'],
+  ['je mag niet parkeren', 'you may not park'],
+  // The questions on screen
+  ['Wat moet je doen bij de kerk?', 'What do you have to do at the church?'],
+  ['Waar kun je het beste parkeren?', 'Where is the best place to park?'],
+]
+
+export const routeWords: ListenWord[] = WORD_ENTRIES.map(([nl, en, pair]) => ({
+  id: `route-woorden:${nl}`,
+  theme: 'route',
+  nl,
+  en,
+  pair,
+}))
+
+/**
+ * Step 2: one line of a message at a time. A turn line asks which way at its
+ * landmark; a parking pair is the two parking lines, one place to use and one
+ * ruled out. The lines are the messages' own, so step 3 holds no new Dutch.
+ */
+export type Sentence =
+  | { id: string; kind: 'turn'; stop: Stop }
+  | { id: string; kind: 'park'; park: ParkId; decoy: ParkId; lines: string[] }
+
+/** Turn lines per style: the traps get as many as the plain lines. */
+const PER_STYLE = 8
+
+function turnSentences(): Sentence[] {
+  const seen = new Set<string>()
+  const count: Record<Style, number> = { plain: 0, als: 0, daar: 0, niet: 0, side: 0 }
+  const picked: Sentence[] = []
+  for (const stop of routes.flatMap((r) => r.stops)) {
+    if (seen.has(stop.sentence) || count[stop.style] === PER_STYLE) continue
+    seen.add(stop.sentence)
+    count[stop.style]++
+    picked.push({ id: `zin:${stop.sentence}`, kind: 'turn', stop })
+  }
+  return picked
+}
+
+function parkSentences(): Sentence[] {
+  const pairs = PARK_PLACES.flatMap((park) => PARK_PLACES.filter((d) => d !== park).map((decoy) => [park, decoy] as const))
+  return pairs.map(([park, decoy], i) => {
+    const where = `Parkeer ${PARK_PLACE[park]}.`
+    return {
+      id: `park:${park}-${decoy}`,
+      kind: 'park',
+      park,
+      decoy,
+      lines: i % 2 === 0 ? [where, PARK_REASON[decoy]] : [PARK_REASON[decoy], where],
+    }
+  })
+}
+
+export const sentences: Sentence[] = [...turnSentences(), ...parkSentences()]
