@@ -98,14 +98,18 @@
   border-radius: var(--radius);
   font-family: var(--font-body);
   font-size: var(--text-sm);
-  white-space: nowrap;
-  opacity: 0;
+  /* Long glosses wrap instead of running off a phone screen. */
+  width: max-content;
+  max-width: min(16rem, 70vw);
+  white-space: normal;
+  /* Out of the layout until shown: a hidden gloss near the right edge would
+     otherwise still widen the page and scroll it sideways. */
+  display: none;
   pointer-events: none;
-  transition: opacity var(--transition-fast);
 }
 .word-tile:hover .word-tile-gloss,
 .word-tile:focus .word-tile-gloss {
-  opacity: 1;
+  display: block;
 }
 
 /* Tooltip (generic) */

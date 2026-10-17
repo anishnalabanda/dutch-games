@@ -8,6 +8,8 @@ import { useDrill, type Drill } from '../../useDrill'
 import { useDutchSpeech } from '../speech'
 import { VoiceSettings } from '../VoiceSettings'
 import { WordPractice } from '../woorden/WoordenLuisteren'
+import { Choices } from '../Choices'
+import { Steps, firstOpenStep, type StepDef } from '../Steps'
 import {
   NOT_TURN,
   PARK_PLACE,
@@ -27,7 +29,7 @@ import {
   type Stop,
   type Turn,
 } from './data'
-import './RouteVolgen.css'
+import '../listening.css'
 
 const STORE_KEY = 'nl.luisteren.route'
 // The first two steps keep their own saves next to the game's key; the hub counts the routes.
@@ -37,7 +39,7 @@ const SENTENCES_KEY = 'nl.luisteren.route-zinnen'
 type Speech = ReturnType<typeof useDutchSpeech>
 type Step = 'woorden' | 'zinnen' | 'route'
 
-const STEPS: { id: Step; label: string; countLabel: string }[] = [
+const STEPS: StepDef<Step>[] = [
   { id: 'woorden', label: '1. Words', countLabel: 'words recognised first time' },
   { id: 'zinnen', label: '2. Sentences', countLabel: 'sentences right first time' },
   { id: 'route', label: '3. Whole message', countLabel: 'routes right first time' },
@@ -69,66 +71,6 @@ function parkText(place: ParkId): string {
   return `${PARK_PLACE[place][0].toUpperCase()}${PARK_PLACE[place].slice(1)}.`
 }
 
-function radioKeys(e: React.KeyboardEvent, action: () => void) {
-  if (e.key !== 'Enter' && e.key !== ' ') return
-  e.preventDefault()
-  action()
-}
-
-/**
- * A row of Dutch answer chips. They hold `GlossedText`, so they are radios, not
- * buttons. `answer` is set once the choice is checked: it marks right and wrong.
- */
-function Choices<T extends string>({
-  options,
-  label,
-  picked,
-  answer,
-  onPick,
-  text,
-  arrow,
-  className,
-}: {
-  options: T[]
-  label: string
-  picked: T | null
-  answer: T | null
-  onPick: (option: T) => void
-  text: (option: T) => string
-  arrow?: (option: T) => string
-  className: string
-}) {
-  const locked = answer !== null
-  return (
-    <div className={className} role="radiogroup" aria-label={label}>
-      {options.map((option) => {
-        const selected = picked === option
-        const mark = locked ? (option === answer ? 'g-chip-ok' : selected ? 'g-chip-alert' : '') : ''
-        const pick = () => !locked && onPick(option)
-        return (
-          <div
-            key={option}
-            role="radio"
-            tabIndex={0}
-            aria-checked={selected}
-            aria-disabled={locked}
-            className={`g-chip rv-turn ${selected ? 'g-chip-selected' : ''} ${mark} ${locked ? 'rv-locked' : ''}`}
-            onClick={pick}
-            onKeyDown={(e) => radioKeys(e, pick)}
-          >
-            {arrow && (
-              <span className="rv-arrow" aria-hidden="true">
-                {arrow(option)}
-              </span>
-            )}
-            <GlossedText text={text(option)} />
-          </div>
-        )
-      })}
-    </div>
-  )
-}
-
 /**
  * Directions by ear, built up in three steps: the words the messages are made
  * of, then one line at a time, then a whole voicemail with a question per
@@ -143,18 +85,19 @@ export function RouteVolgen() {
   const [step, setStep] = useState<Step | null>(null)
   const loaded = wordDrill.loaded && sentenceDrill.loaded && routeDrill.loaded
 
-  useEffect(() => {
-    if (!loaded || step !== null) return
-    setStep(!wordDrill.state.done ? 'woorden' : !sentenceDrill.state.done ? 'zinnen' : 'route')
-  }, [loaded, step, wordDrill.state.done, sentenceDrill.state.done])
-
-  if (!loaded || step === null) return null
-
   const drills: Record<Step, Drill<{ id: string }>> = {
     woorden: wordDrill,
     zinnen: sentenceDrill,
     route: routeDrill,
   }
+
+  useEffect(() => {
+    if (loaded && step === null) setStep(firstOpenStep(STEPS, drills))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loaded, step])
+
+  if (!loaded || step === null) return null
+
   const active = drills[step]
   const meta = STEPS.find((s) => s.id === step)!
 
@@ -170,22 +113,7 @@ export function RouteVolgen() {
       progress={{ value: active.mastered, max: active.total }}
       countLabel={meta.countLabel}
     >
-      <div className="g-chips" role="group" aria-label="Step">
-        {STEPS.map((s) => (
-          <button
-            key={s.id}
-            type="button"
-            className={`g-chip ${step === s.id ? 'g-chip-selected' : ''}`}
-            aria-pressed={step === s.id}
-            onClick={() => go(s.id)}
-          >
-            {s.label}{' '}
-            <span className="rv-step-count">
-              {drills[s.id].mastered}/{drills[s.id].total}
-            </span>
-          </button>
-        ))}
-      </div>
+      <Steps steps={STEPS} current={step} drills={drills} onChoose={go} />
 
       <VoiceSettings speech={speech} />
 
@@ -293,7 +221,7 @@ function SentenceStep({
         <StreakBadge label="Streak" value={drill.state.streak} />
       </div>
 
-      <div className="rv-board">
+      <div className="ls-board">
         {speech.supported && (
           <div className="g-actions">
             <Button onClick={() => speak(text)}>&#9654; Play again</Button>
@@ -303,7 +231,7 @@ function SentenceStep({
           </div>
         )}
         {textVisible ? (
-          <ol className="rv-transcript" lang="nl">
+          <ol className="ls-transcript" lang="nl">
             {(current.kind === 'turn' ? [current.stop.sentence] : current.lines).map((line) => (
               <li key={line}>
                 <GlossedText text={line} />
@@ -311,18 +239,18 @@ function SentenceStep({
             ))}
           </ol>
         ) : (
-          <button type="button" className="rv-reveal" onClick={showText}>
+          <button type="button" className="ls-reveal" onClick={showText}>
             Show the text (counts as a miss)
           </button>
         )}
       </div>
 
-      <div className="rv-question">
+      <div className="ls-question">
         {current.kind === 'turn' ? (
           <>
-            <GlossedText className="rv-question-text" text={current.stop.question} />
+            <GlossedText className="ls-question-text" text={current.stop.question} />
             <Choices
-              className="rv-turns"
+              className="ls-choices"
               options={TURNS}
               label={current.stop.question}
               picked={picked as Turn | null}
@@ -334,9 +262,9 @@ function SentenceStep({
           </>
         ) : (
           <>
-            <GlossedText className="rv-question-text" text={PARK_QUESTION} />
+            <GlossedText className="ls-question-text" text={PARK_QUESTION} />
             <Choices
-              className="rv-parks"
+              className="ls-choices"
               options={PARK_PLACES}
               label={PARK_QUESTION}
               picked={picked as ParkId | null}
@@ -346,7 +274,7 @@ function SentenceStep({
             />
           </>
         )}
-        {why && <p className="rv-why">{why}</p>}
+        {why && <p className="ls-why">{why}</p>}
       </div>
 
       {answered && (
@@ -441,7 +369,7 @@ function RouteStep({ drill, speech }: { drill: Drill<Route>; speech: Speech }) {
         <StreakBadge label="Streak" value={drill.state.streak} />
       </div>
 
-      <div className="rv-board">
+      <div className="ls-board">
         {speech.supported ? (
           <div className="g-actions">
             <Button onClick={() => play()}>&#9654; Play the message</Button>
@@ -456,14 +384,14 @@ function RouteStep({ drill, speech }: { drill: Drill<Route>; speech: Speech }) {
           <p className="g-hint">This browser cannot speak, so the message is shown as text.</p>
         )}
         {shown || checked || !speech.supported ? (
-          <ol className="rv-transcript" lang="nl">
+          <ol className="ls-transcript" lang="nl">
             {current.sentences.map((sentence, i) => {
               const stopIndex = current.stops.findIndex((s) => s.sentence === sentence)
               const isPark = current.parkSentences.includes(sentence)
               const wrong =
                 checked && ((stopIndex >= 0 && !turnsRight[stopIndex]) || (isPark && !parkRight))
               return (
-                <li key={i} className={wrong ? 'rv-line-wrong' : ''}>
+                <li key={i} className={wrong ? 'ls-line-wrong' : ''}>
                   <GlossedText text={sentence} />
                 </li>
               )
@@ -472,7 +400,7 @@ function RouteStep({ drill, speech }: { drill: Drill<Route>; speech: Speech }) {
         ) : (
           <button
             type="button"
-            className="rv-reveal"
+            className="ls-reveal"
             onClick={() => {
               stopSpeech()
               setShown(true)
@@ -483,12 +411,12 @@ function RouteStep({ drill, speech }: { drill: Drill<Route>; speech: Speech }) {
         )}
       </div>
 
-      <ol className="rv-questions">
+      <ol className="ls-questions">
         {current.stops.map((stop, i) => (
-          <li key={stop.landmark} className="rv-question">
-            <GlossedText className="rv-question-text" text={stop.question} />
+          <li key={stop.landmark} className="ls-question">
+            <GlossedText className="ls-question-text" text={stop.question} />
             <Choices
-              className="rv-turns"
+              className="ls-choices"
               options={TURNS}
               label={stop.question}
               picked={turns[i] ?? null}
@@ -497,14 +425,14 @@ function RouteStep({ drill, speech }: { drill: Drill<Route>; speech: Speech }) {
               text={turnText}
               arrow={(t) => TURN_ARROW[t]}
             />
-            {checked && !turnsRight[i] && <p className="rv-why">{explain(stop)}</p>}
+            {checked && !turnsRight[i] && <p className="ls-why">{explain(stop)}</p>}
           </li>
         ))}
 
-        <li className="rv-question">
-          <GlossedText className="rv-question-text" text={PARK_QUESTION} />
+        <li className="ls-question">
+          <GlossedText className="ls-question-text" text={PARK_QUESTION} />
           <Choices
-            className="rv-parks"
+            className="ls-choices"
             options={PARK_PLACES}
             label={PARK_QUESTION}
             picked={park}
@@ -512,7 +440,7 @@ function RouteStep({ drill, speech }: { drill: Drill<Route>; speech: Speech }) {
             onPick={(place) => !checked && setPark(place)}
             text={parkText}
           />
-          {checked && !parkRight && park && <p className="rv-why">{explainPark(park, current.decoy)}</p>}
+          {checked && !parkRight && park && <p className="ls-why">{explainPark(park, current.decoy)}</p>}
         </li>
       </ol>
 

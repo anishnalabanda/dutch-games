@@ -116,6 +116,8 @@ function splitSentences(text: string): string[] {
 
 export interface SpeakOptions {
   slow?: boolean
+  /** 1 is the voice as it is: lower for the man in a conversation, higher for the woman. */
+  pitch?: number
   /** Say it with this voice instead of the chosen one: the picker's sample, before the choice has rendered. */
   voice?: SpeechSynthesisVoice
   /** Queue after whatever is already speaking, instead of cutting it off. */
@@ -178,6 +180,7 @@ export function useDutchSpeech(): DutchSpeech {
         utterance.lang = v?.lang ?? 'nl-NL'
         if (v) utterance.voice = v
         utterance.rate = options.slow ? SLOW_RATE : NORMAL_RATE
+        if (options.pitch) utterance.pitch = options.pitch
         if (i === 0 && options.onStart) utterance.onstart = options.onStart
         if (i === parts.length - 1 && options.onEnd) {
           utterance.onend = options.onEnd

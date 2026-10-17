@@ -18,8 +18,14 @@ baseline. Learning happens through **playing games**, not reading lessons.
 - Lezen: cleared (no games needed)
 - Luisteren: in progress (baseline practice exam: 18/25; oefenexamen 2 on 14 October 2026:
   21/25; exam moved from 16 to 19 October 2026). 16 word games, one per theme
-  (`src/games/luisteren/woorden/`, keys `nl.luisteren.woorden-<theme>`): a word list with the
-  meaning beneath and browser TTS, plus a hear-it-pick-the-meaning drill. Every word on the
+  (`src/games/luisteren/woorden/`, keys `nl.luisteren.woorden-<theme>`), each in three steps,
+  each its own drill: **1. Words**, a word list with the meaning beneath and browser TTS, plus a
+  hear-it-pick-the-meaning drill; **2. Sentences** (40 per theme, key `...-<theme>-zinnen`): hear
+  one sentence, pick its meaning from three that differ only in the detail to catch; **3.
+  Conversation** (20 per theme, key `...-<theme>-gesprek`): a man and a woman (one voice, two
+  pitches), a Dutch exam-style question with three Dutch options that are all said in it. The
+  content is in `woorden/zinnen/<theme>.ts`; the step tabs and answer chips are shared with Route
+  volgen (`luisteren/Steps.tsx`, `luisteren/Choices.tsx`). The hub bar counts step 1 only. Every word on the
   oefenexamen 2 screens is in them, with prepositions, pronouns, verb forms and directions as
   themes of their own. Plus `nl.luisteren.route` (**Route volgen**, `src/games/luisteren/route/`),
   in three steps, each its own drill: **1. Words** (the 46 words the messages are built from, on

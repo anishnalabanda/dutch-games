@@ -1,5 +1,7 @@
+/* Shared by the Luisteren games that build up to a whole text: Route volgen and the word games. */
+
 /* The message: play controls, then the text once it is shown or checked. */
-.rv-board {
+.ls-board {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -11,7 +13,7 @@
   padding: var(--space-4) var(--space-3);
 }
 
-.rv-transcript {
+.ls-transcript {
   margin: 0;
   padding-left: var(--space-4);
   display: grid;
@@ -20,11 +22,11 @@
   font-size: var(--text-md);
 }
 
-.rv-line-wrong {
+.ls-line-wrong {
   color: var(--alert);
 }
 
-.rv-reveal {
+.ls-reveal {
   background: none;
   border: none;
   border-bottom: 1px dotted var(--muted);
@@ -34,15 +36,15 @@
   font-size: var(--text-sm);
   cursor: pointer;
 }
-.rv-reveal:hover,
-.rv-reveal:focus-visible {
+.ls-reveal:hover,
+.ls-reveal:focus-visible {
   color: var(--amber);
   border-bottom-color: var(--amber);
   outline: none;
 }
 
-/* The questions, one per landmark, then parking. */
-.rv-questions {
+/* The questions under a text: one per landmark in Route volgen. */
+.ls-questions {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -50,7 +52,7 @@
   gap: var(--space-3);
 }
 
-.rv-question {
+.ls-question {
   display: grid;
   gap: var(--space-2);
   background: var(--panel);
@@ -59,50 +61,90 @@
   padding: var(--space-3);
 }
 
-.rv-question-text {
+.ls-question-text {
   font-size: var(--text-md);
   font-weight: 600;
   color: var(--paper);
 }
 
-.rv-turns,
-.rv-parks {
+.ls-choices {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
   gap: var(--space-2);
 }
 
-.rv-turn {
+.ls-choice {
   display: flex;
   align-items: center;
   gap: var(--space-2);
   text-align: left;
 }
 /* A selected chip already has an amber border, so focus needs its own ring. */
-.rv-turn:focus-visible {
+.ls-choice:focus-visible {
   outline: 2px solid var(--amber);
   outline-offset: 2px;
 }
 
-.rv-locked {
+.ls-locked {
   cursor: default;
 }
 
-.rv-arrow {
+.ls-arrow {
   font-size: var(--text-lg);
   color: var(--amber);
   line-height: 1;
 }
 
-.rv-why {
+.ls-why {
   margin: 0;
   color: var(--muted);
   font-size: var(--text-sm);
 }
 
 /* The step switcher: how far each step is, next to its name. */
-.rv-step-count {
+.ls-step-count {
   color: var(--muted);
   font-family: var(--font-heading);
   font-variant-numeric: tabular-nums;
+}
+
+/* A single sentence on the board, and its meanings: whole sentences, one per row. */
+.ls-sentence {
+  margin: 0;
+  padding-left: 0;
+}
+
+.ls-meanings,
+.ls-choices-stacked {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-2);
+}
+
+/* A conversation: who speaks on the left, what they say beside it. */
+.ls-dialogue {
+  margin: 0;
+  display: grid;
+  gap: var(--space-2);
+  color: var(--paper);
+  font-size: var(--text-md);
+}
+
+.ls-dialogue-line {
+  display: grid;
+  grid-template-columns: 5rem 1fr;
+  gap: var(--space-2);
+  align-items: baseline;
+}
+
+.ls-dialogue-line dt {
+  color: var(--muted);
+  font-family: var(--font-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: var(--text-sm);
+}
+
+.ls-dialogue-line dd {
+  margin: 0;
 }

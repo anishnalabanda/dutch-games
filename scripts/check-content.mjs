@@ -213,6 +213,8 @@ const NOT_GLOSSED = new Set([
   'mulder', 'yasmina', 'lotte', 'fatma', 'daan', 'mark', 'sara', 'tim', 'lisa', 'emma', 'ilse', 'ruben',
   'rotterdam', 'amsterdam', 'molenstraat', 'b', 'x',
   'pieter', 'fatima', 'joris', 'ahmed', 'eva',
+  // Names, towns and countries in the Luisteren sentences and conversations
+  'amersfoort', 'breda', 'delft', 'den', 'dorpsstraat', 'duitsland', 'groningen', 'haag', 'haarlem', 'italië', 'kees', 'leiden', 'lina', 'lindestraat', 'marokko', 'milan', 'parijs', 'peter', 'regenboog', 'sandra', 'schoolstraat', 'sem', 'stationsstraat', 'tom', 'toms', 'turkije', 'zwolle',
 ])
 const unglossed = new Map()
 function needsGloss(where, text) {
@@ -299,6 +301,44 @@ for (const s of rv.sentences) {
 const styleCounts = Object.values(perStyle)
 ok(styleCounts.length === 5 && Math.min(...styleCounts) === Math.max(...styleCounts), `route sentences: uneven across styles ${JSON.stringify(perStyle)}`)
 console.log(`route: ${rv.routeWords.length} words, ${rv.sentences.length} sentences`)
+// Luisteren word games, steps 2 and 3: sentences with two near-miss meanings,
+// and exam-shaped conversations whose three options are all said in them.
+const lz = await import(`${base}/luisteren/woorden/zinnen/index.ts`)
+let lzSentences = 0
+let lzConversations = 0
+for (const [theme, list] of Object.entries(lz.sentencesByTheme)) {
+  ok(list.length >= 40, `luisteren zinnen ${theme}: only ${list.length} sentences (aim for 40+)`)
+  ok(new Set(list.map(x => x.id)).size === list.length, `luisteren zinnen ${theme}: a sentence appears twice`)
+  for (const x of list) {
+    const meanings = [x.en, ...x.wrong]
+    ok(meanings.every(m => m.trim().length > 0) && new Set(meanings).size === 3, `luisteren zinnen ${x.id}: meanings not three distinct strings`)
+    ok(![x.nl, ...meanings].some(t => /[—–]/.test(t)), `luisteren zinnen ${x.id}: a dash`)
+    ok(x.nl.split(/\s+/).length <= 16, `luisteren zinnen ${x.id}: longer than 16 words`)
+    needsGloss(`luisteren zinnen ${theme}`, x.nl)
+  }
+  lzSentences += list.length
+}
+for (const [theme, list] of Object.entries(lz.conversationsByTheme)) {
+  ok(list.length >= 20, `luisteren gesprek ${theme}: only ${list.length} conversations (aim for 20+)`)
+  ok(new Set(list.map(c => c.id)).size === list.length, `luisteren gesprek ${theme}: an id appears twice`)
+  const answers = [0, 0, 0]
+  for (const c of list) {
+    ok(c.lines.length >= 2 && c.lines.length <= 4, `luisteren gesprek ${c.id}: ${c.lines.length} lines (2 to 4)`)
+    ok(new Set(c.lines.map(l => l[0])).size === 2, `luisteren gesprek ${c.id}: not both a man and a woman`)
+    const words = c.lines.map(l => l[1]).join(' ').split(/\s+/).length
+    ok(words <= 60, `luisteren gesprek ${c.id}: ${words} words, too long`)
+    ok(c.question.trim().endsWith('?'), `luisteren gesprek ${c.id}: the question has no question mark`)
+    ok(c.options.length === 3 && new Set(c.options).size === 3, `luisteren gesprek ${c.id}: options not three distinct`)
+    ok([0, 1, 2].includes(c.answer), `luisteren gesprek ${c.id}: answer out of range`)
+    ok(c.why.length > 20, `luisteren gesprek ${c.id}: no explanation`)
+    ok(![c.question, c.why, ...c.options, ...c.lines.map(l => l[1])].some(t => /[—–]/.test(t)), `luisteren gesprek ${c.id}: a dash`)
+    answers[c.answer]++
+    for (const t of [c.question, ...c.options, ...c.lines.map(l => l[1])]) needsGloss(`luisteren gesprek ${theme}`, t)
+  }
+  ok(Math.min(...answers) >= Math.floor(list.length / 5), `luisteren gesprek ${theme}: the right answer is too often in one place ${JSON.stringify(answers)}`)
+  lzConversations += list.length
+}
+console.log(`luisteren word games: ${lzSentences} sentences, ${lzConversations} conversations`)
 for (const [word, where] of unglossed) ok(false, `${where}: "${word}" has no glossary entry`)
 console.log(`glossary: bouwstenen and the four exam-task games checked for missing words`)
 

@@ -7,45 +7,103 @@ import { useCurrentGame } from '../../currentGame'
 import { useDrill, type Drill } from '../../useDrill'
 import { useDutchSpeech } from '../speech'
 import { VoiceSettings } from '../VoiceSettings'
+import { Steps, firstOpenStep, type StepDef } from '../Steps'
 import { optionsFor, themeFromKey, wordsByTheme, type ListenWord } from './data'
+import {
+  CONVERSATIONS_SUFFIX,
+  SENTENCES_SUFFIX,
+  conversationsByTheme,
+  sentencesByTheme,
+  type ListenConversation,
+  type ListenSentence,
+} from './zinnen'
+import { SentenceStep } from './SentenceStep'
+import { ConversationStep } from './ConversationStep'
 import './WoordenLuisteren.css'
 
 type Mode = 'list' | 'drill'
 
 const NO_WORDS: ListenWord[] = []
+const NO_SENTENCES: ListenSentence[] = []
+const NO_CONVERSATIONS: ListenConversation[] = []
+
+type Step = 'woorden' | 'zinnen' | 'gesprek'
+
+const STEPS: StepDef<Step>[] = [
+  { id: 'woorden', label: '1. Words', countLabel: 'recognised first time' },
+  { id: 'zinnen', label: '2. Sentences', countLabel: 'sentences right first time' },
+  { id: 'gesprek', label: '3. Conversation', countLabel: 'conversations right first time' },
+]
 
 /**
  * One game per theme, all on this component: the manifest entry on screen says
- * which theme. The list is for going over the words, Dutch with the meaning
- * underneath and a button to hear it. The drill only says the word: pick the
- * meaning, and it counts once it is right first time.
+ * which theme. It builds up in three steps, each its own drill: the words (a
+ * list to go over, then hear-it-pick-the-meaning), then single sentences, then
+ * short conversations asked the way the exam asks. It opens on the first step
+ * not done; the hub counts the words, the game's own key.
  */
 export function WoordenLuisteren() {
   const meta = useCurrentGame()
   const key = meta?.id ?? ''
   const theme = themeFromKey(key)
   const items = theme ? wordsByTheme[theme] : NO_WORDS
-  const drill = useDrill(key, items)
+  const sentences = theme ? sentencesByTheme[theme] : NO_SENTENCES
+  const conversations = theme ? conversationsByTheme[theme] : NO_CONVERSATIONS
+  const wordDrill = useDrill(key, items)
+  const sentenceDrill = useDrill(`${key}${SENTENCES_SUFFIX}`, sentences)
+  const conversationDrill = useDrill(`${key}${CONVERSATIONS_SUFFIX}`, conversations)
   const speech = useDutchSpeech()
+  const [step, setStep] = useState<Step | null>(null)
+  const loaded = wordDrill.loaded && sentenceDrill.loaded && conversationDrill.loaded
+  const drills: Record<Step, Drill<{ id: string }>> = {
+    woorden: wordDrill,
+    zinnen: sentenceDrill,
+    gesprek: conversationDrill,
+  }
+
+  useEffect(() => {
+    if (loaded && step === null) setStep(firstOpenStep(STEPS, drills))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loaded, step])
 
   if (!meta || !theme) return <p>Unknown game.</p>
-  if (!drill.loaded) return null
+  if (!loaded || step === null) return null
 
-  const title = meta.title
+  const active = drills[step]
+  const stepMeta = STEPS.find((s) => s.id === step)!
+
+  function go(next: Step) {
+    speech.stop()
+    setStep(next)
+  }
+
   return (
     <Shell
-      title={title}
+      title={meta.title}
       backTo="/luisteren"
-      progress={{ value: drill.mastered, max: drill.total }}
-      countLabel="recognised first time"
+      progress={{ value: active.mastered, max: active.total }}
+      countLabel={stepMeta.countLabel}
     >
+      <Steps steps={STEPS} current={step} drills={drills} onChoose={go} />
+
       <VoiceSettings speech={speech} />
 
-      <WordPractice items={items} drill={drill} speech={speech} />
+      {step === 'woorden' && (
+        <WordPractice
+          items={items}
+          drill={wordDrill}
+          speech={speech}
+          next={{ label: 'Next: sentences', onClick: () => go('zinnen') }}
+        />
+      )}
+      {step === 'zinnen' && (
+        <SentenceStep items={sentences} drill={sentenceDrill} speech={speech} onNext={() => go('gesprek')} />
+      )}
+      {step === 'gesprek' && <ConversationStep items={conversations} drill={conversationDrill} speech={speech} />}
 
       <p className="g-hint">
-        This is a computer voice reading single words. The exam plays real recordings at normal
-        speed, so do the DUO practice exams on inburgeren.nl as well.
+        This is a computer voice. The exam plays real recordings at normal speed, so do the DUO
+        practice exams on inburgeren.nl as well.
       </p>
     </Shell>
   )

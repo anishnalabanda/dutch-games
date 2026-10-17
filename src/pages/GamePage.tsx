@@ -13,7 +13,8 @@ export function GamePage() {
   const GameComponent = game.component
   return (
     <CurrentGameProvider meta={game}>
-      <GameComponent />
+      {/* Keyed by game: the word games share one component, and state from one theme must not leak into the next. */}
+      <GameComponent key={game.id} />
     </CurrentGameProvider>
   )
 }
