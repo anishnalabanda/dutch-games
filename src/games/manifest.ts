@@ -17,6 +17,7 @@ import { Wijkkrant } from './schrijven/wijkkrant/Wijkkrant'
 import { InformeelBericht } from './schrijven/informeel/InformeelBericht'
 import { FormeleEmail } from './schrijven/formeel/FormeleEmail'
 import { WoordenLuisteren } from './luisteren/woorden/WoordenLuisteren'
+import { RouteVolgen } from './luisteren/route/RouteVolgen'
 
 // Item counts come from the games' own data, so the hub and the exam page can
 // never quote a total the game does not actually have.
@@ -37,6 +38,7 @@ import { tasks as wijkkrant } from './schrijven/wijkkrant/data'
 import { tasks as informeel } from './schrijven/informeel/data'
 import { tasks as formeel } from './schrijven/formeel/data'
 import { STORE_PREFIX, THEMES, wordsByTheme } from './luisteren/woorden/data'
+import { routes } from './luisteren/route/data'
 
 export interface RegisteredGame extends GameMeta {
   component: ComponentType
@@ -188,6 +190,17 @@ export const games: RegisteredGame[] = [
     core: true,
     total: formeel.length,
     component: FormeleEmail,
+  },
+  // Luisteren: following a spoken route, asked the way the exam asks it. Extra,
+  // like the word games: a computer voice reading patterns is not the exam.
+  {
+    id: 'nl.luisteren.route',
+    exam: 'luisteren',
+    title: 'Route volgen',
+    subtitle: 'Follow spoken directions: which way at each landmark',
+    core: false,
+    total: routes.length,
+    component: RouteVolgen,
   },
   // Luisteren: one word game per theme, all on one component that reads its
   // theme from the id. Extra, not core: knowing the words by ear is not being

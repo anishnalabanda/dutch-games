@@ -16,9 +16,14 @@ baseline. Learning happens through **playing games**, not reading lessons.
 
 ### Current exam status (keep updated as games are completed)
 - Lezen: cleared (no games needed)
-- Luisteren: in progress (baseline practice exam: 18/25; exam 16 October 2026). 12 word
-  games, one per theme (`src/games/luisteren/woorden/`, keys `nl.luisteren.woorden-<theme>`):
-  a word list with the meaning beneath and browser TTS, plus a hear-it-pick-the-meaning drill.
+- Luisteren: in progress (baseline practice exam: 18/25; oefenexamen 2 on 14 October 2026:
+  21/25; exam moved from 16 to 19 October 2026). 16 word games, one per theme
+  (`src/games/luisteren/woorden/`, keys `nl.luisteren.woorden-<theme>`): a word list with the
+  meaning beneath and browser TTS, plus a hear-it-pick-the-meaning drill. Every word on the
+  oefenexamen 2 screens is in them, with prepositions, pronouns, verb forms and directions as
+  themes of their own. Plus `nl.luisteren.route` (**Route volgen**, `src/games/luisteren/route/`):
+  a TTS voicemail gives a route, then "Wat moet je doen bij ...?" per landmark and where to park,
+  with the exam's traps built in (`niet X, maar Y`; the side a building is on vs the turn).
   They are extra, not core: knowing words by ear is not being ready, so Luisteren has no
   core games yet and the DUO oefenexamens remain the real practice.
 - Schrijven: in progress (all 16 games built, roadmap in section 13; done now means

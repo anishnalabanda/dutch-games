@@ -1,0 +1,101 @@
+/* The message: play controls, then the text once it is shown or checked. */
+.rv-board {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+  background: var(--board);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--amber);
+  border-radius: var(--radius);
+  padding: var(--space-4) var(--space-3);
+}
+
+.rv-transcript {
+  margin: 0;
+  padding-left: var(--space-4);
+  display: grid;
+  gap: var(--space-1);
+  color: var(--paper);
+  font-size: var(--text-md);
+}
+
+.rv-line-wrong {
+  color: var(--alert);
+}
+
+.rv-reveal {
+  background: none;
+  border: none;
+  border-bottom: 1px dotted var(--muted);
+  padding: 0;
+  color: var(--muted);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  cursor: pointer;
+}
+.rv-reveal:hover,
+.rv-reveal:focus-visible {
+  color: var(--amber);
+  border-bottom-color: var(--amber);
+  outline: none;
+}
+
+/* The questions, one per landmark, then parking. */
+.rv-questions {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-3);
+}
+
+.rv-question {
+  display: grid;
+  gap: var(--space-2);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: var(--space-3);
+}
+
+.rv-question-text {
+  font-size: var(--text-md);
+  font-weight: 600;
+  color: var(--paper);
+}
+
+.rv-turns,
+.rv-parks {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: var(--space-2);
+}
+
+.rv-turn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  text-align: left;
+}
+/* A selected chip already has an amber border, so focus needs its own ring. */
+.rv-turn:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 2px;
+}
+
+.rv-locked {
+  cursor: default;
+}
+
+.rv-arrow {
+  font-size: var(--text-lg);
+  color: var(--amber);
+  line-height: 1;
+}
+
+.rv-why {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--text-sm);
+}

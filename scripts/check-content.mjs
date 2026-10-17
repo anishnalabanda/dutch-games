@@ -212,6 +212,7 @@ const NOT_GLOSSED = new Set([
   'visser', 'boer', 'sanne', 'smit', 'bakker', 'jansen', 'noor', 'peters', 'koster', 'dekker', 'hendriks',
   'mulder', 'yasmina', 'lotte', 'fatma', 'daan', 'mark', 'sara', 'tim', 'lisa', 'emma', 'ilse', 'ruben',
   'rotterdam', 'amsterdam', 'molenstraat', 'b', 'x',
+  'pieter', 'fatima', 'joris', 'ahmed', 'eva',
 ])
 const unglossed = new Map()
 function needsGloss(where, text) {
@@ -245,6 +246,37 @@ for (const form of fo.forms) {
 needsGloss('frame', 'Van Aan Onderwerp')
 const tpl = await import(`${base}/schrijven/taken/templates.ts`)
 for (const [name, template] of Object.entries(tpl)) for (const line of template.lines) needsGloss(`template ${name}`, line.nl)
+// Route volgen: the voicemail has to say what the questions ask, and the traps
+// have to be there: both turns in a `niet` line, the opposite side in a `side` line.
+const rv = await import(`${base}/luisteren/route/data.ts`)
+ok(rv.routes.length >= 40, `route: only ${rv.routes.length} routes (aim for 40+)`)
+const routeIds = new Set()
+for (const r of rv.routes) {
+  ok(!routeIds.has(r.id), `route ${r.id}: id appears twice`)
+  routeIds.add(r.id)
+  ok(new Set(r.stops.map(s => s.landmark)).size === r.stops.length, `route ${r.id}: a landmark appears twice`)
+  ok(r.park !== r.decoy, `route ${r.id}: the parking answer is also the ruled-out place`)
+  for (const s of r.stops) {
+    const right = rv.TURN_WORD[s.turn]
+    ok(s.sentence.includes(s.landmark) && s.sentence.includes(right), `route ${r.id}: "${s.sentence}" does not name ${s.landmark} and ${right}`)
+    const others = rv.TURNS.filter(t => t !== s.turn).map(t => rv.TURN_WORD[t])
+    if (s.style === 'niet') {
+      ok(s.sentence.includes(`niet ${rv.TURN_WORD[rv.NOT_TURN[s.turn]]}, maar ${right}`), `route ${r.id}: "${s.sentence}" is not a niet-maar trap`)
+    } else {
+      ok(others.every(w => !s.sentence.includes(w)), `route ${r.id}: "${s.sentence}" names a second turn`)
+    }
+    if (s.style === 'side') ok(s.turn === 'S' || !rv.SIDE_WORD[s.turn].startsWith(s.turn === 'L' ? 'links' : 'rechts'), `route ${r.id}: side word matches the turn`)
+    needsGloss(`route ${r.id}`, s.sentence)
+    needsGloss(`route ${r.id}`, s.question)
+  }
+  ok(r.parkSentences.some(t => t.includes(rv.PARK_PLACE[r.park])), `route ${r.id}: parking answer not said`)
+  ok(r.parkSentences.includes(rv.PARK_REASON[r.decoy]), `route ${r.id}: ruled-out place not said`)
+  for (const t of r.sentences) needsGloss(`route ${r.id}`, t)
+}
+for (const t of rv.TURNS) needsGloss('route options', `Je moet ${rv.TURN_WORD[t]}.`)
+for (const p of rv.PARK_PLACES) needsGloss('route options', rv.PARK_PLACE[p])
+needsGloss('route options', rv.PARK_QUESTION)
+console.log(`route: ${rv.routes.length} routes, ${rv.routes.reduce((n, r) => n + r.stops.length, 0)} landmarks`)
 for (const [word, where] of unglossed) ok(false, `${where}: "${word}" has no glossary entry`)
 console.log(`glossary: bouwstenen and the four exam-task games checked for missing words`)
 
