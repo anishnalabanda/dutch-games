@@ -5,7 +5,8 @@ import { FeedbackBox } from '../../../components/FeedbackBox'
 import { StreakBadge } from '../../../components/StreakBadge'
 import { useCurrentGame } from '../../currentGame'
 import { useDrill, type Drill } from '../../useDrill'
-import { useDutchSpeech, voiceRegion } from '../speech'
+import { useDutchSpeech } from '../speech'
+import { VoiceSettings } from '../VoiceSettings'
 import { optionsFor, themeFromKey, wordsByTheme, type ListenWord } from './data'
 import './WoordenLuisteren.css'
 
@@ -64,7 +65,7 @@ export function WoordenLuisteren() {
         </button>
       </div>
 
-      {speech.voices.length > 0 && <VoicePicker speech={speech} />}
+      <VoiceSettings speech={speech} />
 
       {mode === 'list' ? (
         <WordList items={items} mastered={drill.state.mastered} speech={speech} />
@@ -72,21 +73,6 @@ export function WoordenLuisteren() {
         <ListenDrill items={items} drill={drill} speech={speech} onList={() => setMode('list')} />
       )}
 
-      {speech.noDutchVoice && (
-        <p className="g-hint">
-          This device has no Dutch voice, so the words may be read with an English accent. Add a
-          Dutch voice in the system speech settings (on an iPhone: Settings, Accessibility, Spoken
-          Content, Voices).
-        </p>
-      )}
-      {speech.supported && speech.voices.length < 3 && (
-        <p className="g-hint">
-          More Dutch voices can be added to the device. On a Mac: System Settings, Accessibility,
-          Spoken Content, System voice, Manage Voices, Dutch; then quit and reopen the browser. On an
-          iPhone: Settings, Accessibility, Spoken Content, Voices, Dutch. Siri voices are not
-          available to web pages.
-        </p>
-      )}
       <p className="g-hint">
         This is a computer voice reading single words. The exam plays real recordings at normal
         speed, so do the DUO practice exams on inburgeren.nl as well.
@@ -96,31 +82,6 @@ export function WoordenLuisteren() {
 }
 
 type Speech = ReturnType<typeof useDutchSpeech>
-
-const VOICE_SAMPLE = 'Hallo, dit is mijn stem.'
-
-function VoicePicker({ speech }: { speech: Speech }) {
-  return (
-    <label className="lw-voice">
-      Voice
-      <select
-        value={speech.voice?.voiceURI ?? ''}
-        onChange={(e) => {
-          const chosen = speech.voices.find((v) => v.voiceURI === e.target.value)
-          if (!chosen) return
-          speech.chooseVoice(chosen.voiceURI)
-          speech.speak(VOICE_SAMPLE, { voice: chosen })
-        }}
-      >
-        {speech.voices.map((v) => (
-          <option key={v.voiceURI} value={v.voiceURI}>
-            {v.name} ({voiceRegion(v)})
-          </option>
-        ))}
-      </select>
-    </label>
-  )
-}
 
 function WordList({
   items,

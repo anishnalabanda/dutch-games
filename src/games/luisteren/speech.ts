@@ -29,10 +29,30 @@ function langOf(voice: SpeechSynthesisVoice): string {
   return voice.lang.toLowerCase().replace('_', '-')
 }
 
-/** Netherlands voices first: a Flemish one is understandable but not what the exam sounds like. */
+export type VoiceQuality = 'natural' | 'enhanced' | 'standard'
+
+/**
+ * How human a voice sounds, read from its name: Edge's neural voices are called
+ * "Microsoft Fenna Online (Natural)", Apple's downloaded ones "Claire (Premium)"
+ * or "Xander (Enhanced)", and Chrome's server voice "Google Nederlands". The
+ * rest (the compact Xander, Microsoft Frank) sound robotic.
+ */
+export function voiceQuality(voice: SpeechSynthesisVoice): VoiceQuality {
+  if (/natural|neural/i.test(voice.name)) return 'natural'
+  if (/premium|enhanced|verbeterd|google/i.test(voice.name)) return 'enhanced'
+  return 'standard'
+}
+
+const QUALITY_RANK: Record<VoiceQuality, number> = { natural: 0, enhanced: 1, standard: 2 }
+
+/**
+ * Best-sounding first, so the default is the most listenable voice on the
+ * device; within the same quality, Netherlands before Flemish, because the exam
+ * is Netherlands Dutch.
+ */
 function dutchVoices(voices: SpeechSynthesisVoice[]): SpeechSynthesisVoice[] {
-  const dutch = voices.filter((v) => langOf(v).startsWith('nl'))
-  return [...dutch.filter((v) => langOf(v) === 'nl-nl'), ...dutch.filter((v) => langOf(v) !== 'nl-nl')]
+  const rank = (v: SpeechSynthesisVoice) => QUALITY_RANK[voiceQuality(v)] * 2 + (langOf(v) === 'nl-nl' ? 0 : 1)
+  return voices.filter((v) => langOf(v).startsWith('nl')).sort((a, b) => rank(a) - rank(b))
 }
 
 /** Where the voice is from, for the picker: the exam is Netherlands Dutch. */
@@ -86,6 +106,12 @@ function track(utterance: SpeechSynthesisUtterance) {
   }
   utterance.addEventListener('end', done)
   utterance.addEventListener('error', done)
+}
+
+/** Splits after . ! ? so each sentence is its own utterance; a single word stays whole. */
+function splitSentences(text: string): string[] {
+  const parts = text.match(/[^.!?]+[.!?]*/g)?.map((p) => p.trim()).filter(Boolean) ?? []
+  return parts.length > 0 ? parts : [text]
 }
 
 export interface SpeakOptions {
@@ -143,24 +169,29 @@ export function useDutchSpeech(): DutchSpeech {
     (text: string, options: SpeakOptions = {}) => {
       const engine = synth
       if (!engine) return
-      const utterance = new SpeechSynthesisUtterance(text)
       const v = options.voice ?? voice
-      utterance.lang = v?.lang ?? 'nl-NL'
-      if (v) utterance.voice = v
-      utterance.rate = options.slow ? SLOW_RATE : NORMAL_RATE
-      if (options.onStart) utterance.onstart = options.onStart
-      if (options.onEnd) {
-        utterance.onend = options.onEnd
-        utterance.onerror = options.onEnd
-      }
-      const start = () => {
-        track(utterance)
-        engine.speak(utterance)
-      }
-      if (!options.queue) clearThen(start)
-      // Queued behind a cancel that is still waiting: it has to wait too, or the cancel would drop it.
-      else if (afterClear.length > 0) afterClear.push(start)
-      else start()
+      // One utterance per sentence: Chrome's Google voices stop after about 15
+      // seconds of a single utterance, so a whole voicemail would be cut off.
+      const parts = splitSentences(text)
+      parts.forEach((part, i) => {
+        const utterance = new SpeechSynthesisUtterance(part)
+        utterance.lang = v?.lang ?? 'nl-NL'
+        if (v) utterance.voice = v
+        utterance.rate = options.slow ? SLOW_RATE : NORMAL_RATE
+        if (i === 0 && options.onStart) utterance.onstart = options.onStart
+        if (i === parts.length - 1 && options.onEnd) {
+          utterance.onend = options.onEnd
+          utterance.onerror = options.onEnd
+        }
+        const start = () => {
+          track(utterance)
+          engine.speak(utterance)
+        }
+        if (i === 0 && !options.queue) clearThen(start)
+        // Queued behind a cancel that is still waiting: it has to wait too, or the cancel would drop it.
+        else if (afterClear.length > 0) afterClear.push(start)
+        else start()
+      })
     },
     [voice],
   )

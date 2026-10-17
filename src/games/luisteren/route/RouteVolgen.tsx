@@ -6,6 +6,7 @@ import { GlossedText } from '../../../components/GlossedText'
 import { StreakBadge } from '../../../components/StreakBadge'
 import { useDrill } from '../../useDrill'
 import { useDutchSpeech } from '../speech'
+import { VoiceSettings } from '../VoiceSettings'
 import {
   NOT_TURN,
   PARK_PLACE,
@@ -126,6 +127,8 @@ export function RouteVolgen() {
         </span>
         <StreakBadge label="Streak" value={drill.state.streak} />
       </div>
+
+      <VoiceSettings speech={speech} />
 
       <div className="rv-board">
         {speech.supported ? (

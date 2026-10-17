@@ -1059,6 +1059,7 @@ export const glossary: Record<string, GlossEntry> = {
   politiebureau: { gloss: 'police station' },
   theater: { gloss: 'theatre' },
   parkeren: { gloss: 'to park', verb: true },
+  parkeer: { gloss: 'park (parkeren)', verb: true },
   parkeerplaats: { gloss: 'car park, parking space' },
   parkeergarage: { gloss: 'parking garage (indoor)' },
   bezoekers: { gloss: 'visitors' },

@@ -256,9 +256,12 @@ for (const r of rv.routes) {
   routeIds.add(r.id)
   ok(new Set(r.stops.map(s => s.landmark)).size === r.stops.length, `route ${r.id}: a landmark appears twice`)
   ok(r.park !== r.decoy, `route ${r.id}: the parking answer is also the ruled-out place`)
+  // Under 15 seconds of speech: a computer voice reads about 2.5 words a second.
+  const words = r.sentences.join(' ').split(/\s+/).length
+  ok(words <= 32, `route ${r.id}: ${words} words, longer than about 13 seconds`)
   for (const s of r.stops) {
     const right = rv.TURN_WORD[s.turn]
-    ok(s.sentence.includes(s.landmark) && s.sentence.includes(right), `route ${r.id}: "${s.sentence}" does not name ${s.landmark} and ${right}`)
+    ok(s.sentence.toLowerCase().includes(s.landmark) && s.sentence.includes(right), `route ${r.id}: "${s.sentence}" does not name ${s.landmark} and ${right}`)
     const others = rv.TURNS.filter(t => t !== s.turn).map(t => rv.TURN_WORD[t])
     if (s.style === 'niet') {
       ok(s.sentence.includes(`niet ${rv.TURN_WORD[rv.NOT_TURN[s.turn]]}, maar ${right}`), `route ${r.id}: "${s.sentence}" is not a niet-maar trap`)
