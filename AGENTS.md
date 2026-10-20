@@ -546,7 +546,9 @@ window, note, newspaper box or form, with the greeting and closing already print
   one next step (same `Issue` shape, so the three-level ladder still applies; a repeat
   press on unchanged text reuses it), and Submit asks for a review: a verdict, each point,
   then **what to write** per question (or per text): the owner's own answer corrected and
-  a stronger A2 example built from their idea, each labelled, and last every correction
+  a stronger A2 example built from their idea, each labelled, then up to four of those
+  sentences cut into numbered slots (`SentenceSlots`, the same frame as Zinnen bouwen's
+  worked examples) with why they stand in that order, and last every correction
   with its rule in English. A point Claude confirms counts as covered, like the tick; Claude's corrections
   never block, so the completion rule above is unchanged. Claude is told what the pattern
   checks found and may overrule them. Any failure (offline, bad key, refusal) falls back to

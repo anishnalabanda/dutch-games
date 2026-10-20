@@ -1,4 +1,5 @@
 import { GlossedText } from '../components/GlossedText'
+import { SentenceSlots } from '../components/SentenceSlots'
 import type { Correction, Review, SuggestedAnswer, Verdict } from './feedback'
 import './ai.css'
 
@@ -119,10 +120,12 @@ const same = (a: string, b: string) => a.trim().replace(/\s+/g, ' ') === b.trim(
 /**
  * What to write for one question (or the whole text): the learner's own
  * sentence fixed, then a stronger example, each labelled so it is clear which
- * is which. Either is left out when it would only repeat the other.
+ * is which. Either is left out when it would only repeat the other. Last, the
+ * sentences cut into slots with why they stand in that order.
  */
 function SuggestedAnswerCard({ answer, label, fixed }: { answer: SuggestedAnswer; label?: string; fixed: boolean }) {
   const stronger = answer.example.trim() !== '' && !same(answer.example, answer.corrected)
+  const sentences = (answer.sentences ?? []).filter((s) => (s.slots ?? []).length > 0)
   return (
     <div className="g-worksheet ai-answer">
       {label && (
@@ -145,6 +148,19 @@ function SuggestedAnswerCard({ answer, label, fixed }: { answer: SuggestedAnswer
         </div>
       )}
       {answer.why && <p className="ai-answer-why">{answer.why}</p>}
+      {sentences.length > 0 && (
+        <div className="ai-build">
+          <span className="ai-answer-tag">
+            {sentences.length > 1 ? 'How the sentences are built' : 'How the sentence is built'}
+          </span>
+          {sentences.map((sentence, i) => (
+            <div key={i} className="ai-build-sentence">
+              <SentenceSlots slots={sentence.slots ?? []} />
+              {sentence.rule && <p className="ai-answer-why">{sentence.rule}</p>}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }

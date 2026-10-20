@@ -204,6 +204,15 @@ export interface SuggestedAnswer {
   example: string
   /** English: what makes the example stronger. */
   why: string
+  /** Its sentences cut into slots, so the word order is taught and not only fixed. */
+  sentences: SentenceBuild[]
+}
+
+export interface SentenceBuild {
+  /** In order; their text joined with spaces is the sentence. */
+  slots: { text: string; role: string; isVerb: boolean }[]
+  /** English: why the words stand in this order. */
+  rule: string
 }
 
 const REVIEW_SCHEMA = {
@@ -255,7 +264,7 @@ const REVIEW_SCHEMA = {
       items: {
         type: 'object',
         additionalProperties: false,
-        required: ['id', 'corrected', 'example', 'why'],
+        required: ['id', 'corrected', 'example', 'why', 'sentences'],
         properties: {
           id: { type: 'string' },
           corrected: {
@@ -270,6 +279,45 @@ const REVIEW_SCHEMA = {
           why: {
             type: 'string',
             description: 'English, one sentence: what makes the example stronger, or that the corrected text is already strong.',
+          },
+          sentences: {
+            type: 'array',
+            description:
+              'How the sentences are built, to teach the word order: each sentence of the corrected text, then any sentence of the example that the corrected text does not have, at most four in all. For a longer text, the four whose word order is most worth learning: a modal with an infinitive, inversion, omdat or dat, a separable verb, the perfectum.',
+            items: {
+              type: 'object',
+              additionalProperties: false,
+              required: ['slots', 'rule'],
+              properties: {
+                slots: {
+                  type: 'array',
+                  description:
+                    "The sentence cut into its slots, in order; their text joined with spaces gives the sentence exactly, punctuation included. A slot is one chunk of meaning, not one word: 'De dokter' and 'Franse gebakjes' are one slot each. Main clause: slot 1 is the subject, or a fronted time, place or question word; slot 2 is the conjugated verb (in a yes/no question or a request such as 'Kunt u ...?' the verb is slot 1); then the middle, one slot per chunk (the subject after inversion, graag, niet, a time, a place, the object); then the other verbs at the end (infinitives, a participle, a separable prefix) together in one slot; last, a phrase with a preposition if it stands after those verbs. A clause after omdat, dat, als or of: the connector, the subject, the middle, then all its verbs together in one slot at the end. A clause after want, maar, en or dus: the connector, then main clause order.",
+                  items: {
+                    type: 'object',
+                    additionalProperties: false,
+                    required: ['text', 'role', 'isVerb'],
+                    properties: {
+                      text: { type: 'string', description: 'Dutch, the words exactly as they stand in the sentence.' },
+                      role: {
+                        type: 'string',
+                        description:
+                          "English, two to six words: what the slot is and, for a verb, where it has to stand. For example 'subject', 'conjugated verb, always slot 2', 'gladly', 'what (the object)', 'other verbs, at the end', 'sends the verb to the end'.",
+                      },
+                      isVerb: {
+                        type: 'boolean',
+                        description: 'True for a slot of verbs: the conjugated verb, infinitives, a participle, a separable prefix.',
+                      },
+                    },
+                  },
+                },
+                rule: {
+                  type: 'string',
+                  description:
+                    "English, one or two sentences: why this sentence is in this order, naming its own words. For example: 'wil changes with ik, so it takes slot 2; leren and maken stay whole and go to the end, without te.'",
+                },
+              },
+            },
           },
         },
       },

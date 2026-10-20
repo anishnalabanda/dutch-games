@@ -164,6 +164,71 @@
   color: var(--alert);
 }
 
+/* SentenceSlots */
+.sentence-slots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.sentence-slot {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-0);
+  flex: 0 1 auto;
+  min-width: 0;
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel);
+}
+.sentence-slot-n {
+  font-family: var(--font-heading);
+  font-size: var(--text-xs);
+  color: var(--muted);
+}
+.sentence-slot-text {
+  font-size: var(--text-base);
+  color: var(--paper);
+}
+.sentence-slot-role {
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  color: var(--muted);
+  max-width: 16ch;
+}
+.sentence-slot-verb {
+  border-color: var(--verb);
+}
+.sentence-slot-verb .sentence-slot-text,
+.sentence-slot-verb .sentence-slot-n {
+  color: var(--verb);
+}
+/* On a cream worksheet card (Claude's review) the slots go light too. */
+.g-worksheet .sentence-slots {
+  line-height: 1.4;
+}
+.g-worksheet .sentence-slot {
+  background: #fffdf8;
+  border-color: #d9d3c4;
+}
+.g-worksheet .sentence-slot-text {
+  color: var(--ink);
+}
+.g-worksheet .sentence-slot-n,
+.g-worksheet .sentence-slot-role {
+  color: #6b7684;
+}
+.g-worksheet .sentence-slot-verb {
+  border-color: var(--verb);
+}
+.g-worksheet .sentence-slot-verb .sentence-slot-text,
+.g-worksheet .sentence-slot-verb .sentence-slot-n {
+  color: var(--verb);
+}
+
 /* Tag */
 .tag {
   display: inline-block;

@@ -6,6 +6,7 @@ import { Tag } from '../../../components/Tag'
 import { Button } from '../../../components/Button'
 import { StreakBadge } from '../../../components/StreakBadge'
 import { GlossedText } from '../../../components/GlossedText'
+import { SentenceSlots } from '../../../components/SentenceSlots'
 import { useDrill } from '../../useDrill'
 import { shuffle } from '../../normalize'
 import {
@@ -33,15 +34,7 @@ function Pattern({ rule }: { rule: RuleType }) {
   return (
     <div className="zinnen-pattern">
       <span className="zinnen-pattern-title">How the sentence is built</span>
-      <ol className="zinnen-pattern-slots">
-        {RULE_PATTERNS[rule].map((slot, i) => (
-          <li key={i} className={slot.isVerb ? 'zinnen-slot zinnen-slot-verb' : 'zinnen-slot'}>
-            <span className="zinnen-slot-n">{i + 1}</span>
-            <span className="zinnen-slot-text">{slot.text}</span>
-            <span className="zinnen-slot-role">{slot.role}</span>
-          </li>
-        ))}
-      </ol>
+      <SentenceSlots slots={RULE_PATTERNS[rule]} />
     </div>
   )
 }
