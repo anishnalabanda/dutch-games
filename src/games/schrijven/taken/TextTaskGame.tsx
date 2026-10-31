@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { ClaudePanel } from '../../../ai/ClaudePanel'
 import { ClaudeReview, ClaudeStatus } from '../../../ai/ClaudeReview'
 import { textContext } from '../../../ai/feedback'
@@ -8,7 +8,8 @@ import { Button } from '../../../components/Button'
 import { GlossedText } from '../../../components/GlossedText'
 import { Tag } from '../../../components/Tag'
 import { HONESTY_NOTE, PAPER_NOTE, hasKeyword, textIssues } from './checks'
-import { Advice, Brief, Checklist, HintCard, NotFinished, TaskPicker, TemplateCard, maxLevel, nextHint } from './parts'
+import { mergeMistakes, mistakesFromIssues, mistakesFromReview, type Mistake } from './mistakes'
+import { Advice, Brief, Checklist, FeedbackLink, HintCard, NotFinished, TaskPicker, TemplateCard, maxLevel, nextHint } from './parts'
 import type { Template } from './templates'
 import { useTasks } from './useTasks'
 import type { Issue, TextTask } from './types'
@@ -45,6 +46,8 @@ export function TextTaskGame({ storeKey, title, noun, tasks, template }: TextTas
   const [hint, setHint] = useState<{ issue: Issue; level: number } | null>(null)
   /** Writing the task again after it was done, with the last feedback still on screen. */
   const [retrying, setRetrying] = useState(false)
+  /** Every mistake found since the task was opened or written again, for the feedback page. */
+  const attempt = useRef<Mistake[]>([])
 
   const task = game.current
   const taskId = task?.id
@@ -61,6 +64,7 @@ export function TextTaskGame({ storeKey, title, noun, tasks, template }: TextTas
     setLevels({})
     setHint(null)
     setRetrying(false)
+    attempt.current = []
   }, [taskId])
 
   if (!game.loaded || !task || !context) return null
@@ -69,6 +73,7 @@ export function TextTaskGame({ storeKey, title, noun, tasks, template }: TextTas
   const blocking = issues.filter((issue) => issue.blocking)
   const advice = issues.filter((issue) => !issue.blocking)
   const isDone = game.finished.has(task.id)
+  const pointLabels = Object.fromEntries(task.points.map((p) => [p.id, p.label]))
 
   function edit(field: 'body' | 'name', value: string) {
     game.setDraft({ body, name, [field]: value })
@@ -103,7 +108,11 @@ export function TextTaskGame({ storeKey, title, noun, tasks, template }: TextTas
       nowCovered = new Set([...covered, ...marked.points.filter((p) => p.covered).map((p) => p.id)])
       setCovered(nowCovered)
     }
-    const stillBlocking = textIssues({ task, body, name, covered: nowCovered }).filter((issue) => issue.blocking)
+    const nowIssues = textIssues({ task, body, name, covered: nowCovered })
+    const found = marked ? mistakesFromReview(marked, pointLabels) : mistakesFromIssues(nowIssues)
+    attempt.current = mergeMistakes(attempt.current, found)
+    game.recordMistakes(attempt.current)
+    const stillBlocking = nowIssues.filter((issue) => issue.blocking)
     if (stillBlocking.length > 0) {
       setPhase('blocked')
       return
@@ -121,6 +130,7 @@ export function TextTaskGame({ storeKey, title, noun, tasks, template }: TextTas
     setLevels({})
     setHint(null)
     setRetrying(true)
+    attempt.current = []
     document.getElementById(WRITE_ID)?.focus()
   }
 
@@ -138,12 +148,11 @@ export function TextTaskGame({ storeKey, title, noun, tasks, template }: TextTas
       review={claude.review.review}
       stale={claude.review.stale}
       previous={retrying}
-      points={Object.fromEntries(task.points.map((p) => [p.id, p.label]))}
+      points={pointLabels}
       parts={{ body: '' }}
     />
   )
 
-  const allDone = game.finished.size === game.total
   const nextTask = game.nextUnfinished ?? tasks[(game.index + 1) % tasks.length]
 
   return (
@@ -153,11 +162,7 @@ export function TextTaskGame({ storeKey, title, noun, tasks, template }: TextTas
       progress={{ value: game.finished.size, max: game.total }}
       countLabel="done"
     >
-      {allDone && (
-        <p className="tk-all-done">
-          All {game.total} done. Open any task to write it again: practice is never wasted.
-        </p>
-      )}
+      <FeedbackLink finished={game.finished.size} total={game.total} noun="task" />
       <TaskPicker items={tasks} finished={game.finished} currentId={task.id} onSelect={game.select} />
 
       <div className="g-row">

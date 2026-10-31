@@ -1,4 +1,4 @@
-import { useEffect, useState, type KeyboardEvent } from 'react'
+import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
 import { ClaudePanel } from '../../../ai/ClaudePanel'
 import { ClaudeReview, ClaudeStatus } from '../../../ai/ClaudeReview'
 import { formContext } from '../../../ai/feedback'
@@ -9,7 +9,8 @@ import { GlossedText } from '../../../components/GlossedText'
 import { Tag } from '../../../components/Tag'
 import { Tooltip } from '../../../components/Tooltip'
 import { HONESTY_NOTE } from '../taken/checks'
-import { Advice, Brief, Checklist, HintCard, NotFinished, TaskPicker, TemplateCard, maxLevel, nextHint } from '../taken/parts'
+import { mergeMistakes, mistakesFromIssues, mistakesFromReview, type Mistake } from '../taken/mistakes'
+import { Advice, Brief, Checklist, FeedbackLink, HintCard, NotFinished, TaskPicker, TemplateCard, maxLevel, nextHint } from '../taken/parts'
 import { FORM_TEMPLATE } from '../taken/templates'
 import { useTasks } from '../taken/useTasks'
 import type { Issue } from '../taken/types'
@@ -44,6 +45,8 @@ export function FormulierInvullen() {
   const [today] = useState(() => new Date())
   /** Answering the questions again after the form was done, with the last feedback still on screen. */
   const [retrying, setRetrying] = useState(false)
+  /** The kinds of mistake found since the form was opened or answered again; no quotes, as nothing typed here is kept. */
+  const attempt = useRef<Mistake[]>([])
 
   const form = game.current
   const formId = form?.id
@@ -60,6 +63,7 @@ export function FormulierInvullen() {
     setLevels({})
     setHint(null)
     setRetrying(false)
+    attempt.current = []
   }, [formId])
 
   if (!game.loaded || !form || !context) return null
@@ -69,7 +73,6 @@ export function FormulierInvullen() {
   const advice = issues.filter((issue) => !issue.blocking)
   const isDone = game.finished.has(form.id)
   const target = phase === 'blocked' ? null : hint?.issue.target
-  const allDone = game.finished.size === game.total
   const nextForm = game.nextUnfinished ?? forms[(game.index + 1) % forms.length]
 
   function update(id: string, value: string) {
@@ -108,7 +111,16 @@ export function FormulierInvullen() {
       nowCovered = new Set([...covered, ...marked.points.filter((p) => p.covered).map((p) => p.id)])
       setCovered(nowCovered)
     }
-    if (formIssues({ form, values, covered: nowCovered, today }).some((issue) => issue.blocking)) {
+    const nowIssues = formIssues({ form, values, covered: nowCovered, today })
+    const found = marked
+      ? mistakesFromReview(marked, {})
+      : mistakesFromIssues(nowIssues.filter((issue) => !issue.id.startsWith('veld-') && !issue.id.startsWith('keuze-')))
+    attempt.current = mergeMistakes(
+      attempt.current,
+      found.map((m) => ({ type: m.type })),
+    )
+    game.recordMistakes(attempt.current)
+    if (nowIssues.some((issue) => issue.blocking)) {
       setPhase('blocked')
       return
     }
@@ -129,6 +141,7 @@ export function FormulierInvullen() {
     setLevels({})
     setHint(null)
     setRetrying(true)
+    attempt.current = []
     if (questions[0]) document.getElementById(answerId(questions[0]))?.focus()
   }
 
@@ -175,11 +188,7 @@ export function FormulierInvullen() {
 
   return (
     <Shell title={TITLE} backTo="/schrijven" progress={{ value: game.finished.size, max: game.total }} countLabel="done">
-      {allDone && (
-        <p className="tk-all-done">
-          All {game.total} done. Open any form to fill it in again: practice is never wasted.
-        </p>
-      )}
+      <FeedbackLink finished={game.finished.size} total={game.total} noun="form" />
       <TaskPicker items={forms} finished={game.finished} currentId={form.id} onSelect={game.select} />
 
       <div className="g-row">

@@ -4,6 +4,7 @@ import { Hub } from './pages/Hub'
 import { ExamPage } from './pages/ExamPage'
 import { GamePage } from './pages/GamePage'
 import { SignIn } from './pages/SignIn'
+import { WritingFeedback } from './pages/WritingFeedback'
 import './styles/global.css'
 import './styles/components.css'
 import './styles/games.css'
@@ -15,6 +16,7 @@ function Gate() {
     <HashRouter>
       <Routes>
         <Route path="/" element={<Hub />} />
+        <Route path="/schrijven/feedback" element={<WritingFeedback />} />
         <Route path="/:examId" element={<ExamPage />} />
         <Route path="/:examId/:slug" element={<GamePage />} />
       </Routes>

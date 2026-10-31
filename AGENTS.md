@@ -556,6 +556,19 @@ window, note, newspaper box or form, with the greeting and closing already print
   checks found and may overrule them. Any failure (offline, bad key, refusal) falls back to
   the pattern hint with a one-line reason. The form game sends only the open answers and
   the ticked option, never the personal details.
+- **Mistakes and the feedback page.** Every Submit records the mistakes of that attempt
+  under the task in the game's own key (`mistakes` in `useTasks`; types and mapping in
+  `taken/mistakes.ts`): with a key, Claude's corrections (each carries a hidden `type`) and
+  the points it found missing; without one, the pattern checks. Only the latest attempt
+  of a task counts, so redoing it without the slip drops it. The form game keeps the type
+  only, never quotes, as its answers can be about health or home. **Get feedback** sits
+  under the progress bar of each of the four games from 3 finished tasks, and on the
+  Schrijven page; it opens `/schrijven/feedback` (`src/pages/WritingFeedback.tsx`): mistake
+  types that came up in 2 or more finished tasks, ranked, with up to two of the owner's own
+  examples, then with a key Claude's reading of them (`src/ai/coach.ts`): at most three
+  habits, each with a plain rule and three sentences to rewrite. The coaching is saved under
+  `nl.schrijven.feedback` and asked for again only when the finished tasks or their
+  mistakes change. Tasks finished before this existed count as clean.
 - **Exam content.** The oefenexamens say "Het examen is geheim" and are (c) Ministerie van
   SZW, and this repo is public, so the 3 tasks per game that follow them keep the
   situation and the bullets but are reworded, with other names; photos are emoji.

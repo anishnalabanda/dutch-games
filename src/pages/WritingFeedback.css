@@ -1,0 +1,91 @@
+/* Writing feedback: the counted habits, then Claude's reading of them. */
+
+.wf-intro {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--text-sm);
+  line-height: 1.6;
+}
+.wf-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.wf-section .g-label {
+  margin: 0;
+}
+
+.wf-counts {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.wf-counts li {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-2) 0;
+  border-top: 1px solid var(--line);
+}
+.wf-counts li:first-child {
+  border-top: 0;
+}
+.wf-count-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-2);
+}
+.wf-count-n {
+  color: var(--amber);
+  font-family: var(--font-heading);
+  white-space: nowrap;
+}
+
+.wf-coaching {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.wf-coaching > p {
+  margin: 0;
+  line-height: 1.6;
+}
+.wf-habit {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.wf-habit h3,
+.wf-habit p {
+  margin: 0;
+}
+.wf-habit p {
+  color: var(--muted);
+  font-size: var(--text-sm);
+  line-height: 1.6;
+}
+.wf-practice {
+  margin: 0;
+  padding-left: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  font-family: var(--font-reading);
+}
+.wf-practice details {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: var(--ok);
+}
+.wf-practice summary {
+  cursor: pointer;
+  color: var(--muted);
+}
+.wf-practice summary:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 2px;
+}
+.wf-strength {
+  color: var(--ok);
+}

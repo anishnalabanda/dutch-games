@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useGameProgress } from '../../useGameProgress'
+import type { Mistake, MistakeLog } from './mistakes'
 
 /** Whatever a task keeps between visits, by field: `body`, `name`. */
 export type Draft = Record<string, string>
@@ -13,9 +14,11 @@ export interface TaskState {
   done: boolean
   finished: string[]
   drafts: Record<string, Draft>
+  /** The latest attempt's mistakes per task, for the feedback page. */
+  mistakes: MistakeLog
 }
 
-const initialState: TaskState = { done: false, finished: [], drafts: {} }
+const initialState: TaskState = { done: false, finished: [], drafts: {}, mistakes: {} }
 
 /** How long typing has to pause before a draft is written to the store (and the cloud). */
 const DRAFT_DELAY_MS = 1500
@@ -32,6 +35,8 @@ export interface Tasks<T> {
   select: (id: string) => void
   /** Records the current task as finished. */
   finish: () => void
+  /** Replaces the current task's saved mistakes with those of this attempt. */
+  recordMistakes: (mistakes: Mistake[]) => void
   /** The next unfinished task after the current one, or null when all are finished. */
   nextUnfinished: T | null
 }
@@ -54,8 +59,9 @@ export function useTasks<T extends { id: string }>(
   )
   const [currentId, setCurrentId] = useState<string | null>(null)
   const [drafts, setDrafts] = useState<Record<string, Draft>>({})
-  const latest = useRef({ finished, drafts })
-  latest.current = { finished, drafts }
+  const [mistakes, setMistakes] = useState<MistakeLog>({})
+  const latest = useRef({ finished, drafts, mistakes })
+  latest.current = { finished, drafts, mistakes }
   const timer = useRef<number | null>(null)
 
   // Open the first unfinished task, and restore the drafts, once the save is in.
@@ -63,13 +69,19 @@ export function useTasks<T extends { id: string }>(
     if (!loaded || currentId !== null) return
     setCurrentId((items.find((item) => !finished.has(item.id)) ?? items[0]).id)
     if (keepDrafts && state.drafts && typeof state.drafts === 'object') setDrafts(state.drafts)
+    if (state.mistakes && typeof state.mistakes === 'object') setMistakes(state.mistakes)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loaded])
 
   const write = useCallback(
-    (nextFinished: Set<string>, nextDrafts: Record<string, Draft>) => {
+    (nextFinished: Set<string>, nextDrafts: Record<string, Draft>, nextMistakes: MistakeLog) => {
       const list = items.filter((item) => nextFinished.has(item.id)).map((item) => item.id)
-      save({ done: list.length === items.length, finished: list, drafts: keepDrafts ? nextDrafts : {} })
+      save({
+        done: list.length === items.length,
+        finished: list,
+        drafts: keepDrafts ? nextDrafts : {},
+        mistakes: nextMistakes,
+      })
     },
     [items, keepDrafts, save],
   )
@@ -79,7 +91,7 @@ export function useTasks<T extends { id: string }>(
     () => () => {
       if (timer.current === null) return
       window.clearTimeout(timer.current)
-      write(latest.current.finished, latest.current.drafts)
+      write(latest.current.finished, latest.current.drafts, latest.current.mistakes)
     },
     [write],
   )
@@ -92,7 +104,7 @@ export function useTasks<T extends { id: string }>(
       if (timer.current !== null) window.clearTimeout(timer.current)
       timer.current = window.setTimeout(() => {
         timer.current = null
-        write(latest.current.finished, latest.current.drafts)
+        write(latest.current.finished, latest.current.drafts, latest.current.mistakes)
       }, DRAFT_DELAY_MS)
     },
     [currentId, keepDrafts, write],
@@ -102,8 +114,21 @@ export function useTasks<T extends { id: string }>(
     if (currentId === null) return
     if (timer.current !== null) window.clearTimeout(timer.current)
     timer.current = null
-    write(new Set([...finished, currentId]), drafts)
+    write(new Set([...finished, currentId]), drafts, latest.current.mistakes)
   }, [currentId, drafts, finished, write])
+
+  const recordMistakes = useCallback(
+    (list: Mistake[]) => {
+      if (currentId === null) return
+      const next = { ...latest.current.mistakes, [currentId]: list }
+      latest.current.mistakes = next
+      setMistakes(next)
+      if (timer.current !== null) window.clearTimeout(timer.current)
+      timer.current = null
+      write(latest.current.finished, latest.current.drafts, next)
+    },
+    [currentId, write],
+  )
 
   const index = items.findIndex((item) => item.id === currentId)
   const after = [...items.slice(index + 1), ...items.slice(0, Math.max(index, 0))]
@@ -118,6 +143,7 @@ export function useTasks<T extends { id: string }>(
     setDraft,
     select: setCurrentId,
     finish,
+    recordMistakes,
     nextUnfinished: after.find((item) => !finished.has(item.id) && item.id !== currentId) ?? null,
   }
 }

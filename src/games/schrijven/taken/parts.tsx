@@ -1,8 +1,35 @@
+import { Link } from 'react-router-dom'
 import { Button } from '../../../components/Button'
 import { GlossedText } from '../../../components/GlossedText'
 import { Tooltip } from '../../../components/Tooltip'
 import type { Template } from './templates'
 import type { Issue, Picture } from './types'
+
+/** Where the four exam-task games send the owner for feedback across all of them. */
+export const FEEDBACK_PATH = '/schrijven/feedback'
+
+/** Finished tasks before feedback has enough to go on: in one game for its button, across the four for the page. */
+export const FEEDBACK_FROM = 3
+
+/**
+ * The line under the progress bar: the all-done note, and once a few tasks
+ * are finished, the way to the feedback page.
+ */
+export function FeedbackLink({ finished, total, noun }: { finished: number; total: number; noun: string }) {
+  if (finished < FEEDBACK_FROM) return null
+  return (
+    <div className="tk-feedback-link">
+      <p className="tk-all-done">
+        {finished === total
+          ? `All ${total} done. Open any ${noun} to do it again: practice is never wasted.`
+          : `${finished} done. See which mistakes keep coming back.`}
+      </p>
+      <Link className="btn btn-primary" to={FEEDBACK_PATH}>
+        Get feedback
+      </Link>
+    </div>
+  )
+}
 
 /** Numbered buttons for every task, so any one can be (re)opened. */
 export function TaskPicker({

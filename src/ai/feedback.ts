@@ -1,5 +1,6 @@
 import type { Issue, TextTask } from '../games/schrijven/taken/types'
 import type { FormTask } from '../games/schrijven/formulieren/data'
+import { MISTAKE_TYPES, type MistakeType } from '../games/schrijven/taken/mistakes'
 import { askJson } from './claude'
 
 /**
@@ -180,6 +181,8 @@ export interface Correction {
   original: string
   /** Dutch, the smallest fix. */
   corrected: string
+  /** Not shown in the review: what the feedback page counts it as. */
+  type: MistakeType
   /** English, one short sentence. */
   explain: string
 }
@@ -244,10 +247,16 @@ const REVIEW_SCHEMA = {
       items: {
         type: 'object',
         additionalProperties: false,
-        required: ['original', 'corrected', 'explain'],
+        required: ['original', 'corrected', 'type', 'explain'],
         properties: {
           original: { type: 'string', description: 'Dutch, quoted exactly from the learner: only the few words that change.' },
           corrected: { type: 'string', description: 'Dutch, the smallest change that fixes it.' },
+          type: {
+            type: 'string',
+            enum: [...MISTAKE_TYPES],
+            description:
+              'What kind of mistake: verb_second (the main verb is not 2nd in a main sentence, also after a fronted time or place), verb_end (a verb that belongs at the end after omdat, dat, als, of, or a second verb, is not there), verb_form (wrong ending or tense: ik werkt, hij werk, the perfectum), register (u and je), spelling, capital_stop (capital letter or full stop), de_het (de or het, or the adjective -e), point (content missing or unclear), word_choice (a wrong or English word).',
+          },
           explain: {
             type: 'string',
             description: 'English, one short sentence in plain words, no grammar terms: why. For example "After ik the verb loses -t: ik werk."',

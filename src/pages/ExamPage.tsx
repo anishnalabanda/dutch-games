@@ -7,6 +7,7 @@ import { Tag } from '../components/Tag'
 import { ProgressBar } from '../components/ProgressBar'
 import { countFinished, isDone } from '../games/progress'
 import { useProgressStore } from '../store/StoreProvider'
+import { FEEDBACK_PATH } from '../games/schrijven/taken/parts'
 
 export function ExamPage() {
   const { examId } = useParams<{ examId: string }>()
@@ -53,6 +54,11 @@ export function ExamPage() {
             ? `${coreDone} of ${core.length} core games done`
             : `${extraDone} of ${extra.length} extra games done. No core games yet: these alone do not make you ready.`}
         </p>
+      )}
+      {exam.id === 'schrijven' && (
+        <Link to={FEEDBACK_PATH} className="btn btn-secondary exam-page-feedback">
+          Get feedback on your writing
+        </Link>
       )}
       {examGames.length === 0 ? (
         <Card className="exam-page-empty">No games for this exam yet.</Card>

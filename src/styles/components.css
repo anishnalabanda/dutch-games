@@ -566,3 +566,7 @@
   color: var(--alert);
   font-size: var(--text-sm);
 }
+.exam-page-feedback {
+  align-self: flex-start;
+  text-decoration: none;
+}
