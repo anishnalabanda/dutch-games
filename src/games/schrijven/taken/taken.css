@@ -405,3 +405,12 @@
     transition: none;
   }
 }
+
+/* Once nothing blocks, the box itself finishes the task: Submit sits below a long review. */
+.tk-all-fixed {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-3);
+}

@@ -198,7 +198,7 @@ export function TextTaskGame({ storeKey, title, noun, tasks, template }: TextTas
             onCover={cover}
           />
           {hint && <HintCard issue={hint.issue} level={hint.level} />}
-          {phase === 'blocked' && <NotFinished issues={blocking} />}
+          {phase === 'blocked' && <NotFinished issues={blocking} onFinish={submit} busy={claude.busy !== null} />}
           {phase === 'blocked' && review}
           <ClaudeStatus busy={claude.busy} error={claude.error} />
           <div className="g-actions">

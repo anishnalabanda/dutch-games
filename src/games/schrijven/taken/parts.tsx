@@ -1,3 +1,4 @@
+import { Button } from '../../../components/Button'
 import { GlossedText } from '../../../components/GlossedText'
 import { Tooltip } from '../../../components/Tooltip'
 import type { Template } from './templates'
@@ -208,12 +209,26 @@ export function HintCard({ issue, level }: { issue: Issue; level: number }) {
 }
 
 /** What still has to happen before Submit counts the task as done. */
-export function NotFinished({ issues }: { issues: Issue[] }) {
+export function NotFinished({
+  issues,
+  onFinish,
+  busy,
+}: {
+  issues: Issue[]
+  /** Submits again; shown once nothing is left, so the task can be finished right here. */
+  onFinish: () => void
+  busy: boolean
+}) {
   if (issues.length === 0) {
     return (
-      <div className="feedback-box feedback-ok" role="status">
-        <strong>All fixed</strong>
-        <p>Everything that was missing is there now. Press Submit again.</p>
+      <div className="feedback-box feedback-ok tk-all-fixed" role="status">
+        <div>
+          <strong>All fixed</strong>
+          <p>Everything that was missing is there now.</p>
+        </div>
+        <Button onClick={onFinish} disabled={busy}>
+          Finish
+        </Button>
       </div>
     )
   }
