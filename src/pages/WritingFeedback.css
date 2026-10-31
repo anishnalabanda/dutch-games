@@ -89,3 +89,20 @@
 .wf-strength {
   color: var(--ok);
 }
+
+.wf-rule {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--text-sm);
+  line-height: 1.5;
+}
+.wf-practice-link {
+  align-self: flex-start;
+  color: var(--amber);
+  font-size: var(--text-sm);
+  text-decoration: none;
+}
+.wf-practice-link:hover,
+.wf-practice-link:focus-visible {
+  text-decoration: underline;
+}

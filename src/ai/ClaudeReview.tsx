@@ -1,6 +1,7 @@
 import { GlossedText } from '../components/GlossedText'
 import { SentenceSlots } from '../components/SentenceSlots'
 import type { Review, SuggestedAnswer, Verdict } from './feedback'
+import { FixDiff } from './FixDiff'
 import './ai.css'
 
 const VERDICT: Record<Verdict, { label: string; tone: string }> = {
@@ -76,17 +77,7 @@ export function ClaudeReview({
         <ul className="ai-fixes">
           {corrections.map((c, i) => (
             <li key={`${i}-${c.original}`}>
-              <div className="ai-fix">
-                <span className="ai-fix-from">
-                  <GlossedText text={c.original} />
-                </span>
-                <span className="ai-fix-arrow" aria-label="becomes">
-                  →
-                </span>
-                <span className="ai-fix-to">
-                  <GlossedText text={c.corrected} />
-                </span>
-              </div>
+              <FixDiff original={c.original} corrected={c.corrected} />
               <p>{c.explain}</p>
             </li>
           ))}

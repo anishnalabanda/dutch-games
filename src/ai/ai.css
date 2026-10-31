@@ -163,24 +163,23 @@
   font-size: var(--text-sm);
   line-height: 1.5;
 }
-.ai-fix {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: var(--space-1) var(--space-2);
+/* A correction in one line: the wrong words struck, the right ones straight after. */
+.ai-fixes .ai-diff,
+.ai-diff {
+  margin: 0;
+  color: var(--paper);
   font-family: var(--font-reading);
   font-size: var(--text-base);
+  line-height: 1.7;
 }
-.ai-fix-from {
-  color: var(--muted);
-  text-decoration: line-through;
+.ai-diff del {
+  color: var(--alert);
   text-decoration-color: var(--alert);
 }
-.ai-fix-arrow {
-  color: var(--muted);
-}
-.ai-fix-to {
-  color: var(--paper);
+.ai-diff ins {
+  text-decoration: none;
+  color: var(--ok);
+  font-weight: 600;
 }
 
 /* Sentence formation: a worksheet card per question, its sentences in slots. */
@@ -209,4 +208,9 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
+}
+/* Inside a correction, red and green say more than the verb colour. */
+.ai-diff del *,
+.ai-diff ins * {
+  color: inherit;
 }

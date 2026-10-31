@@ -7,11 +7,20 @@ import { useClaudeKey } from '../ai/key'
 import { Button } from '../components/Button'
 import { Card } from '../components/Card'
 import { GlossedText } from '../components/GlossedText'
+import { FixDiff } from '../ai/FixDiff'
+import { games as manifest, gameSlug } from '../games/manifest'
 import { forms } from '../games/schrijven/formulieren/data'
 import { tasks as wijkkrant } from '../games/schrijven/wijkkrant/data'
 import { tasks as informeel } from '../games/schrijven/informeel/data'
 import { tasks as formeel } from '../games/schrijven/formeel/data'
-import { MISTAKE_LABEL, type Mistake, type MistakeLog, type MistakeType } from '../games/schrijven/taken/mistakes'
+import {
+  MISTAKE_GAME,
+  MISTAKE_LABEL,
+  MISTAKE_RULE,
+  type Mistake,
+  type MistakeLog,
+  type MistakeType,
+} from '../games/schrijven/taken/mistakes'
 import { FEEDBACK_FROM } from '../games/schrijven/taken/parts'
 import { useProgressStore } from '../store/StoreProvider'
 import '../ai/ai.css'
@@ -39,6 +48,9 @@ interface Count {
   tasks: number
   examples: Mistake[]
 }
+
+/** An example longer than this is a rewritten sentence, not one slip: shown only when there is nothing shorter. */
+const LONG_EXAMPLE = 60
 
 /**
  * Feedback across the four exam-task games: the kinds of mistake that keep
@@ -132,9 +144,11 @@ export function WritingFeedback() {
                         {c.tasks} of {finishedCount} tasks
                       </span>
                     </div>
+                    <p className="wf-rule">{MISTAKE_RULE[c.type]}</p>
                     {c.examples.map((m, i) => (
-                      <Fix key={i} original={m.original ?? ''} corrected={m.corrected ?? ''} />
+                      <FixDiff key={i} original={m.original ?? ''} corrected={m.corrected ?? ''} />
                     ))}
+                    <PracticeLink type={c.type} />
                   </li>
                 ))}
               </ul>
@@ -189,36 +203,50 @@ function fingerprint(text: string): string {
   return `${text.length}-${(h >>> 0).toString(36)}`
 }
 
-/** Mistake types ranked by how many finished tasks they came up in; only those in two or more. */
+/**
+ * Mistake types ranked by how many finished tasks they came up in; only those
+ * in two or more. Each gets its two shortest examples, and an example shown
+ * under one type is not repeated under the next.
+ */
 function countTypes(games: GameMistakes[]): Count[] {
-  const byType = new Map<MistakeType, Count>()
+  const byType = new Map<MistakeType, { tasks: number; quoted: Mistake[] }>()
   for (const task of games.flatMap((g) => g.tasks)) {
     const seen = new Set<MistakeType>()
     for (const m of task.mistakes) {
       if (!(m.type in MISTAKE_LABEL)) continue
-      const count = byType.get(m.type) ?? { type: m.type, tasks: 0, examples: [] }
-      if (!seen.has(m.type)) count.tasks += 1
+      const entry = byType.get(m.type) ?? { tasks: 0, quoted: [] }
+      if (!seen.has(m.type)) entry.tasks += 1
       seen.add(m.type)
-      if (m.original && m.corrected && count.examples.length < 2) count.examples.push(m)
-      byType.set(m.type, count)
+      if (m.original && m.corrected && m.original.trim() !== m.corrected.trim()) entry.quoted.push(m)
+      byType.set(m.type, entry)
     }
   }
-  return [...byType.values()].filter((c) => c.tasks >= 2).sort((a, b) => b.tasks - a.tasks)
+  const used = new Set<string>()
+  return [...byType.entries()]
+    .filter(([, e]) => e.tasks >= 2)
+    .sort((a, b) => b[1].tasks - a[1].tasks)
+    .map(([type, e]) => {
+      const fresh = e.quoted
+        .filter((m) => !used.has(m.original!.trim()))
+        .sort((a, b) => a.original!.length - b.original!.length)
+      const short = fresh.filter((m) => m.original!.length <= LONG_EXAMPLE)
+      const examples = (short.length > 0 ? short : fresh).filter(
+        (m, i, list) => list.findIndex((o) => o.original === m.original) === i,
+      ).slice(0, 2)
+      for (const m of examples) used.add(m.original!.trim())
+      return { type, tasks: e.tasks, examples }
+    })
 }
 
-function Fix({ original, corrected }: { original: string; corrected: string }) {
+/** Where to drill a type, when one of the games trains it. */
+function PracticeLink({ type }: { type: MistakeType }) {
+  const game = manifest.find((g) => g.id === MISTAKE_GAME[type])
+  if (!game) return null
   return (
-    <div className="ai-fix">
-      <span className="ai-fix-from">
-        <GlossedText text={original} />
-      </span>
-      <span className="ai-fix-arrow" aria-label="becomes">
-        →
-      </span>
-      <span className="ai-fix-to">
-        <GlossedText text={corrected} />
-      </span>
-    </div>
+    // Plain title: a link cannot hold the focusable word tooltips, so the subtitle is its gloss.
+    <Link className="wf-practice-link" to={`/${game.exam}/${gameSlug(game.id)}`} title={game.subtitle}>
+      Practise in {game.title} →
+    </Link>
   )
 }
 
@@ -232,7 +260,7 @@ function CoachingView({ coaching }: { coaching: Coaching }) {
             {i + 1}. {habit.title}
           </h3>
           {(habit.examples ?? []).map((ex, j) => (
-            <Fix key={j} original={ex.original} corrected={ex.corrected} />
+            <FixDiff key={j} original={ex.original} corrected={ex.corrected} />
           ))}
           <p>{habit.rule}</p>
           <span className="g-label">Practice: rewrite these</span>

@@ -550,7 +550,8 @@ window, note, newspaper box or form, with the greeting and closing already print
   text): the answer to write, the owner's own text corrected, cut into numbered slots
   (`SentenceSlots`, the same frame as Zinnen bouwen's worked examples, at most three
   sentences) with one plain line each; the whole answer is printed too only when the slots
-  do not spell it out. **2. Corrections**: each fix as from → to with one plain English
+  do not spell it out. **2. Corrections**: each fix in one line (`FixDiff`: only the changed words, the wrong one struck
+  and the right one after it) with one plain English
   line. A point Claude confirms counts as covered, like the tick; Claude's corrections
   never block, so the completion rule above is unchanged. Claude is told what the pattern
   checks found and may overrule them. Any failure (offline, bad key, refusal) falls back to
@@ -564,8 +565,9 @@ window, note, newspaper box or form, with the greeting and closing already print
   only, never quotes, as its answers can be about health or home. **Get feedback** sits
   under the progress bar of each of the four games from 3 finished tasks, and on the
   Schrijven page; it opens `/schrijven/feedback` (`src/pages/WritingFeedback.tsx`): mistake
-  types that came up in 2 or more finished tasks, ranked, with up to two of the owner's own
-  examples, then with a key Claude's reading of them (`src/ai/coach.ts`): at most three
+  types that came up in 2 or more finished tasks, ranked, each with a one-line rule
+  (`MISTAKE_RULE`), its two shortest examples (never repeated under another type) and a link
+  to the drill that trains it (`MISTAKE_GAME`), then with a key Claude's reading of them (`src/ai/coach.ts`): at most three
   habits, each with a plain rule and three sentences to rewrite. The coaching is saved under
   `nl.schrijven.feedback` and asked for again only when the finished tasks or their
   mistakes change. Tasks finished before this existed count as clean.

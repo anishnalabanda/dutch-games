@@ -34,6 +34,31 @@ export const MISTAKE_LABEL: Record<MistakeType, string> = {
   word_choice: 'Wrong word',
 }
 
+/** English, one plain line: what to do instead. */
+export const MISTAKE_RULE: Record<MistakeType, string> = {
+  verb_second:
+    'The verb that changes with the person stands 2nd, also when the sentence starts with a time or a place: Morgen ga ik.',
+  verb_end: 'After omdat, dat, als and of, the verbs go to the end. A second verb goes to the end too: Ik wil tennis spelen.',
+  verb_form: 'ik werk, jij werkt, hij werkt. "I am playing" is ik speel, not ik ben spelen.',
+  register: 'Pick u or je from the greeting, and keep it the whole text: u and uw, or je and jouw.',
+  spelling: 'Check each word letter by letter: on the exam there is no spellcheck.',
+  capital_stop: 'A capital only to start a sentence and for names: after en, want and maar, ik stays small. End with a full stop.',
+  de_het: 'Learn a noun with its article (de woonkamer, het huis), and do not leave the article out.',
+  point: 'Answer every bullet in its own sentence, and reuse the words of the bullet.',
+  word_choice: 'Use the Dutch way of saying it, not the English words one by one.',
+}
+
+/** The drill that trains each type, by manifest id; none for the ones no single game covers. */
+export const MISTAKE_GAME: Partial<Record<MistakeType, string>> = {
+  verb_second: 'nl.schrijven.zinnen',
+  verb_end: 'nl.schrijven.voegwoorden',
+  verb_form: 'nl.schrijven.werkwoorden',
+  register: 'nl.schrijven.uofje',
+  spelling: 'nl.schrijven.spelling',
+  de_het: 'nl.schrijven.dehet',
+  word_choice: 'nl.schrijven.woorden',
+}
+
 export interface Mistake {
   type: MistakeType
   /** Dutch, quoted from the learner. Never kept for the form game. */

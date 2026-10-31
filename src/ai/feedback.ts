@@ -249,13 +249,18 @@ const REVIEW_SCHEMA = {
         additionalProperties: false,
         required: ['original', 'corrected', 'type', 'explain'],
         properties: {
-          original: { type: 'string', description: 'Dutch, quoted exactly from the learner: only the few words that change.' },
+          original: {
+            type: 'string',
+            description:
+              'Dutch, quoted exactly from the learner: only the few words around one mistake, never a whole sentence or text. Two mistakes in one sentence are two corrections.',
+          },
           corrected: { type: 'string', description: 'Dutch, the smallest change that fixes it.' },
           type: {
             type: 'string',
-            enum: [...MISTAKE_TYPES],
+            // A missing point is reported under points, not as a correction.
+            enum: MISTAKE_TYPES.filter((t) => t !== 'point'),
             description:
-              'What kind of mistake: verb_second (the main verb is not 2nd in a main sentence, also after a fronted time or place), verb_end (a verb that belongs at the end after omdat, dat, als, of, or a second verb, is not there), verb_form (wrong ending or tense: ik werkt, hij werk, the perfectum), register (u and je), spelling, capital_stop (capital letter or full stop), de_het (de or het, or the adjective -e), point (content missing or unclear), word_choice (a wrong or English word).',
+              'What kind of mistake: verb_second (the main verb is not 2nd in a main sentence, also after a fronted time or place), verb_end (a verb that belongs at the end after omdat, dat, als, of, or a second verb, is not there), verb_form (wrong ending or tense: ik werkt, hij werk, the perfectum, or an English-style verb such as ik ben spelen for I am playing), register (u and je), spelling (a word spelled wrong: luek for leuk), capital_stop (capital letter or full stop, also Ik with a capital after en, want or maar), de_het (de or het, a missing article, or the adjective -e), word_choice (a wrong word or one translated word by word from English). Pick the one cause; a misspelled word is spelling even when the sentence has other mistakes.',
           },
           explain: {
             type: 'string',
