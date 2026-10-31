@@ -180,8 +180,7 @@ export interface Correction {
   original: string
   /** Dutch, the smallest fix. */
   corrected: string
-  category: 'content' | 'register' | 'word_order' | 'verb_form' | 'spelling' | 'punctuation' | 'word_choice'
-  /** English. */
+  /** English, one short sentence. */
   explain: string
 }
 
@@ -198,12 +197,8 @@ export interface Review {
 export interface SuggestedAnswer {
   /** The part (question, or `body`) this is for. */
   id: string
-  /** Dutch: the learner's own text with only the corrections applied. */
-  corrected: string
-  /** Dutch: a stronger answer at A2 level, built from the learner's idea. */
+  /** Dutch: the answer to write at A2 level, the learner's own text corrected, made stronger only where needed. */
   example: string
-  /** English: what makes the example stronger. */
-  why: string
   /** Its sentences cut into slots, so the word order is taught and not only fixed. */
   sentences: SentenceBuild[]
 }
@@ -225,7 +220,10 @@ const REVIEW_SCHEMA = {
       enum: ['likely_pass', 'borderline', 'not_yet'],
       description: 'How an A2 examiner would most likely mark this task.',
     },
-    summary: { type: 'string', description: 'English, two or three sentences: the honest overall judgement and the one thing to work on.' },
+    summary: {
+      type: 'string',
+      description: 'English, one short sentence in plain words: the honest overall judgement, or the one thing to work on.',
+    },
     points: {
       type: 'array',
       description: 'One entry per point the examiner checks, in the order given.',
@@ -236,7 +234,7 @@ const REVIEW_SCHEMA = {
         properties: {
           id: { type: 'string' },
           covered: { type: 'boolean', description: 'True only if a Dutch reader would understand this point without guessing.' },
-          comment: { type: 'string', description: 'English, one short sentence.' },
+          comment: { type: 'string', description: 'English, one short sentence: what is missing or unclear. Empty string if covered.' },
         },
       },
     },
@@ -246,15 +244,14 @@ const REVIEW_SCHEMA = {
       items: {
         type: 'object',
         additionalProperties: false,
-        required: ['original', 'corrected', 'category', 'explain'],
+        required: ['original', 'corrected', 'explain'],
         properties: {
-          original: { type: 'string', description: 'Dutch, quoted exactly from the learner.' },
+          original: { type: 'string', description: 'Dutch, quoted exactly from the learner: only the few words that change.' },
           corrected: { type: 'string', description: 'Dutch, the smallest change that fixes it.' },
-          category: {
+          explain: {
             type: 'string',
-            enum: ['content', 'register', 'word_order', 'verb_form', 'spelling', 'punctuation', 'word_choice'],
+            description: 'English, one short sentence in plain words, no grammar terms: why. For example "After ik the verb loses -t: ik werk."',
           },
-          explain: { type: 'string', description: 'English: the rule, in one or two sentences.' },
         },
       },
     },
@@ -264,26 +261,18 @@ const REVIEW_SCHEMA = {
       items: {
         type: 'object',
         additionalProperties: false,
-        required: ['id', 'corrected', 'example', 'why', 'sentences'],
+        required: ['id', 'example', 'sentences'],
         properties: {
           id: { type: 'string' },
-          corrected: {
-            type: 'string',
-            description: "Dutch: the learner's own text with only the corrections applied, nothing else changed.",
-          },
           example: {
             type: 'string',
             description:
-              "Dutch: a stronger answer the learner could write instead, at A2 level: short, simple sentences, the learner's own idea and words where possible, every point fully and clearly covered. For a form question one or two sentences; for a text, the whole text between greeting and closing. If the corrected text is already a strong answer, repeat it exactly.",
-          },
-          why: {
-            type: 'string',
-            description: 'English, one sentence: what makes the example stronger, or that the corrected text is already strong.',
+              "Dutch: the answer to write, at A2 level: the learner's own text with the corrections applied, changed further only where a point is missing or unclear. Short, simple sentences. For a form question one or two sentences; for a text, the whole text between greeting and closing.",
           },
           sentences: {
             type: 'array',
             description:
-              'How the sentences are built, to teach the word order: each sentence of the corrected text, then any sentence of the example that the corrected text does not have, at most four in all. For a longer text, the four whose word order is most worth learning: a modal with an infinitive, inversion, omdat or dat, a separable verb, the perfectum.',
+              'How the sentences of the example are built, to teach the word order, at most three. For a form question, each of its sentences. For a longer text, the three whose word order is most worth learning: a modal with an infinitive, inversion, omdat or dat, a separable verb, the perfectum.',
             items: {
               type: 'object',
               additionalProperties: false,
@@ -302,7 +291,7 @@ const REVIEW_SCHEMA = {
                       role: {
                         type: 'string',
                         description:
-                          "English, two to six words: what the slot is and, for a verb, where it has to stand. For example 'subject', 'conjugated verb, always slot 2', 'gladly', 'what (the object)', 'other verbs, at the end', 'sends the verb to the end'.",
+                          "English, two to six plain everyday words a beginner understands, with no grammar terms (never 'subject', 'object', 'conjugated', 'participle', 'infinitive', 'clause'): what the slot says and, for a verb, where it has to stand. For example 'who', 'main verb, always 2nd', 'when', 'gladly', 'what', 'past form, at the end', 'other verb, at the end', 'pushes the verb to the end'.",
                       },
                       isVerb: {
                         type: 'boolean',
@@ -314,7 +303,7 @@ const REVIEW_SCHEMA = {
                 rule: {
                   type: 'string',
                   description:
-                    "English, one or two sentences: why this sentence is in this order, naming its own words. For example: 'wil changes with ik, so it takes slot 2; leren and maken stay whole and go to the end, without te.'",
+                    "English, one short sentence in plain everyday words, no grammar terms, naming its own words: the one thing about this order worth remembering. For example: 'wil goes 2nd; leren waits at the end.'",
                 },
               },
             },

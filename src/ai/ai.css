@@ -139,19 +139,35 @@
   display: flex;
   gap: var(--space-2);
 }
-.ai-point-ok > span:first-child {
-  color: var(--ok);
-}
 .ai-point-missing > span:first-child {
   color: var(--alert);
 }
 
+/* Corrections: one line from → to, one line why, divided by a rule. */
+.ai-fixes {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.ai-fixes li {
+  padding: var(--space-2) 0;
+  border-top: 1px solid var(--line);
+}
+.ai-fixes li:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+.ai-fixes p {
+  margin: var(--space-1) 0 0;
+  color: var(--muted);
+  font-size: var(--text-sm);
+  line-height: 1.5;
+}
 .ai-fix {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
   gap: var(--space-1) var(--space-2);
-  margin-top: var(--space-1);
   font-family: var(--font-reading);
   font-size: var(--text-base);
 }
@@ -167,7 +183,7 @@
   color: var(--paper);
 }
 
-/* What to write: a worksheet card per question, corrected answer then stronger one. */
+/* Sentence formation: a worksheet card per question, its sentences in slots. */
 .ai-answer {
   display: flex;
   flex-direction: column;
@@ -183,41 +199,11 @@
   font-weight: 600;
   color: #4a5562;
 }
-.ai-answer-row {
-  border-left: 3px solid #b9c0c8;
-  padding-left: var(--space-3);
-}
-.ai-answer-better {
-  border-left-color: var(--ok);
-}
-.ai-answer-tag {
-  display: block;
-  font-family: var(--font-heading);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  font-size: var(--text-xs);
-  color: #6b7684;
-  margin-bottom: var(--space-1);
-}
-.ai-answer-better .ai-answer-tag {
-  color: #23885a;
-}
 .ai-answer-why {
   font-family: var(--font-body);
   font-size: var(--text-sm);
-  line-height: 1.6;
+  line-height: 1.5;
   color: #4a5562;
-}
-/* How the sentence is built: Claude's slots, each sentence with why it is in that order. */
-.ai-build {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-  border-top: 1px solid #d9d3c4;
-  padding-top: var(--space-3);
-}
-.ai-build .ai-answer-tag {
-  margin-bottom: 0;
 }
 .ai-build-sentence {
   display: flex;

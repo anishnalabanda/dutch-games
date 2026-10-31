@@ -544,12 +544,14 @@ window, note, newspaper box or form, with the greeting and closing already print
   checks.
 - **With a Claude key** (`src/ai/`, model `claude-sonnet-5-5`): Hint asks Claude for the
   one next step (same `Issue` shape, so the three-level ladder still applies; a repeat
-  press on unchanged text reuses it), and Submit asks for a review: a verdict, each point,
-  then **what to write** per question (or per text): the owner's own answer corrected and
-  a stronger A2 example built from their idea, each labelled, then up to four of those
-  sentences cut into numbered slots (`SentenceSlots`, the same frame as Zinnen bouwen's
-  worked examples) with why they stand in that order, and last every correction
-  with its rule in English. A point Claude confirms counts as covered, like the tick; Claude's corrections
+  press on unchanged text reuses it), and Submit asks for a review, kept short on purpose
+  (the owner found the longer one too much to take in): a verdict in one sentence and only
+  the points still missing, then two parts. **1. Sentence formation**, per question (or per
+  text): the answer to write, the owner's own text corrected, cut into numbered slots
+  (`SentenceSlots`, the same frame as Zinnen bouwen's worked examples, at most three
+  sentences) with one plain line each; the whole answer is printed too only when the slots
+  do not spell it out. **2. Corrections**: each fix as from → to with one plain English
+  line. A point Claude confirms counts as covered, like the tick; Claude's corrections
   never block, so the completion rule above is unchanged. Claude is told what the pattern
   checks found and may overrule them. Any failure (offline, bad key, refusal) falls back to
   the pattern hint with a one-line reason. The form game sends only the open answers and
