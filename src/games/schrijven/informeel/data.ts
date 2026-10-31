@@ -1,4 +1,4 @@
-import { NEW_DATE, REASON } from '../taken/keywords'
+import { NEW_DATE, REASON, TIME } from '../taken/keywords'
 import type { TextTask } from '../taken/types'
 
 /**
@@ -515,5 +515,405 @@ export const tasks: TextTask[] = [
     minSentences: 3,
     model:
       'Wil jij straks de tafels dekken? Zet jij daarna de vuilniszakken buiten? En kun jij de planten water geven? Ze zijn erg droog.',
+  },
+  {
+    id: 'film',
+    title: 'Naar de film',
+    situation: 'U wilt zaterdag naar de bioscoop. U stuurt een e-mail aan uw vriend Joris. U vraagt of hij meegaat.',
+    bullets: [
+      'Vraag of Joris mee wil naar de film.',
+      'Schrijf welke film u wilt zien.',
+      'Stel voor waar en hoe laat jullie afspreken.',
+    ],
+    instructions: INSTRUCTIONS,
+    frame: mail('joris@mail.nl', 'Film zaterdag', 'Hoi Joris,'),
+    register: 'je',
+    points: [
+      {
+        id: 'mee',
+        label: 'Ask whether he wants to come',
+        keywords: ['mee', 'zin', 'ga je', 'wil je', 'samen'],
+        starter: 'Heb je zin om … mee te gaan?',
+        example: 'Heb je zin om zaterdag mee te gaan naar de film?',
+      },
+      {
+        id: 'film',
+        label: 'Say which film',
+        keywords: ['film', 'komedie', 'actiefilm', 'heet'],
+        starter: 'Ik wil graag … zien.',
+        example: 'Ik wil graag de nieuwe Nederlandse film zien.',
+      },
+      {
+        id: 'afspraak',
+        label: 'Suggest where and what time to meet',
+        keywords: ['uur', 'half', 'kwart', 'station', 'bioscoop', 'ingang', 'café', 'afspreken'],
+        starter: 'Zullen we om … bij … afspreken?',
+        example: 'Zullen we om 19.30 uur bij de bioscoop afspreken?',
+      },
+    ],
+    minSentences: 3,
+    model:
+      'Heb je zin om zaterdag mee te gaan naar de film? Ik wil graag de nieuwe Nederlandse komedie zien. De film begint om 20.00 uur. Zullen we om 19.30 uur bij de bioscoop afspreken? Laat je het even weten?',
+  },
+  {
+    id: 'huiswerk',
+    title: 'Les gemist',
+    situation:
+      'U volgt een cursus Nederlands. U was vorige week ziek en u heeft de les gemist. U stuurt een e-mail aan Lina. Zij zit ook in uw groep.',
+    bullets: [
+      'Schrijf waarom u er niet was.',
+      'Vraag wat het huiswerk is.',
+      'Vraag of u haar aantekeningen mag lenen.',
+    ],
+    instructions: INSTRUCTIONS,
+    frame: mail('lina@mail.nl', 'Huiswerk', 'Hoi Lina,'),
+    register: 'je',
+    points: [
+      {
+        id: 'waarom',
+        label: "Say why you weren't there",
+        keywords: REASON,
+        starter: 'Ik was niet bij de les, want …',
+        example: 'Ik was vorige week niet bij de les, want ik had griep.',
+      },
+      {
+        id: 'huiswerk',
+        label: 'Ask what the homework is',
+        keywords: ['huiswerk', 'opdracht', 'oefening', 'bladzijde', 'hoofdstuk'],
+        starter: 'Weet jij wat het … is?',
+        example: 'Weet jij wat het huiswerk voor volgende week is?',
+      },
+      {
+        id: 'aantekeningen',
+        label: 'Ask to borrow her notes',
+        keywords: ['aantekening', 'schrift', 'lenen', 'leen', 'kopie', 'foto'],
+        starter: 'Mag ik jouw … lenen?',
+        example: 'Mag ik jouw aantekeningen lenen?',
+      },
+    ],
+    minSentences: 3,
+    model:
+      'Ik was vorige week niet bij de les, want ik had griep. Nu gaat het weer goed met mij. Weet jij wat het huiswerk voor volgende week is? Mag ik ook jouw aantekeningen lenen? Ik geef ze dinsdag terug.',
+  },
+  {
+    id: 'pakketje',
+    title: 'Pakketje voor mij',
+    situation:
+      'U verwacht morgen een pakketje, maar u bent de hele dag op uw werk. U stuurt een e-mail aan uw buurman Ahmed. U kent hem goed.',
+    bullets: [
+      'Schrijf dat er morgen een pakketje komt.',
+      'Vraag of Ahmed het pakketje wil aannemen.',
+      'Schrijf wanneer u het pakketje komt halen.',
+    ],
+    instructions: INSTRUCTIONS,
+    frame: mail('ahmed@mail.nl', 'Pakketje', 'Hoi Ahmed,'),
+    register: 'je',
+    points: [
+      {
+        id: 'pakket',
+        label: 'Say that a parcel is coming',
+        keywords: ['pakket', 'pakje', 'bezorg', 'post', 'doos', 'besteld'],
+        starter: 'Morgen komt er …',
+        example: 'Morgen komt er een pakketje voor mij.',
+      },
+      {
+        id: 'aannemen',
+        label: 'Ask whether he will take it in',
+        keywords: ['aanne', 'neem', 'bewaar', 'opendoen', 'thuis'],
+        starter: 'Wil jij het pakketje …?',
+        example: 'Wil jij het pakketje voor mij aannemen?',
+      },
+      {
+        id: 'halen',
+        label: 'Say when you will pick it up',
+        keywords: ['haal', 'halen', 'ophalen', ...TIME],
+        starter: 'Ik kom het … bij jou halen.',
+        example: 'Ik kom het morgenavond om 19.00 uur bij jou halen.',
+      },
+    ],
+    minSentences: 3,
+    model:
+      'Morgen komt er een pakketje voor mij. Ik ben de hele dag op mijn werk. Wil jij het pakketje voor mij aannemen? Ik kom het morgenavond om 19.00 uur bij jou halen. Alvast bedankt!',
+  },
+  {
+    id: 'afzeggen',
+    title: 'Etentje afzeggen',
+    situation: 'U heeft vrijdag een etentje met uw vriendin Eva. Maar u kunt niet. U stuurt haar een e-mail.',
+    bullets: [
+      'Schrijf dat u vrijdag niet kunt komen.',
+      'Schrijf waarom niet. Bedenk zelf een reden.',
+      'Stel een andere dag voor.',
+    ],
+    instructions: INSTRUCTIONS,
+    frame: mail('eva@mail.nl', 'Vrijdag', 'Lieve Eva,', 'Liefs,'),
+    register: 'je',
+    points: [
+      {
+        id: 'niet',
+        label: "Say that you can't come on Friday",
+        keywords: ['kan .*niet', 'niet komen', 'afzeggen', 'lukt .*niet'],
+        starter: 'Helaas kan ik …',
+        example: 'Helaas kan ik vrijdag niet komen.',
+      },
+      {
+        id: 'reden',
+        label: 'Give a reason',
+        keywords: REASON,
+        starter: 'Ik kan niet, want …',
+        example: 'Mijn moeder is jarig en ik ga naar haar feest.',
+      },
+      {
+        id: 'dag',
+        label: 'Suggest another day',
+        keywords: NEW_DATE,
+        starter: 'Kunnen we op … samen eten?',
+        example: 'Kunnen we volgende week zaterdag samen eten?',
+      },
+    ],
+    minSentences: 3,
+    model:
+      'Helaas kan ik vrijdag niet komen. Mijn moeder is jarig en ik ga naar haar feest. Dat was ik vergeten, sorry! Kunnen we volgende week zaterdag samen eten? Ik betaal!',
+  },
+  {
+    id: 'baby',
+    title: 'Een baby!',
+    situation: 'Uw collega Sandra heeft een baby gekregen. U stuurt haar een e-mail.',
+    bullets: [
+      'Feliciteer Sandra met de baby.',
+      'Vraag hoe het met haar en de baby gaat.',
+      'Vraag wanneer u op bezoek mag komen.',
+    ],
+    instructions: INSTRUCTIONS,
+    frame: mail('sandra@werk.nl', 'Gefeliciteerd!', 'Hoi Sandra,'),
+    register: 'je',
+    points: [
+      {
+        id: 'feliciteren',
+        label: 'Congratulate her',
+        keywords: ['gefeliciteerd', 'feliciteer', 'proficiat', 'wat leuk', 'wat fijn'],
+        starter: 'Gefeliciteerd met …!',
+        example: 'Gefeliciteerd met jullie baby!',
+      },
+      {
+        id: 'hoe',
+        label: 'Ask how she and the baby are',
+        keywords: ['hoe gaat', 'gaat het', 'hoe is', 'goed met'],
+        starter: 'Hoe gaat het met …?',
+        example: 'Hoe gaat het met jou en de baby?',
+      },
+      {
+        id: 'bezoek',
+        label: 'Ask when you can visit',
+        keywords: ['bezoek', 'langs', 'kom', 'zien'],
+        starter: 'Wanneer mag ik …?',
+        example: 'Wanneer mag ik op bezoek komen?',
+      },
+    ],
+    minSentences: 3,
+    model:
+      'Gefeliciteerd met jullie baby! Ik vind het heel leuk nieuws. Hoe gaat het met jou en de baby? Wanneer mag ik op bezoek komen? Ik neem een klein cadeautje mee.',
+  },
+  {
+    id: 'fiets',
+    title: 'Fiets lenen',
+    situation:
+      'Uw fiets is kapot. Morgen moet u naar een sollicitatiegesprek. U stuurt een e-mail aan uw buurman Kees. U wilt zijn fiets lenen.',
+    bullets: [
+      'Schrijf wat het probleem is.',
+      'Vraag of u zijn fiets mag lenen.',
+      'Schrijf wanneer u de fiets terugbrengt.',
+    ],
+    instructions: INSTRUCTIONS,
+    frame: mail('kees@mail.nl', 'Fiets lenen', 'Hoi Kees,'),
+    register: 'je',
+    points: [
+      {
+        id: 'probleem',
+        label: 'Say what the problem is',
+        keywords: ['kapot', 'lek', 'band', 'gestolen', 'werkt niet', 'probleem'],
+        starter: 'Mijn fiets is …',
+        example: 'Mijn fiets is kapot: de band is lek.',
+      },
+      {
+        id: 'lenen',
+        label: 'Ask to borrow his bike',
+        keywords: ['leen', 'lenen', 'gebruiken'],
+        starter: 'Mag ik jouw fiets …?',
+        example: 'Mag ik morgen jouw fiets lenen?',
+      },
+      {
+        id: 'terug',
+        label: 'Say when you bring it back',
+        keywords: ['terug', ...NEW_DATE, 'middag', 'avond', 'uur'],
+        starter: 'Ik breng de fiets … terug.',
+        example: 'Ik breng de fiets om 14.00 uur terug.',
+      },
+    ],
+    minSentences: 3,
+    model:
+      'Mijn fiets is kapot: de band is lek. Morgen heb ik een sollicitatiegesprek in de stad. Mag ik morgen jouw fiets lenen? Ik breng de fiets om 14.00 uur terug. Bedankt!',
+  },
+  {
+    id: 'laptop',
+    title: 'Hulp met de laptop',
+    situation: 'Uw laptop doet het niet goed. Uw vriend Milan weet veel van computers. U stuurt hem een e-mail.',
+    bullets: [
+      'Schrijf wat het probleem met uw laptop is.',
+      'Vraag of Milan u kan helpen.',
+      'Schrijf wat u als bedankje voor hem doet.',
+    ],
+    instructions: INSTRUCTIONS,
+    frame: mail('milan@mail.nl', 'Laptop', 'Hoi Milan,'),
+    register: 'je',
+    points: [
+      {
+        id: 'probleem',
+        label: 'Say what is wrong with the laptop',
+        keywords: ['traag', 'langzaam', 'start', 'kapot', 'werkt niet', 'doet het niet', 'scherm', 'internet', 'probleem'],
+        starter: 'Mijn laptop is …',
+        example: 'Mijn laptop is heel traag en het scherm wordt soms zwart.',
+      },
+      {
+        id: 'helpen',
+        label: 'Ask whether he can help',
+        keywords: ['help', 'kijken', 'kijk', 'repareren', 'maken'],
+        starter: 'Kun jij mij …?',
+        example: 'Kun jij mij helpen?',
+      },
+      {
+        id: 'bedankje',
+        label: 'Say what you will do in return',
+        keywords: ['kook', 'koken', 'eten', 'trakteer', 'betaal', 'cadeau', 'drinken', 'taart', 'pizza', 'curry'],
+        starter: 'Als bedankje … ik …',
+        example: 'Als bedankje kook ik een lekkere curry voor jou.',
+      },
+    ],
+    minSentences: 3,
+    model:
+      'Mijn laptop is heel traag en het scherm wordt soms zwart. Kun jij mij helpen? Misschien kun je zaterdag even komen kijken. Als bedankje kook ik een lekkere curry voor jou.',
+  },
+  {
+    id: 'terugvanvakantie',
+    title: 'Terug van vakantie',
+    situation: 'U bent net terug van vakantie. Uw collega Peter vraagt hoe het was. U stuurt hem een e-mail.',
+    bullets: [
+      'Schrijf waar u op vakantie was.',
+      'Schrijf wat u daar gedaan heeft.',
+      'Schrijf wanneer u weer op uw werk bent.',
+    ],
+    instructions: INSTRUCTIONS,
+    frame: mail('peter@werk.nl', 'Mijn vakantie', 'Hoi Peter,'),
+    register: 'je',
+    points: [
+      {
+        id: 'waar',
+        label: 'Say where you were',
+        keywords: ['spanje', 'frankrijk', 'italië', 'india', 'turkije', 'griekenland', 'zee', 'berg', 'strand'],
+        starter: 'Ik was … in …',
+        example: 'Ik was twee weken in Italië.',
+      },
+      {
+        id: 'gedaan',
+        label: 'Say what you did there',
+        keywords: ['gezwommen', 'gewandeld', 'gegeten', 'bezocht', 'gezien', 'gefietst', 'gelezen', 'gedaan', 'gelegen', 'museum', 'strand', 'foto'],
+        starter: 'We hebben veel …',
+        example: 'We hebben veel pizza gegeten en we hebben oude kerken bezocht.',
+      },
+      {
+        id: 'werk',
+        label: 'Say when you are back at work',
+        keywords: ['werk', ...NEW_DATE],
+        starter: 'Ik ben … weer op mijn werk.',
+        example: 'Ik ben maandag weer op mijn werk.',
+      },
+    ],
+    minSentences: 3,
+    model:
+      "Ik was twee weken in Italië. Het was heel mooi en warm. We hebben veel pizza gegeten en we hebben oude kerken bezocht. Ik ben maandag weer op mijn werk. Dan laat ik je de foto's zien.",
+  },
+  {
+    id: 'feestje',
+    title: 'Feest bij mij thuis',
+    situation:
+      'U geeft zaterdag een feest bij u thuis. Het wordt misschien laat en druk. U stuurt een e-mail aan uw buurvrouw Sara. U kent haar goed.',
+    bullets: [
+      'Schrijf dat u een feest geeft en waarom.',
+      'Schrijf hoe laat het feest stopt.',
+      'Nodig Sara uit voor het feest.',
+    ],
+    instructions: INSTRUCTIONS,
+    frame: mail('sara@mail.nl', 'Feest zaterdag', 'Hoi Sara,'),
+    register: 'je',
+    points: [
+      {
+        id: 'feest',
+        label: 'Say that you are having a party, and why',
+        keywords: ['feest', 'verjaardag', 'jarig', 'vier'],
+        starter: 'Zaterdag geef ik een feest, want …',
+        example: 'Zaterdag geef ik een feest, want ik ben jarig.',
+      },
+      {
+        id: 'stop',
+        label: 'Say what time it ends',
+        keywords: ['uur', 'stop', 'klaar', 'afgelopen', 'half'],
+        starter: 'Het feest stopt om …',
+        example: 'Het feest stopt om 24.00 uur.',
+      },
+      {
+        id: 'uitnodigen',
+        label: 'Invite her',
+        keywords: ['uitnodig', 'nodig .*uit', 'kom', 'welkom'],
+        starter: 'Kom jij ook …?',
+        example: 'Kom jij ook naar het feest?',
+      },
+    ],
+    minSentences: 3,
+    model:
+      'Zaterdag geef ik een feest, want ik ben jarig. Het wordt misschien een beetje druk. Het feest stopt om 24.00 uur. Kom jij ook naar het feest? Je bent van harte welkom!',
+  },
+  {
+    id: 'kantoor',
+    title: 'Briefje op kantoor',
+    situation:
+      'U werkt op een kantoor. Morgen bent u vrij. Uw collega Tom moet een paar dingen voor u doen. Kijk naar de plaatjes.',
+    pictures: [
+      { icons: '📞', shows: 'a phone: someone has to be called back' },
+      { icons: '📦✉️', shows: 'a parcel that has to go to the post office' },
+      { icons: '💻🔌', shows: 'a computer being switched off' },
+    ],
+    bullets: [],
+    instructions: [
+      'Schrijf een briefje voor Tom.',
+      'Schrijf wat hij moet doen. Schrijf drie dingen op.',
+      'Schrijf in hele zinnen.',
+    ],
+    frame: { kind: 'note', greeting: 'Hoi Tom,', closing: ['Bedankt!', 'Groetjes,'] },
+    register: 'je',
+    points: [
+      {
+        id: 'bellen',
+        label: 'Picture 1: call someone back',
+        keywords: ['bel', 'terugbellen', 'telefoon'],
+        starter: 'Wil jij … terugbellen?',
+        example: 'Wil jij meneer De Vries terugbellen?',
+      },
+      {
+        id: 'pakket',
+        label: 'Picture 2: take the parcel to the post office',
+        keywords: ['pakket', 'post', 'breng', 'verstuur'],
+        starter: 'Kun jij het pakket …?',
+        example: 'Kun jij het pakket naar het postkantoor brengen?',
+      },
+      {
+        id: 'computer',
+        label: 'Picture 3: switch off the computers',
+        keywords: ['computer', 'laptop', 'uitzetten', 'zet .*uit'],
+        starter: 'Zet jij om … de computers …?',
+        example: 'Zet jij om 17.00 uur de computers uit?',
+      },
+    ],
+    minSentences: 3,
+    model:
+      'Wil jij morgen meneer De Vries terugbellen? Hij heeft een vraag over de rekening. Kun jij ook het pakket naar het postkantoor brengen? Zet jij om 17.00 uur alle computers uit?',
   },
 ]

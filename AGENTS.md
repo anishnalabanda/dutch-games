@@ -438,7 +438,7 @@ manifest when built.
      the exam's photos), and a question can need two things at once (`needs` groups:
      the laptop *and* the watch).
    - Field formats and samples in `formulieren/fields.ts`, checks in `formulieren/checks.ts`.
-   - 12 forms, 32 open questions; 3 follow the oefenexamens.
+   - 22 forms, 54 open questions; 3 follow the oefenexamens.
 6. `nl.schrijven.uofje`: **U of je**, core, *built*
    - Drills: register, `u/uw` vs `je/jij/jouw`, formal vs informal aanhef and afsluiting
      (`Geachte heer/mevrouw` … `Met vriendelijke groet` vs `Hoi` … `Groetjes`), staying
@@ -486,14 +486,14 @@ manifest when built.
     - Mechanic: sort nouns into two lanes, then the adjective ending follows.
 14. `nl.schrijven.wijkkrant`: **Wijkkrant**, core, *built*, exam-task game
     - A short text about yourself: three "Denk aan" questions, at least three sentences,
-      written in the ik-form. 12 topics; 3 follow the oefenexamens.
+      written in the ik-form. 22 topics; 3 follow the oefenexamens.
 15. `nl.schrijven.informeel`: **Informeel bericht**, core, *built*, exam-task game
-    - An e-mail or a note to someone you say je to. Two of the 12 are picture notes
+    - An e-mail or a note to someone you say je to. Three of the 22 are picture notes
       (*Briefje voor een collega*), and *Boek lenen* keeps the "Beste + first name = je"
       trap. 3 follow the oefenexamens.
 16. `nl.schrijven.formeel`: **Formele e-mail**, core, *built*, exam-task game
     - An e-mail to someone you say u to: a teacher, a manager, a landlord, a webshop.
-      12 tasks; 3 follow the oefenexamens.
+      22 tasks; 3 follow the oefenexamens.
 
 The former capstone, `nl.schrijven.examen` (**Schrijfopdracht**), was removed: its level 1
 (finishing a bare sentence stem) matched nothing in the real exam, and the four exam-task

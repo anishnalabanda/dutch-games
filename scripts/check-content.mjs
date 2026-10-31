@@ -211,7 +211,7 @@ const NOT_GLOSSED = new Set([
   'noord', 'utrecht', 'kerkstraat', 'yoga', 'a',
   'visser', 'boer', 'sanne', 'smit', 'bakker', 'jansen', 'noor', 'peters', 'koster', 'dekker', 'hendriks',
   'mulder', 'yasmina', 'lotte', 'fatma', 'daan', 'mark', 'sara', 'tim', 'lisa', 'emma', 'ilse', 'ruben',
-  'rotterdam', 'amsterdam', 'molenstraat', 'b', 'x',
+  'rotterdam', 'amsterdam', 'molenstraat', 'b', 'x', 'india',
   'pieter', 'fatima', 'joris', 'ahmed', 'eva',
   // Names, towns and countries in the Luisteren sentences and conversations
   'amersfoort', 'breda', 'delft', 'den', 'dorpsstraat', 'duitsland', 'groningen', 'haag', 'haarlem', 'italië', 'kees', 'leiden', 'lina', 'lindestraat', 'marokko', 'milan', 'parijs', 'peter', 'regenboog', 'sandra', 'schoolstraat', 'sem', 'stationsstraat', 'tom', 'toms', 'turkije', 'zwolle',

@@ -514,5 +514,397 @@ export const tasks: TextTask[] = [
     model:
       'Ik kan volgende week niet naar de ouderavond komen. Ik moet die avond werken, want ik heb een avonddienst. Kunnen we op een andere dag een gesprek hebben? Ik kan op maandag of woensdag na 16.00 uur.',
   },
+  {
+    id: 'telaat',
+    title: 'Te laat op het werk',
+    situation: 'Vandaag rijden er geen treinen. U komt te laat op uw werk. U stuurt een e-mail aan uw chef, mevrouw Jansen.',
+    bullets: ['Schrijf dat u te laat komt.', 'Schrijf waarom.', 'Schrijf hoe laat u er bent.'],
+    instructions: INSTRUCTIONS,
+    frame: mail('l.jansen@werk.nl', 'Te laat', 'Beste mevrouw Jansen,'),
+    register: 'u',
+    points: [
+      {
+        id: 'telaat',
+        label: 'Say that you will be late',
+        keywords: ['te laat', 'later', 'laat'],
+        starter: 'Ik kom vandaag …',
+        example: 'Ik kom vandaag te laat op mijn werk.',
+      },
+      {
+        id: 'waarom',
+        label: 'Say why',
+        keywords: [...REASON, 'trein', 'bus', 'staking', 'file', 'storing', 'vertraging'],
+        starter: 'Er rijden geen treinen, want …',
+        example: 'Er rijden vandaag geen treinen door een storing.',
+      },
+      {
+        id: 'tijd',
+        label: 'Say what time you will be there',
+        keywords: ['[0-9]', 'uur', 'half', 'kwart'],
+        starter: 'Ik ben om … op kantoor.',
+        example: 'Ik ben om 10.30 uur op kantoor.',
+      },
+    ],
+    minSentences: 3,
+    model:
+      'Ik kom vandaag te laat op mijn werk. Er rijden vandaag geen treinen door een storing. Ik neem nu de bus. Ik ben om 10.30 uur op kantoor. Het spijt me.',
+  },
+  {
+    id: 'vacature',
+    title: 'Reageren op een vacature',
+    situation:
+      'De supermarkt in uw buurt zoekt een vakkenvuller. U wilt daar graag werken. U stuurt een e-mail aan meneer Visser van de supermarkt.',
+    bullets: [
+      'Schrijf waarom u de e-mail stuurt.',
+      'Schrijf welke ervaring u heeft. Bedenk het zelf.',
+      'Schrijf wanneer u kunt werken.',
+    ],
+    instructions: INSTRUCTIONS,
+    frame: mail('j.visser@supermarkt.nl', 'Vacature vakkenvuller', 'Beste meneer Visser,'),
+    register: 'u',
+    points: [
+      {
+        id: 'waarom',
+        label: 'Say why you are writing',
+        keywords: [...WHY_WRITING, 'vacature', 'solliciteer', 'reageer'],
+        starter: 'Ik reageer op …',
+        example: 'Ik reageer op de vacature voor vakkenvuller.',
+      },
+      {
+        id: 'ervaring',
+        label: 'Say what experience you have',
+        keywords: ['ervaring', 'gewerkt', 'werkte', 'jaar', 'winkel', 'supermarkt', 'magazijn'],
+        starter: 'Ik heb … in een … gewerkt.',
+        example: 'Ik heb twee jaar in een winkel gewerkt.',
+      },
+      {
+        id: 'wanneer',
+        label: 'Say when you can work',
+        keywords: [...NEW_DATE, 'avond', 'ochtend', 'middag', 'altijd', 'dagen'],
+        starter: 'Ik kan op … werken.',
+        example: 'Ik kan op maandag, woensdag en zaterdag werken.',
+      },
+    ],
+    minSentences: 3,
+    model:
+      'Ik reageer op de vacature voor vakkenvuller. Ik heb twee jaar in een winkel in India gewerkt. Ik werk graag en ik ben altijd op tijd. Ik kan op maandag, woensdag en zaterdag werken. Ik hoor graag van u.',
+  },
+  {
+    id: 'verlof',
+    title: 'Vrij van school',
+    situation:
+      'Uw familie in India viert een bruiloft. U wilt met uw zoon Sem naar de bruiloft. Dan mist hij twee dagen school. U stuurt een e-mail aan mevrouw Peters, de directeur van zijn school.',
+    bullets: [
+      'Schrijf waarom u de e-mail stuurt.',
+      'Schrijf welke dagen Sem niet op school is.',
+      'Vraag of dat mag.',
+    ],
+    instructions: INSTRUCTIONS,
+    frame: mail('m.peters@basisschool.nl', 'Verlof voor Sem', 'Beste mevrouw Peters,'),
+    register: 'u',
+    points: [
+      {
+        id: 'waarom',
+        label: 'Say why you are writing',
+        keywords: [...WHY_WRITING, 'bruiloft', 'verlof', 'vrij'],
+        starter: 'Ik stuur u deze e-mail, omdat …',
+        example: 'Ik stuur u deze e-mail, omdat mijn familie een bruiloft viert.',
+      },
+      {
+        id: 'dagen',
+        label: 'Say which days Sem is not at school',
+        keywords: NEW_DATE,
+        starter: 'Sem is op … niet op school.',
+        example: 'Sem is op donderdag 26 en vrijdag 27 november niet op school.',
+      },
+      {
+        id: 'mag',
+        label: 'Ask whether that is allowed',
+        keywords: ['mag', 'goed', 'toestemming', 'kan dat', 'akkoord'],
+        starter: 'Mag Sem …?',
+        example: 'Mag Sem die twee dagen vrij hebben?',
+      },
+    ],
+    minSentences: 3,
+    model:
+      'Ik stuur u deze e-mail, omdat mijn familie in India een bruiloft viert. Ik wil graag met Sem naar de bruiloft. Sem is op donderdag 26 en vrijdag 27 november niet op school. Mag hij die twee dagen vrij hebben? Hij neemt zijn huiswerk mee.',
+  },
+  {
+    id: 'huur',
+    title: 'Huur opzeggen',
+    situation:
+      'U huurt een appartement van meneer Koster. U gaat verhuizen naar een andere stad. U stuurt meneer Koster een e-mail.',
+    bullets: [
+      'Schrijf dat u de huur wilt opzeggen.',
+      'Schrijf waarom u verhuist.',
+      'Schrijf wanneer u de sleutels teruggeeft.',
+    ],
+    instructions: INSTRUCTIONS,
+    frame: mail('verhuur@koster.nl', 'Huur opzeggen', 'Beste meneer Koster,'),
+    register: 'u',
+    points: [
+      {
+        id: 'opzeggen',
+        label: 'Say that you want to end the rent',
+        keywords: ['opzeg', 'zeg .*op', 'stop', 'huur'],
+        starter: 'Ik wil de huur van …',
+        example: 'Ik wil de huur van mijn appartement opzeggen.',
+      },
+      {
+        id: 'waarom',
+        label: 'Say why you are moving',
+        keywords: [...REASON, 'werk', 'baan', 'groter', 'kleiner', 'samenwonen'],
+        starter: 'Ik verhuis naar …, want …',
+        example: 'Ik verhuis naar Rotterdam, want ik heb daar een nieuwe baan.',
+      },
+      {
+        id: 'sleutels',
+        label: 'Say when you give the keys back',
+        keywords: ['sleutel', 'terug', ...NEW_DATE],
+        starter: 'Ik geef de sleutels op … terug.',
+        example: 'Ik geef de sleutels op maandag 30 november terug.',
+      },
+    ],
+    minSentences: 3,
+    model:
+      'Ik wil de huur van mijn appartement opzeggen. Ik verhuis naar Rotterdam, want ik heb daar een nieuwe baan. Ik geef de sleutels op maandag 30 november terug. Wilt u laten weten hoe laat dat kan?',
+  },
+  {
+    id: 'bedankt',
+    title: 'Bedankt voor de cursus',
+    situation: 'U heeft een cursus Nederlands gevolgd bij meneer Dekker. De cursus is klaar. U stuurt hem een e-mail.',
+    bullets: [
+      'Bedank meneer Dekker voor de cursus.',
+      'Schrijf wat u heeft geleerd.',
+      'Schrijf wat u nu gaat doen.',
+    ],
+    instructions: INSTRUCTIONS,
+    frame: mail('j.dekker@buurthuis.nl', 'Bedankt', 'Beste meneer Dekker,'),
+    register: 'u',
+    points: [
+      {
+        id: 'bedanken',
+        label: 'Thank him',
+        keywords: ['bedank', 'dank'],
+        starter: 'Hartelijk bedankt voor …',
+        example: 'Hartelijk bedankt voor de fijne cursus.',
+      },
+      {
+        id: 'geleerd',
+        label: 'Say what you learned',
+        keywords: ['geleerd', 'leer', 'kan nu', 'beter', 'woorden', 'spreken', 'schrijven', 'lezen', 'luisteren'],
+        starter: 'Ik heb veel … geleerd.',
+        example: 'Ik heb veel nieuwe woorden geleerd.',
+      },
+      {
+        id: 'nu',
+        label: 'Say what you will do now',
+        keywords: ['ga', 'examen', 'volgende', 'oefen', 'wil'],
+        starter: 'Nu ga ik …',
+        example: 'Nu ga ik oefenen voor mijn examen.',
+      },
+    ],
+    minSentences: 3,
+    model:
+      'Hartelijk bedankt voor de fijne cursus. Ik heb veel nieuwe woorden geleerd. Ook kan ik nu beter een e-mail schrijven. Nu ga ik oefenen voor mijn examen in december.',
+  },
+  {
+    id: 'uren',
+    title: 'Minder uren werken',
+    situation: 'U werkt vijf dagen per week. U wilt vanaf januari vier dagen werken. U stuurt een e-mail aan uw chef, meneer de Boer.',
+    bullets: [
+      'Schrijf wat u wilt veranderen.',
+      'Schrijf waarom. Bedenk zelf een reden.',
+      'Vraag of u een afspraak kunt maken om erover te praten.',
+    ],
+    instructions: INSTRUCTIONS,
+    frame: mail('m.deboer@werk.nl', 'Minder werken', 'Beste meneer de Boer,'),
+    register: 'u',
+    points: [
+      {
+        id: 'veranderen',
+        label: 'Say what you want to change',
+        keywords: ['vier dagen', 'minder', 'uren', 'dagen'],
+        starter: 'Ik wil vanaf … werken.',
+        example: 'Ik wil vanaf januari vier dagen per week werken.',
+      },
+      {
+        id: 'waarom',
+        label: 'Give a reason',
+        keywords: [...REASON, 'kinderen', 'kind', 'cursus', 'studie', 'opleiding', 'zorg', 'rust'],
+        starter: 'Ik ga op … een … volgen.',
+        example: 'Ik ga op woensdag een opleiding volgen.',
+      },
+      {
+        id: 'afspraak',
+        label: 'Ask for a meeting to talk about it',
+        keywords: ['afspraak', 'praten', 'gesprek', 'bespreken'],
+        starter: 'Kunnen we een afspraak maken …?',
+        example: 'Kunnen we een afspraak maken om erover te praten?',
+      },
+    ],
+    minSentences: 3,
+    model:
+      'Ik wil vanaf januari vier dagen per week werken. Ik ga op woensdag een opleiding volgen. Dan kan ik op woensdag niet werken. Kunnen we een afspraak maken om erover te praten?',
+  },
+  {
+    id: 'nietontvangen',
+    title: 'Bestelling niet ontvangen',
+    situation:
+      'U heeft drie weken geleden een jas besteld bij een webwinkel. U heeft de jas nog niet ontvangen. U stuurt de klantenservice een e-mail.',
+    bullets: [
+      'Schrijf wat u heeft besteld en wanneer.',
+      'Schrijf wat het probleem is.',
+      'Schrijf wat de winkel moet doen.',
+    ],
+    instructions: INSTRUCTIONS,
+    frame: mail('klantenservice@kledingwinkel.nl', 'Bestelling niet ontvangen', 'Beste meneer, mevrouw,'),
+    register: 'u',
+    points: [
+      {
+        id: 'besteld',
+        label: 'Say what you ordered and when',
+        keywords: ['besteld', 'bestelling', 'gekocht', 'jas'],
+        starter: 'Op … heb ik … besteld.',
+        example: 'Op 10 oktober heb ik een zwarte jas besteld.',
+      },
+      {
+        id: 'probleem',
+        label: 'Say what the problem is',
+        keywords: ['niet ontvangen', 'nog niet', 'niet gekregen', 'niet bezorgd', 'kwijt', 'probleem'],
+        starter: 'Ik heb de jas …',
+        example: 'Ik heb de jas nog niet ontvangen.',
+      },
+      {
+        id: 'willen',
+        label: 'Say what the shop should do',
+        keywords: ['geld terug', 'terug', 'sturen', 'stuur', 'opsturen', 'oplossen', 'uitzoeken'],
+        starter: 'Wilt u …?',
+        example: 'Wilt u de jas zo snel mogelijk sturen?',
+      },
+    ],
+    minSentences: 3,
+    model:
+      'Op 10 oktober heb ik een zwarte jas besteld. Ik heb al betaald, maar ik heb de jas nog niet ontvangen. Wilt u de jas zo snel mogelijk sturen? Anders wil ik graag mijn geld terug.',
+  },
+  {
+    id: 'kinderopvang',
+    title: 'Plek op de kinderopvang',
+    situation:
+      'U wilt uw dochter Noor naar de kinderopvang brengen. U stuurt een e-mail aan mevrouw Hendriks van kinderopvang De Regenboog.',
+    bullets: [
+      'Schrijf hoe oud uw dochter is.',
+      'Schrijf op welke dagen zij naar de opvang moet.',
+      'Vraag wanneer zij kan beginnen.',
+    ],
+    instructions: INSTRUCTIONS,
+    frame: mail('s.hendriks@regenboog.nl', 'Plek voor mijn dochter', 'Beste mevrouw Hendriks,'),
+    register: 'u',
+    points: [
+      {
+        id: 'oud',
+        label: 'Say how old your daughter is',
+        keywords: ['[0-9]', 'jaar', 'maanden', 'oud'],
+        starter: 'Mijn dochter is … oud.',
+        example: 'Mijn dochter is twee jaar oud.',
+      },
+      {
+        id: 'dagen',
+        label: 'Say which days she needs care',
+        keywords: [...WEEKDAYS, 'dagen'],
+        starter: 'Ze moet op … naar de opvang.',
+        example: 'Ze moet op maandag en donderdag naar de opvang.',
+      },
+      {
+        id: 'beginnen',
+        label: 'Ask when she can start',
+        keywords: ['begin', 'start', 'wanneer'],
+        starter: 'Wanneer kan zij …?',
+        example: 'Wanneer kan zij beginnen?',
+      },
+    ],
+    minSentences: 3,
+    model:
+      'Ik zoek een plek voor mijn dochter Noor op de kinderopvang. Noor is twee jaar oud. Ze moet op maandag en donderdag naar de opvang, want dan werk ik. Wanneer kan zij beginnen? Ik hoor graag van u.',
+  },
+  {
+    id: 'zaal',
+    title: 'Zaal huren',
+    situation:
+      'Uw moeder wordt zeventig. U wilt een feest voor haar geven in het buurthuis. U stuurt een e-mail aan meneer Mulder van het buurthuis.',
+    bullets: [
+      'Schrijf waarom u een zaal wilt huren.',
+      'Schrijf op welke datum en hoe laat.',
+      'Vraag hoeveel het kost.',
+    ],
+    instructions: INSTRUCTIONS,
+    frame: mail('r.mulder@buurthuis.nl', 'Zaal huren', 'Beste meneer Mulder,'),
+    register: 'u',
+    points: [
+      {
+        id: 'waarom',
+        label: 'Say why you want to rent a room',
+        keywords: [...REASON, 'zaal', 'huren', 'vieren'],
+        starter: 'Ik wil graag een zaal huren, omdat …',
+        example: 'Ik wil graag een zaal huren, omdat mijn moeder zeventig wordt.',
+      },
+      {
+        id: 'datum',
+        label: 'Say the date and time',
+        keywords: [...NEW_DATE, 'uur'],
+        starter: 'Het feest is op …',
+        example: 'Het feest is op zaterdag 12 december van 18.00 tot 23.00 uur.',
+      },
+      {
+        id: 'kosten',
+        label: 'Ask what it costs',
+        keywords: ['kost', 'prijs', 'betalen', 'hoeveel', 'euro'],
+        starter: 'Hoeveel kost …?',
+        example: 'Hoeveel kost de zaal?',
+      },
+    ],
+    minSentences: 3,
+    model:
+      'Ik wil graag een zaal huren, omdat mijn moeder zeventig wordt. Het feest is op zaterdag 12 december van 18.00 tot 23.00 uur. Er komen ongeveer veertig gasten. Hoeveel kost de zaal voor die avond?',
+  },
+  {
+    id: 'parkeren',
+    title: 'Parkeervergunning',
+    situation:
+      'U heeft een auto gekocht. In uw straat mag u alleen met een vergunning parkeren. U stuurt een e-mail aan de gemeente, aan mevrouw Bakker.',
+    bullets: [
+      'Schrijf waarom u de e-mail stuurt.',
+      'Schrijf waar u woont.',
+      'Vraag hoeveel de vergunning kost.',
+    ],
+    instructions: INSTRUCTIONS,
+    frame: mail('parkeren@gemeente.nl', 'Parkeervergunning', 'Beste mevrouw Bakker,'),
+    register: 'u',
+    points: [
+      {
+        id: 'waarom',
+        label: 'Say why you are writing',
+        keywords: [...WHY_WRITING, 'vergunning', 'parkeer', 'aanvragen'],
+        starter: 'Ik wil graag een … aanvragen.',
+        example: 'Ik wil graag een parkeervergunning aanvragen.',
+      },
+      {
+        id: 'waar',
+        label: 'Say where you live',
+        keywords: ['woon', 'straat', 'adres', 'laan', 'weg', 'plein', 'nummer'],
+        starter: 'Ik woon in de …',
+        example: 'Ik woon in de Kerkstraat 12 in Utrecht.',
+      },
+      {
+        id: 'kosten',
+        label: 'Ask what the permit costs',
+        keywords: ['kost', 'prijs', 'betalen', 'hoeveel', 'euro'],
+        starter: 'Hoeveel kost …?',
+        example: 'Hoeveel kost een vergunning per jaar?',
+      },
+    ],
+    minSentences: 3,
+    model:
+      'Ik wil graag een parkeervergunning aanvragen. Ik heb een auto gekocht. Ik woon in de Kerkstraat 12 in Utrecht. Hoeveel kost een vergunning per jaar? Hoe lang duurt het voordat ik de vergunning krijg?',
+  },
 ]
-
