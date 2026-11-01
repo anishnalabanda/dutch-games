@@ -259,7 +259,6 @@ export function FormulierInvullen() {
               question={section.question}
               value={values[section.question.id] ?? ''}
               highlighted={target === section.question.id}
-              showExample={phase === 'done'}
               onChange={(value) => update(section.question.id, value)}
             />
           )
@@ -360,13 +359,11 @@ function QuestionSection({
   question,
   value,
   highlighted,
-  showExample,
   onChange,
 }: {
   question: OpenQuestion
   value: string
   highlighted: boolean
-  showExample: boolean
   onChange: (value: string) => void
 }) {
   return (
@@ -384,12 +381,11 @@ function QuestionSection({
         spellCheck={false}
         onChange={(e) => onChange(e.target.value)}
       />
-      {showExample && (
-        <p className="fo-example">
-          <span className="g-label">One way to answer</span>
-          <GlossedText text={question.example} />
-        </p>
-      )}
+      {/* Always on screen, by the owner's choice, as in the text games. */}
+      <p className="fo-example">
+        <span className="g-label">One way to answer</span>
+        <GlossedText text={question.example} />
+      </p>
     </section>
   )
 }

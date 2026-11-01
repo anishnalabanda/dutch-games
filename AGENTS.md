@@ -526,12 +526,15 @@ window, note, newspaper box or form, with the greeting and closing already print
 - **Hint** works at any time: it reads the text so far and shows the most useful next
   step. Pressed again on the same problem it goes deeper: what is missing (English), then
   a Dutch sentence starter, then a whole Dutch example sentence.
-- **Submit** finishes the task when nothing blocking is left, and shows a model answer;
-  otherwise it lists what is still missing.
+- **The model answer is always on screen** (the owner's choice, November 2026): under the
+  writing space in the text games, under each question in the form game, while writing
+  and after.
+- **Submit** finishes the task when nothing blocking is left; otherwise it lists what is
+  still missing.
 - **Try again** on the done screen blanks the writing space (in the form game only the open
   answers: the personal details and the ticked option stay) and keeps Claude's last review
   on screen, labelled as feedback on the last attempt, so the task can be rewritten with
-  it in view. The task stays finished; the static model answer is hidden again.
+  it in view. The task stays finished.
 - **Blocking:** every point from the brief, the register the printed greeting demands,
   the minimum number of sentences, a capital and a full stop on every sentence, and the
   name under the closing. **Advice, never blocking:** inversion after a fronted time or

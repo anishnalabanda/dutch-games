@@ -188,6 +188,12 @@ export function TextTaskGame({ storeKey, title, noun, tasks, template }: TextTas
 
       <WritingFrame task={task} body={body} name={name} noun={noun} onEdit={edit} />
 
+      {/* Always on screen, by the owner's choice: an example to learn from, not only a reward. */}
+      <section>
+        <span className="g-label">One way to write it</span>
+        <ModelAnswer task={task} />
+      </section>
+
       {phase === 'write' && retrying && review}
 
       {phase !== 'done' && (
@@ -224,15 +230,11 @@ export function TextTaskGame({ storeKey, title, noun, tasks, template }: TextTas
           <div className="feedback-box feedback-ok" role="status">
             <strong>Done</strong>
             <p>
-              Every point is covered. Compare your {noun} with the one below: it is one way to write
+              Every point is covered. Compare your {noun} with the one above: it is one way to write
               it, not the only one.
             </p>
           </div>
           {review ?? <Advice issues={advice} />}
-          <section>
-            <span className="g-label">One way to write it</span>
-            <ModelAnswer task={task} />
-          </section>
           <p className="tk-honesty">{PAPER_NOTE}</p>
           <div className="g-actions">
             <Button variant="secondary" onClick={tryAgain}>
