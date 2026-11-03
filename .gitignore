@@ -27,3 +27,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Photos of the KNM book, typed into src/games/knm/data (copyrighted, kept local)
+/knm/
