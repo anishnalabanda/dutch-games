@@ -8,6 +8,8 @@
  * deliberately NOT marked as verbs: colouring them amber would be wrong as
  * often as it is right. Their gloss names both senses instead.
  */
+import { knmGlossary } from './knm/glossary'
+
 export interface GlossEntry {
   gloss: string
   verb?: boolean
@@ -1917,5 +1919,5 @@ export const glossary: Record<string, GlossEntry> = {
 export function lookupWord(raw: string): GlossEntry | null {
   const word = raw.toLowerCase().replace(/^[^a-zà-ÿ]+|[^a-zà-ÿ]+$/g, '')
   if (word.length === 0) return null
-  return glossary[word] ?? null
+  return glossary[word] ?? knmGlossary[word] ?? null
 }

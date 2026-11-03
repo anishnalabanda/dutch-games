@@ -38,7 +38,13 @@ baseline. Learning happens through **playing games**, not reading lessons.
   core games yet and the DUO oefenexamens remain the real practice.
 - Schrijven: in progress (all 16 games built, roadmap in section 13; done now means
   every item right first time, so older right-eventually saves no longer count)
-- KNM: question source is the owner's *NT2 KNM 1000 vragen* book
+- KNM: question source is the owner's *NT2 KNM 1000 vragen* book (8 themes, 1000
+  questions). One core game per theme (`src/games/knm/`, keys `nl.knm.<theme>`), all on
+  `KnmQuiz`: a question with lettered options, on `useDrill`. Each theme's questions are
+  in `knm/data/<theme>.ts`, typed in from photos of the book and kept as printed; where
+  the book's answer key is wrong, `answer` is corrected and `bookAnswer` plus an English
+  `note` say so. Their words' glosses are in `knm/gloss/<theme>.ts`, read by
+  `lookupWord` with the main glossary. A theme with no questions yet gets no card.
 - Spreken: not started, no date
 - ONA: portfolio + interview, not a knowledge test (a task checklist, not games)
 

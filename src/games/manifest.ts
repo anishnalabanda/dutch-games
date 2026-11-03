@@ -18,6 +18,7 @@ import { InformeelBericht } from './schrijven/informeel/InformeelBericht'
 import { FormeleEmail } from './schrijven/formeel/FormeleEmail'
 import { WoordenLuisteren } from './luisteren/woorden/WoordenLuisteren'
 import { RouteVolgen } from './luisteren/route/RouteVolgen'
+import { KnmQuiz } from './knm/KnmQuiz'
 
 // Item counts come from the games' own data, so the hub and the exam page can
 // never quote a total the game does not actually have.
@@ -39,6 +40,7 @@ import { tasks as informeel } from './schrijven/informeel/data'
 import { tasks as formeel } from './schrijven/formeel/data'
 import { STORE_PREFIX, THEMES, wordsByTheme } from './luisteren/woorden/data'
 import { routes } from './luisteren/route/data'
+import { KNM_THEMES, STORE_PREFIX as KNM_PREFIX } from './knm/data'
 
 export interface RegisteredGame extends GameMeta {
   component: ComponentType
@@ -213,6 +215,18 @@ export const games: RegisteredGame[] = [
     core: false,
     total: wordsByTheme[theme.id].length,
     component: WoordenLuisteren,
+  })),
+  // KNM: one game per theme of the owner's book, all on one component that
+  // reads its theme from the id. Core: the book is the chosen question source.
+  // A theme whose pages are not typed in yet has no questions and no card.
+  ...KNM_THEMES.filter((theme) => theme.questions.length > 0).map((theme) => ({
+    id: `${KNM_PREFIX}${theme.id}`,
+    exam: 'knm' as const,
+    title: theme.title,
+    subtitle: theme.subtitle,
+    core: true,
+    total: theme.questions.length,
+    component: KnmQuiz,
   })),
 ]
 

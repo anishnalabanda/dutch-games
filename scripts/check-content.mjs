@@ -339,8 +339,39 @@ for (const [theme, list] of Object.entries(lz.conversationsByTheme)) {
   lzConversations += list.length
 }
 console.log(`luisteren word games: ${lzSentences} sentences, ${lzConversations} conversations`)
+// KNM: the owner's book, one theme per game. Text as printed; an answer that
+// differs from the book's key must say so, and say why.
+const kd = await import(`${base}/knm/data.ts`)
+const kg = await import(`${base}/knm/glossary.ts`)
+let knmTotal = 0
+for (const theme of kd.KNM_THEMES) {
+  const list = theme.questions
+  list.forEach((q, i) => {
+    const where = `knm ${q.id}`
+    ok(q.id === `${theme.id}-${q.n}`, `${where}: id does not match theme and number`)
+    ok(q.n === i + 1, `${where}: expected question ${i + 1} here (numbers must run in order, none skipped)`)
+    ok(q.options.length >= 2 && q.options.length <= 4, `${where}: ${q.options.length} options`)
+    ok(new Set(q.options).size === q.options.length, `${where}: duplicate options`)
+    ok(Number.isInteger(q.answer) && q.answer >= 0 && q.answer < q.options.length, `${where}: answer out of range`)
+    if (q.bookAnswer !== undefined) {
+      ok(q.bookAnswer >= 0 && q.bookAnswer < q.options.length && q.bookAnswer !== q.answer, `${where}: bookAnswer out of range or equal to answer`)
+      ok((q.note ?? '').length > 20, `${where}: corrected against the book with no note saying why`)
+    }
+    ok(![q.question, ...q.options, q.note ?? ''].some(t => /[—–]/.test(t)), `${where}: a dash`)
+    ok([q.question, ...q.options].every(t => t.trim() === t && !/  /.test(t)), `${where}: stray space`)
+    for (const t of [q.question, ...q.options]) {
+      for (const word of t.match(/[A-Za-zÀ-ÿ]+(?:['’-][A-Za-zÀ-ÿ]+)*/g) ?? []) {
+        if (kg.knmNames.has(word.toLowerCase()) || glossary.lookupWord(word)) continue
+        if (!unglossed.has(word.toLowerCase())) unglossed.set(word.toLowerCase(), where)
+      }
+    }
+  })
+  ok(list.length === 0 || list.length >= 40, `knm ${theme.id}: only ${list.length} questions`)
+  knmTotal += list.length
+}
+console.log(`knm: ${knmTotal} questions in ${kd.KNM_THEMES.filter(t => t.questions.length > 0).length} of ${kd.KNM_THEMES.length} themes`)
 for (const [word, where] of unglossed) ok(false, `${where}: "${word}" has no glossary entry`)
-console.log(`glossary: bouwstenen and the four exam-task games checked for missing words`)
+console.log(`glossary: bouwstenen, the four exam-task games, Luisteren and KNM checked for missing words`)
 
 const d = await import(`${base}/schrijven/voorzetsels/data.ts`)
 const names = ['zondag','maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag']
